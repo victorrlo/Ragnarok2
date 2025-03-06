@@ -18,7 +18,7 @@
                     "name": "MousePosition",
                     "type": "Value",
                     "id": "241d467d-e750-452c-8b66-944f0ac44d21",
-                    "expectedControlType": "Vector3",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -39,7 +39,7 @@
                 {
                     "name": "",
                     "id": "92708ff3-2a4f-431d-ac63-3c862920efa3",
-                    "path": "",
+                    "path": "<Mouse>/position",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
