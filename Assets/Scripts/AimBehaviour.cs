@@ -10,6 +10,8 @@ public class AimBehaviour : MonoBehaviour
     [SerializeField] private Grid _grid; 
     private float _gridSize;
 
+    public Vector3Int? LastGridCellPosition { get; private set; }
+
     private void Start()
     {
         _mainCamera = Camera.main;
@@ -20,10 +22,10 @@ public class AimBehaviour : MonoBehaviour
     {
         if (!context.performed) return;
 
-        Vector3Int? gridCell = GetMouseGridPosition();
-        if (gridCell.HasValue)
+        LastGridCellPosition = GetMouseGridPosition();
+        if (LastGridCellPosition.HasValue)
         {
-            transform.position = _grid.GetCellCenterWorld(gridCell.Value);
+            transform.position = _grid.GetCellCenterWorld(LastGridCellPosition.Value);
             transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         }
     }
