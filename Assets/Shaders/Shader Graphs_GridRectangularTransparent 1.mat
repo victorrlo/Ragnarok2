@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4752469267477235519
+--- !u!114 &-5126124405273045547
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_GridRectangularTransparent
+  m_Name: Shader Graphs_GridRectangularTransparent 1
   m_Shader: {fileID: -6465566751694194690, guid: 5360f42c9a36a5948875e04194580a5d,
     type: 3}
   m_Parent: {fileID: 0}
@@ -53,5 +53,9 @@ Material:
     m_Floats:
     - _QueueControl: 0
     - _QueueOffset: 0
-    m_Colors: []
+    - _Thickness: 0.1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 0}
+    - _DefaultScale: {r: 10, g: 10, b: 0, a: 0}
+    - _Size: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
