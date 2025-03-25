@@ -4,27 +4,17 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
-{
-
-
-
-    [SerializeField] private AimBehaviour _aimBehaviour;
+{   
+    [SerializeField] private AimBehaviour _aim;
     [SerializeField] private Grid _grid;
     [SerializeField] private float _moveSpeed;
     private Coroutine _moveCoroutine;
-
-
-    private void Start()
-    {
-        _aimBehaviour = FindObjectOfType<AimBehaviour>();
-        _grid = FindObjectOfType<Grid>();
-    }
 
     public void OnMouseClick(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
 
-        var targetGrid = _aimBehaviour.LastGridCellPosition;
+        var targetGrid = _aim.LastGridCellPosition;
         
         if (targetGrid.HasValue)
         {
@@ -46,7 +36,6 @@ public class PlayerMovement : MonoBehaviour
 
         while(Vector3.Distance(transform.position, targetPosition) > distanceThreshold)
         {
-            Debug.Log($"Current Position: {transform.position}, Target Position: {targetPosition}, Speed: {_moveSpeed}");
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, _moveSpeed * Time.deltaTime);
             yield return null;
         }

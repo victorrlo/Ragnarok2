@@ -5,17 +5,31 @@ using UnityEngine.InputSystem;
 
 public class AimBehaviour : MonoBehaviour
 {
+    private AimBehaviour _instance;
     private Camera _mainCamera;
     [SerializeField] private LayerMask _aimLayerMask;
     [SerializeField] private Grid _grid; 
-    private float _gridSize;
+    [SerializeField] private float _raycastDistance = 2f;
 
     public Vector3Int? LastGridCellPosition { get; private set; }
 
+    private void Awake()
+    {
+        // make sure there's only one instance of this in the scene as we won't want multiple aims!
+        if (_instance == null)
+        {
+            _instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Start()
     {
+        DontDestroyOnLoad(gameObject);
         _mainCamera = Camera.main;
-        _gridSize = _grid.cellSize.x;
     }
 
     public void OnMouseMove(InputAction.CallbackContext context)
@@ -26,7 +40,7 @@ public class AimBehaviour : MonoBehaviour
         if (LastGridCellPosition.HasValue)
         {
             transform.position = _grid.GetCellCenterWorld(LastGridCellPosition.Value);
-            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            transform.position = new Vector3(transform.position.x, 0.01f , transform.position.z);
         }
     }
     
@@ -35,8 +49,25 @@ public class AimBehaviour : MonoBehaviour
         Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _aimLayerMask))
         {
-            return _grid.WorldToCell(hit.point);
+            if (IsWalkable(hit.point))
+            {
+                return _grid.WorldToCell(hit.point);
+            }
         }
         return null;
     }   
+
+    bool IsWalkable(Vector3 position)
+    {
+        RaycastHit hit;
+
+        Vector3 rayStart = new Vector3(position.x, position.y + _raycastDistance/2, position.z);
+
+        if (Physics.Raycast(rayStart, Vector3.down, out hit, _raycastDistance, _aimLayerMask))
+        {
+            return hit.collider.CompareTag("Walkable");
+        }
+
+        return false;
+    }
 }
