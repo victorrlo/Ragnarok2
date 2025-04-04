@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 31312fd103b2ec64db5e1fc51f715aaf
+guid: 3dfe9d12f79c4c94680694a9b9f310b5
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,7 +123,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ground tileset_0
+      name: obstacles tileset_0
       rect:
         serializedVersion: 2
         x: 0
@@ -138,14 +138,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d3c6502d2c7812248b041674447f254c
-      internalID: 1769351103
+      spriteID: f9d325a588ec04c48b4f88bd452ecad2
+      internalID: -1353950225
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground tileset_1
+      name: obstacles tileset_1
       rect:
         serializedVersion: 2
         x: 10
@@ -160,8 +160,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3b68c7ae968e0b42808c57bdcc12215
-      internalID: 1022779615
+      spriteID: a2ff4f11fc82beb41a6416dbf639b1e0
+      internalID: 1570808935
       vertices: []
       indices: 
       edges: []
@@ -170,7 +170,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: d92e72834d0f7584189ab41b0825b381
+    spriteID: b441c7a5d959cfe4393cf0deaa061d41
     internalID: 0
     vertices: []
     indices: 
@@ -180,8 +180,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ground tileset_0: 1769351103
-      ground tileset_1: 1022779615
+      obstacles tileset_0: -1353950225
+      obstacles tileset_1: 1570808935
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
