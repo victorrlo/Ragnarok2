@@ -2,14 +2,15 @@ using UnityEngine;
 
 public class Node
 {
-    public Vector2Int _gridPosition;
-    public bool _isWalkable;
+    public Vector3Int _gridPosition {get; set;}
+    public bool _isWalkable {get;}
     public Node _parent;
-    public float _gCost;
-    public float _hCost;
-    public float _fCost => _gCost + _hCost;
 
-    public Node(Vector2Int position, bool isWalkable)
+    public int _gCost = int.MaxValue; // infinity cost
+    public int _hCost;
+    public int _fCost => _gCost + _hCost;
+
+    public Node(Vector3Int position, bool isWalkable)
     {
         _gridPosition = position;
         _isWalkable = isWalkable;
