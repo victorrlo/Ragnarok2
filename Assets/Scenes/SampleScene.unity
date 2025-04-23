@@ -4652,7 +4652,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _aim: {fileID: 251205959}
-  _walkableTilemap: {fileID: 699126974}
+  _nodeManager: {fileID: 1360470685}
   _grid: {fileID: 1360470683}
   _moveSpeed: 3
 --- !u!114 &1231503496
@@ -4667,9 +4667,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42e877934a637a140895fd98b0e4991f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grid: {fileID: 1360470683}
-  _walkableTilemap: {fileID: 699126974}
-  _obstacleTilemap: {fileID: 603129710}
 --- !u!1 &1360470682
 GameObject:
   m_ObjectHideFlags: 0
