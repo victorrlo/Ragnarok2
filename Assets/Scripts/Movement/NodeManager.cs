@@ -35,7 +35,7 @@ public class NodeManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"✅ Generated {_nodes.Count} total nodes");
+        // Debug.Log($"Generated {_nodes.Count} total nodes");
     }
 
     public bool IsWalkable(Vector3Int pos)

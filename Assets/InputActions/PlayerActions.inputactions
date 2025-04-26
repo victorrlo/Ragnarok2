@@ -1,15 +1,15 @@
 {
-    "name": "MouseActions",
+    "name": "PlayerActions",
     "maps": [
         {
-            "name": "Mouse",
+            "name": "Gameplay",
             "id": "2aec13e2-8e01-4e59-b05c-d9ac9db9a7d4",
             "actions": [
                 {
                     "name": "MouseClick",
                     "type": "Button",
                     "id": "2b8d244d-9d7a-47c4-9be1-7a76fc3f4acc",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Skill: AGI UP",
+                    "type": "Button",
+                    "id": "70e2073e-ac5c-46f1-8d5d-4c54ae2c9f31",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -44,6 +53,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "MousePosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5267a391-8af2-458c-ad51-24e9ee16ccc0",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skill: AGI UP",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
