@@ -13,6 +13,7 @@ public class NodeManager : MonoBehaviour
     
     private Dictionary<Vector3Int, Node> _nodes = new();
 
+
     private void Awake()
     {
         _grid = GetComponent<Grid>();
@@ -129,19 +130,8 @@ public class NodeManager : MonoBehaviour
     List<Node> GetNeighbors(Node node)
     {
         List<Node> neighbors = new();
-        Vector3Int[] directions = new Vector3Int[]
-        {
-            new Vector3Int( 0, 1, 0),   //up
-            new Vector3Int( 0, -1, 0),  //down
-            new Vector3Int( -1, 0, 0),  //left
-            new Vector3Int( 1, 0, 0),   //right
-            new Vector3Int( -1, 1, 0),  //up-left
-            new Vector3Int( 1, 1, 0),   //up-right
-            new Vector3Int( -1, -1, 0), //down-left
-            new Vector3Int( 1, -1, 0)   //down-right   
-        };
 
-        foreach (var dir in directions)
+        foreach (var dir in DirectionHelper._directions)
         {
             Vector3Int neighborPos = node._gridPosition + dir;
 

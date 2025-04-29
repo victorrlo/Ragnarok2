@@ -43,20 +43,20 @@ public class PlayerMovement : GridMovement
         _movementCoroutine = StartCoroutine(FollowPath(path, _moveSpeed)); // uses gridMovement script to walk
     }
 
-    public void OnSpeedBoost(InputAction.CallbackContext context)
-    {
-        if (!context.performed) return;
-        Debug.Log("Aumentar AGILIDADE!");
-        StartCoroutine(SpeedBoost());
-    }
+    // public void OnSpeedBoost(InputAction.CallbackContext context)
+    // {
+    //     if (!context.performed) return;
+    //     Debug.Log("Aumentar AGILIDADE!");
+    //     StartCoroutine(SpeedBoost());
+    // }
 
-    private IEnumerator SpeedBoost()
-    {
-        float originalSpeed = _moveSpeed;
-        _moveSpeed *= 2f;
+    // private IEnumerator SpeedBoost()
+    // {
+    //     float originalSpeed = _moveSpeed;
+    //     _moveSpeed = 6f;
 
-        yield return new WaitForSeconds(5f);
+    //     yield return new WaitForSeconds(5f);
 
-        _moveSpeed = originalSpeed;
-    }
+    //     _moveSpeed = originalSpeed;
+    // }
 }

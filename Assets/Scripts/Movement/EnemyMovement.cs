@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class EnemyMovement : GridMovement
@@ -7,10 +8,12 @@ public class EnemyMovement : GridMovement
     private Transform _player;
     private NodeManager _nodeManager;
     private Coroutine _movementCoroutine;
+    private Vector3Int _lastKnownPlayerPosition;
 
     private enum EnemyState
     {
         Passive,
+        Active,
         Attacking,
         RangedAttacking,
         SpecialAttacking
@@ -31,6 +34,18 @@ public class EnemyMovement : GridMovement
         InvokeRepeating(nameof(UpdatePath), 0f, 2f);
     }
 
+    private void Update()
+    {
+        if (_player == null || _nodeManager == null) return;
+
+        Vector3Int playerGridPos = _grid.WorldToCell(_player.position);
+        if (playerGridPos != _lastKnownPlayerPosition && _currentState == EnemyState.Attacking)
+        {
+            _lastKnownPlayerPosition = playerGridPos;
+            UpdatePath();
+        }
+    }
+
     private void UpdatePath()
     {
         if (_player == null || _nodeManager == null) return;
@@ -46,6 +61,9 @@ public class EnemyMovement : GridMovement
         switch(_currentState)
         {
             case EnemyState.Passive:
+                WanderRandomly();
+                break;
+            case EnemyState.Active:
                 if (playerInDetectionRange)
                 {
                     _currentState = EnemyState.Attacking;
@@ -62,25 +80,16 @@ public class EnemyMovement : GridMovement
                 bool playerInTiringRange = (distanceX <= _tiringRange && distanceY <= _tiringRange);
                 if (!playerInTiringRange)
                 {
-                    _currentState = EnemyState.Passive;
+                    _currentState = EnemyState.Active;
                     Debug.Log("Monstro cansou de correr atrás do jogador!");
                 }
                 else
                 {
                     ChasePlayer(enemyGridPos, playerGridPos);
-                }
+                } 
                 break;
             }
         }
-
-        // List<Node> path = _nodeManager.FindPath(enemyGridPos, playerGridPos);
-
-        // if (path == null || path.Count == 0) return;
-
-        // if (_movementCoroutine != null)
-        //     StopCoroutine(_movementCoroutine);
-
-        // _movementCoroutine = StartCoroutine(FollowPath(path));
     }
 
     private void WanderRandomly()
@@ -110,7 +119,14 @@ public class EnemyMovement : GridMovement
 
     private void ChasePlayer(Vector3Int enemyPos, Vector3Int playerPos)
     {
-        List<Node> path = _nodeManager.FindPath(enemyPos, playerPos);
+        Vector3Int targetPos = FindAdjacentTile(enemyPos, playerPos);
+
+        if (targetPos == Vector3Int.zero)
+        {
+            return;
+        }
+
+        List<Node> path = _nodeManager.FindPath(enemyPos, targetPos);
 
         if (path == null || path.Count == 0) return;
 
@@ -118,5 +134,42 @@ public class EnemyMovement : GridMovement
             StopCoroutine(_movementCoroutine);
         
         _movementCoroutine = StartCoroutine(FollowPath(path));
+    }
+
+    private Vector3Int FindAdjacentTile(Vector3Int enemyPos, Vector3Int playerPos)
+    {
+        Vector3Int bestTile = Vector3Int.zero;
+        float bestDistance = float.MaxValue;
+
+        foreach (var dir in DirectionHelper._directions)
+        {
+            Vector3Int adjacent = playerPos + dir;
+            
+            if (_nodeManager.IsWalkable(adjacent)) // only walkable tiles that are different from player
+            {
+                if (adjacent == enemyPos) continue; // to not go back to the same tile
+
+                float distance = Vector3Int.Distance(enemyPos, adjacent);
+
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    bestTile = adjacent;
+                }
+                    
+            }
+        }
+        // if (bestTile == Vector3Int.zero) Debug.LogError("nenhum tile adjacente válido foi encontrado!");
+
+        return bestTile;
+    }
+
+    private void StopMovement()
+    {
+        if (_movementCoroutine != null)
+        {
+            StopCoroutine(_movementCoroutine);
+            _movementCoroutine = null;
+        }
     }
 }

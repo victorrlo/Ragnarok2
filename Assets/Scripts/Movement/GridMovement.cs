@@ -10,7 +10,7 @@ public class GridMovement : MonoBehaviour
     {
         _grid = FindFirstObjectByType<Grid>();
     }
-    protected IEnumerator FollowPath(List<Node> path, float moveSpeed = 3f)
+    protected IEnumerator FollowPath(List<Node> path, float moveSpeed = 1f)
     {
         foreach (Node node in path)
         {
