@@ -4,8 +4,7 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Ground
-  - Walkable
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -13,7 +12,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Player
   - 
   - Enemies
   - Obstacles
@@ -40,6 +39,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: UI
+    uniqueID: 1706218913
+    locked: 0
   - name: Ground Tilemap
     uniqueID: 2126955695
     locked: 0

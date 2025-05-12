@@ -28,7 +28,6 @@ public class AimBehaviour : MonoBehaviour
 
     private void Start()
     {
-        DontDestroyOnLoad(gameObject);
         _mainCamera = Camera.main;
     }
 

@@ -9,6 +9,8 @@ public class EnemyMovement : GridMovement
     private NodeManager _nodeManager;
     private Coroutine _movementCoroutine;
     private Vector3Int _lastKnownPlayerPosition;
+    private GridOccupancyManager _gridOccupancyManager;
+    private Vector3Int _currentGridPos;
 
     private enum EnemyState
     {
@@ -25,13 +27,17 @@ public class EnemyMovement : GridMovement
     {
         base.Awake();
         _nodeManager = FindFirstObjectByType<NodeManager>();
+        _gridOccupancyManager = GridOccupancyManager.Instance;
     }
 
     private void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player").transform;
-        // moves to player each 2 seconds
+        // moves each 2 seconds
         InvokeRepeating(nameof(UpdatePath), 0f, 2f);
+
+        _currentGridPos = _grid.WorldToCell(transform.position);
+        _gridOccupancyManager.RegisterOccupant(_currentGridPos, gameObject);
     }
 
     private void Update()
@@ -67,7 +73,6 @@ public class EnemyMovement : GridMovement
                 if (playerInDetectionRange)
                 {
                     _currentState = EnemyState.Attacking;
-                    Debug.Log("Jogador detectado!");
                 }
                 else
                 {
@@ -77,8 +82,8 @@ public class EnemyMovement : GridMovement
 
             case EnemyState.Attacking:
             {
-                bool playerInTiringRange = (distanceX <= _tiringRange && distanceY <= _tiringRange);
-                if (!playerInTiringRange)
+                bool playerInRange = (distanceX <= _tiringRange && distanceY <= _tiringRange);
+                if (!playerInRange)
                 {
                     _currentState = EnemyState.Active;
                     Debug.Log("Monstro cansou de correr atrás do jogador!");
@@ -134,6 +139,17 @@ public class EnemyMovement : GridMovement
             StopCoroutine(_movementCoroutine);
         
         _movementCoroutine = StartCoroutine(FollowPath(path));
+    }
+
+    protected override void OnStep(Vector3Int from, Vector3Int to)
+    {
+        _gridOccupancyManager.MoveOccupant(from, to);
+        _currentGridPos = to;
+    }
+
+    protected override void OnPathComplete(Vector3Int finalCell)
+    {
+        StopMovement();
     }
 
     private Vector3Int FindAdjacentTile(Vector3Int enemyPos, Vector3Int playerPos)

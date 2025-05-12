@@ -9,6 +9,7 @@ public class UiCustomCursor : MonoBehaviour
     private Vector2 _cursorHotSpot;
     [SerializeField] private LayerMask _enemyLayerMask;
     [SerializeField] private Camera _mainCamera;
+    [SerializeField] private Grid _grid;
 
     private void Awake()
     {
@@ -23,29 +24,31 @@ public class UiCustomCursor : MonoBehaviour
 
     private void Update()
     {
-        Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero); //plane to fix raycast not hitting things
+        Vector3Int? gridCell = GetMouseGridCell();
 
-        if (groundPlane.Raycast(ray, out float enter))
+        if (gridCell.HasValue &&
+            GridOccupancyManager.Instance.TryGetOccupant(gridCell.Value, out GameObject occupant) &&
+            occupant.CompareTag("Enemy"))
         {
-            Vector3 hitPoint = ray.GetPoint(enter);
-            Debug.DrawRay(hitPoint, Vector3.up * 0.5f, Color.magenta);
-
-            if (Physics.Raycast(hitPoint + Vector3.up *2f, Vector3.down, out RaycastHit hit, 5f))
-            {
-                Debug.Log("Hit: " + hit.collider.name);
-                Cursor.SetCursor(_attackCursorSprite, _cursorHotSpot, CursorMode.Auto);
-            }
-            else
-            {
-                Cursor.SetCursor(_normalCursorSprite, _cursorHotSpot, CursorMode.Auto);
-            }
+            Cursor.SetCursor(_attackCursorSprite, _cursorHotSpot, CursorMode.Auto);
         }
         else
         {
             Cursor.SetCursor(_normalCursorSprite, _cursorHotSpot, CursorMode.Auto);
         }
+    }
 
-        
+    private Vector3Int? GetMouseGridCell()
+    {
+        Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+
+        if (groundPlane.Raycast(ray, out float enter))
+        {
+            Vector3 hitPoint = ray.GetPoint(enter);
+            return _grid.WorldToCell(hitPoint);
+        }
+
+        return null;
     }
 }

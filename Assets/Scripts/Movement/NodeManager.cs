@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 
 public class NodeManager : MonoBehaviour
 {
-    private Grid _grid;
+    public static Grid Instance { get; private set; }
     [SerializeField] private Tilemap _walkableTilemap;
     [SerializeField] private Tilemap _obstacleTilemap;
     private List<Node> _lastPath;
@@ -16,7 +16,7 @@ public class NodeManager : MonoBehaviour
 
     private void Awake()
     {
-        _grid = GetComponent<Grid>();
+        Instance = GetComponent<Grid>();
         GenerateNodes();
     }
 
@@ -35,8 +35,6 @@ public class NodeManager : MonoBehaviour
                 _nodes[pos] = new Node(pos, isWalkable && !isObstacle);
             }
         }
-
-        // Debug.Log($"Generated {_nodes.Count} total nodes");
     }
 
     public bool IsWalkable(Vector3Int pos)
@@ -146,7 +144,7 @@ public class NodeManager : MonoBehaviour
 
                 if (!_nodes[horizontal]._isWalkable || !_nodes[vertical]._isWalkable)
                 {
-                    // Debug.Log($"Blocked diagonal at {neighborPos} due to corner clipping");
+                    // blocks diagonal at neighborPos due to corner clipping
                     continue;
                 }   
             }
@@ -167,45 +165,45 @@ public class NodeManager : MonoBehaviour
         }
     }
 
-    void OnDrawGizmos()
-    {
-        if (_walkableTilemap != null)
-            DrawTileMapGizmos(_walkableTilemap, Color.green);
+    // void OnDrawGizmos()
+    // {
+    //     if (_walkableTilemap != null)
+    //         DrawTileMapGizmos(_walkableTilemap, Color.green);
 
-        if (_obstacleTilemap != null)
-        {
-            DrawTileMapGizmos(_obstacleTilemap, Color.red);
-        }
-    }
+    //     if (_obstacleTilemap != null)
+    //     {
+    //         DrawTileMapGizmos(_obstacleTilemap, Color.red);
+    //     }
+    // }
 
-    void DrawTileMapGizmos(Tilemap tilemap, Color color)
-    {   
-        BoundsInt bounds = tilemap.cellBounds; // this gets the boundaries of the tilemap in cell size.
+    // void DrawTileMapGizmos(Tilemap tilemap, Color color)
+    // {   
+    //     BoundsInt bounds = tilemap.cellBounds; // this gets the boundaries of the tilemap in cell size.
 
-        foreach (Vector3Int pos in bounds.allPositionsWithin) // all the positions of tilemap
-        {
-            if (tilemap.HasTile(pos))
-            {
-                Vector3 worldPos = tilemap.CellToWorld(pos) + new Vector3(0.5f, 0, 0.5f);
-                Gizmos.color = color;
-                Gizmos.DrawWireCube(worldPos, new Vector3(1f, 0.1f, 1f));
-            }
-        }
+    //     foreach (Vector3Int pos in bounds.allPositionsWithin) // all the positions of tilemap
+    //     {
+    //         if (tilemap.HasTile(pos))
+    //         {
+    //             Vector3 worldPos = tilemap.CellToWorld(pos) + new Vector3(0.5f, 0, 0.5f);
+    //             Gizmos.color = color;
+    //             Gizmos.DrawWireCube(worldPos, new Vector3(1f, 0.1f, 1f));
+    //         }
+    //     }
 
-        if(_lastPath != null)
-        {
-            foreach (Node node in _lastPath)
-            {
-                Vector3 pos = _grid.GetCellCenterWorld(node._gridPosition);
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawSphere(pos + new Vector3(0, 0.1f, 0), 0.2f);
-            }
-        }
-    }
+    //     if(_lastPath != null)
+    //     {
+    //         foreach (Node node in _lastPath)
+    //         {
+    //             Vector3 pos = _grid.GetCellCenterWorld(node._gridPosition);
+    //             Gizmos.color = Color.cyan;
+    //             Gizmos.DrawSphere(pos + new Vector3(0, 0.1f, 0), 0.2f);
+    //         }
+    //     }
+    // }
 
-    public void DrawPath(List<Node> path)
-    {
-        _lastPath = path;
-    }
+    // public void DrawPath(List<Node> path)
+    // {
+    //     _lastPath = path;
+    // }
 
 }
