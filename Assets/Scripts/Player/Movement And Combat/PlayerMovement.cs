@@ -6,7 +6,6 @@ using UnityEngine.Tilemaps;
 
 public class PlayerMovement : GridMovement
 {   
-    [SerializeField] private NodeManager _nodeManager;
     private Vector3Int? _startPos;
     private Vector3Int? _finalPos;
     [SerializeField] private float _moveSpeed = 3f;
@@ -23,7 +22,7 @@ public class PlayerMovement : GridMovement
     {
         if (!context.performed) return;
 
-        _startPos = _grid.WorldToCell(transform.position);
+        _startPos = GridManager.Instance.WorldToCell(transform.position);
         _finalPos = AimBehaviour.Instance._lastGridCellPosition;
         if (!_finalPos.HasValue) return;
 
@@ -48,7 +47,7 @@ public class PlayerMovement : GridMovement
             _combatCoroutine = null;
         }
 
-        List<Node> path = _nodeManager.FindPath(_startPos.Value, _finalPos.Value);
+        List<Node> path = NodeManager.Instance.FindPath(_startPos.Value, _finalPos.Value);
         // _nodeManager.DrawPath(path); to see path in inspector
 
         if (path == null || path.Count == 0) // couldn't find a path
@@ -73,7 +72,7 @@ public class PlayerMovement : GridMovement
         {
             Vector3Int adjacent = target + dir;
 
-            if (!_nodeManager.IsWalkable(adjacent)) continue;
+            if (!NodeManager.Instance.IsWalkable(adjacent)) continue;
             if(GridOccupancyManager.Instance.IsCellOccupied(adjacent)) continue;
 
             float dist = Vector3Int.Distance(from, adjacent);
@@ -141,8 +140,8 @@ public class PlayerMovement : GridMovement
 
         while (target != null && _isChasing)
         {
-            Vector3Int playerPos = NodeManager.Instance.WorldToCell(transform.position);
-            Vector3Int enemyPos = NodeManager.Instance.WorldToCell(target.transform.position);
+            Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
+            Vector3Int enemyPos = GridManager.Instance.WorldToCell(target.transform.position);
 
             bool isAdjacent = IsAdjacent8Directional(playerPos, enemyPos);
             Debug.Log($"Is Adjacent? {isAdjacent}");
@@ -152,7 +151,7 @@ public class PlayerMovement : GridMovement
                 Vector3Int tile = FindAdjacentWalkableTile(playerPos, enemyPos);
                 if (tile == Vector3Int.zero) break;
 
-                List<Node> path = _nodeManager.FindPath(playerPos, tile);
+                List<Node> path = NodeManager.Instance.FindPath(playerPos, tile);
                 if (path != null && path.Count > 0)
                     yield return StartCoroutine(FollowPath(path, _moveSpeed));
 

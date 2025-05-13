@@ -4,19 +4,18 @@ using UnityEngine;
 
 public class GridMovement : MonoBehaviour
 {
-    [SerializeField] protected Grid _grid;
 
     protected virtual void Awake()
     {
-        _grid = FindFirstObjectByType<Grid>();
+        
     }
     protected virtual IEnumerator FollowPath(List<Node> path, float moveSpeed = 1f)
     {
-        Vector3Int previousCell = _grid.WorldToCell(transform.position);
+        Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
 
         foreach (Node node in path)
         {
-            Vector3 destinationWorld = _grid.GetCellCenterWorld(node._gridPosition);
+            Vector3 destinationWorld = GridManager.Instance.GetCellCenterWorld(node._gridPosition);
             Vector3 flatDestination = new Vector3(destinationWorld.x, 0, destinationWorld.z);
 
             while (Vector3.Distance(transform.position, flatDestination) > 0.05f)

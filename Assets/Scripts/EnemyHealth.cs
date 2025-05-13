@@ -22,7 +22,7 @@ public class EnemyHealth : MonoBehaviour
 
     private void Die()
     {
-        Vector3Int cell = NodeManager.Instance.WorldToCell(transform.position);
+        Vector3Int cell = GridManager.Instance.WorldToCell(transform.position);
         GridOccupancyManager.Instance.UnregisterOccupant(cell);
         Destroy(gameObject);
     }

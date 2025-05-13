@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 
 public class NodeManager : MonoBehaviour
 {
-    public static Grid Instance { get; private set; }
+    public static NodeManager Instance { get; private set; }
     [SerializeField] private Tilemap _walkableTilemap;
     [SerializeField] private Tilemap _obstacleTilemap;
     private List<Node> _lastPath;
@@ -16,7 +16,15 @@ public class NodeManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = GetComponent<Grid>();
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        
         GenerateNodes();
     }
 

@@ -34467,18 +34467,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3cce7a3ee1412a047a94b58486e229d4, type: 3}
---- !u!114 &1004528253 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 551020394459901863, guid: 3cce7a3ee1412a047a94b58486e229d4,
-    type: 3}
-  m_PrefabInstance: {fileID: 1004528252}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ab7513f772f2d2438cf4797089b154c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1231503492
 GameObject:
   m_ObjectHideFlags: 0
@@ -34583,7 +34571,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _grid: {fileID: 1360470683}
-  _aim: {fileID: 1004528253}
   _nodeManager: {fileID: 1360470685}
   _moveSpeed: 3
   _attackInterval: 1.5
@@ -34602,6 +34589,7 @@ GameObject:
   - component: {fileID: 1360470683}
   - component: {fileID: 1360470685}
   - component: {fileID: 1360470686}
+  - component: {fileID: 1360470687}
   m_Layer: 10
   m_Name: grid
   m_TagString: Untagged
@@ -34664,7 +34652,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dcad6686c2c9e64abaaf7c268534914, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grid: {fileID: 1360470683}
+--- !u!114 &1360470687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360470682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2ce712e936524d4dac38273533cd26f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1364833078
 GameObject:
   m_ObjectHideFlags: 0

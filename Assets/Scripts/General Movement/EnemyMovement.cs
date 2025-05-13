@@ -36,7 +36,7 @@ public class EnemyMovement : GridMovement
         // moves each 2 seconds
         InvokeRepeating(nameof(UpdatePath), 0f, 2f);
 
-        _currentGridPos = _grid.WorldToCell(transform.position);
+        _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
         _gridOccupancyManager.RegisterOccupant(_currentGridPos, gameObject);
     }
 
@@ -44,7 +44,7 @@ public class EnemyMovement : GridMovement
     {
         if (_player == null || _nodeManager == null) return;
 
-        Vector3Int playerGridPos = _grid.WorldToCell(_player.position);
+        Vector3Int playerGridPos = GridManager.Instance.WorldToCell(_player.position);
         if (playerGridPos != _lastKnownPlayerPosition && _currentState == EnemyState.Attacking)
         {
             _lastKnownPlayerPosition = playerGridPos;
@@ -56,8 +56,8 @@ public class EnemyMovement : GridMovement
     {
         if (_player == null || _nodeManager == null) return;
 
-        Vector3Int enemyGridPos = _grid.WorldToCell(transform.position);
-        Vector3Int playerGridPos = _grid.WorldToCell(_player.position);
+        Vector3Int enemyGridPos = GridManager.Instance.WorldToCell(transform.position);
+        Vector3Int playerGridPos = GridManager.Instance.WorldToCell(_player.position);
 
         int distanceX = Mathf.Abs(enemyGridPos.x - playerGridPos.x);
         int distanceY = Mathf.Abs(enemyGridPos.y - playerGridPos.y);
@@ -99,7 +99,7 @@ public class EnemyMovement : GridMovement
 
     private void WanderRandomly()
     {
-        Vector3Int startPos = _grid.WorldToCell(transform.position);
+        Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
         Vector3Int randomOffset = Vector3Int.zero;
         int rand = UnityEngine.Random.Range(0,4);
 

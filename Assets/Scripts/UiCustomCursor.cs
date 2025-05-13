@@ -9,7 +9,6 @@ public class UiCustomCursor : MonoBehaviour
     private Vector2 _cursorHotSpot;
     [SerializeField] private LayerMask _enemyLayerMask;
     [SerializeField] private Camera _mainCamera;
-    [SerializeField] private Grid _grid;
 
     private void Awake()
     {
@@ -46,7 +45,7 @@ public class UiCustomCursor : MonoBehaviour
         if (groundPlane.Raycast(ray, out float enter))
         {
             Vector3 hitPoint = ray.GetPoint(enter);
-            return _grid.WorldToCell(hitPoint);
+            return GridManager.Instance.WorldToCell(hitPoint);
         }
 
         return null;
