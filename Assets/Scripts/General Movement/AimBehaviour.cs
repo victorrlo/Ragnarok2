@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 
 public class AimBehaviour : MonoBehaviour
 {
-    private AimBehaviour _instance;
+    public static AimBehaviour Instance { get; private set;}
     private Camera _mainCamera;
     [SerializeField] private Grid _grid; 
     [SerializeField] private Tilemap _walkableTilemap;
@@ -16,9 +16,9 @@ public class AimBehaviour : MonoBehaviour
     private void Awake()
     {
         // make sure there's only one instance of this in the scene as we won't want multiple aims!
-        if (_instance == null)
+        if (Instance == null)
         {
-            _instance = this;
+            Instance = this;
         }
         else
         {

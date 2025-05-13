@@ -6,7 +6,6 @@ using UnityEngine.Tilemaps;
 
 public class PlayerMovement : GridMovement
 {   
-    [SerializeField] private AimBehaviour _aim;
     [SerializeField] private NodeManager _nodeManager;
     private Vector3Int? _startPos;
     private Vector3Int? _finalPos;
@@ -25,7 +24,7 @@ public class PlayerMovement : GridMovement
         if (!context.performed) return;
 
         _startPos = _grid.WorldToCell(transform.position);
-        _finalPos = _aim._lastGridCellPosition;
+        _finalPos = AimBehaviour.Instance._lastGridCellPosition;
         if (!_finalPos.HasValue) return;
 
         if (GridOccupancyManager.Instance.TryGetOccupant(_finalPos.Value, out GameObject occupant) &&
@@ -35,7 +34,7 @@ public class PlayerMovement : GridMovement
             return;
         }
 
-        if(!_aim.IsWalkable(_finalPos.Value))
+        if(!AimBehaviour.Instance.IsWalkable(_finalPos.Value))
         {
             return; // not walkable
         }
@@ -145,7 +144,8 @@ public class PlayerMovement : GridMovement
             Vector3Int playerPos = NodeManager.Instance.WorldToCell(transform.position);
             Vector3Int enemyPos = NodeManager.Instance.WorldToCell(target.transform.position);
 
-            bool isAdjacent = Vector3Int.Distance(playerPos, enemyPos) <= 1.1f;
+            bool isAdjacent = IsAdjacent8Directional(playerPos, enemyPos);
+            Debug.Log($"Is Adjacent? {isAdjacent}");
 
             if (!isAdjacent)
             {
@@ -172,6 +172,14 @@ public class PlayerMovement : GridMovement
 
         MarkEnemyAsTarget(null, false);
         _combatCoroutine = null;
+    }
+
+    private bool IsAdjacent8Directional(Vector3Int a, Vector3Int b)
+    {
+        int dx = Mathf.Abs(a.x - b.x);
+        int dy = Mathf.Abs(a.y - b.y);
+
+        return dx <= 1 && dy <= 1 && (dx + dy > 0);
     }
 
     // public void OnSpeedBoost(InputAction.CallbackContext context)
