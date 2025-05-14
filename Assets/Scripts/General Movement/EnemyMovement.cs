@@ -6,10 +6,8 @@ using UnityEngine;
 public class EnemyMovement : GridMovement
 {
     private Transform _player;
-    private NodeManager _nodeManager;
     private Coroutine _movementCoroutine;
     private Vector3Int _lastKnownPlayerPosition;
-    private GridOccupancyManager _gridOccupancyManager;
     private Vector3Int _currentGridPos;
 
     private enum EnemyState
@@ -26,8 +24,6 @@ public class EnemyMovement : GridMovement
     protected override void Awake()
     {
         base.Awake();
-        _nodeManager = FindFirstObjectByType<NodeManager>();
-        _gridOccupancyManager = GridOccupancyManager.Instance;
     }
 
     private void Start()
@@ -37,12 +33,12 @@ public class EnemyMovement : GridMovement
         InvokeRepeating(nameof(UpdatePath), 0f, 2f);
 
         _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
-        _gridOccupancyManager.RegisterOccupant(_currentGridPos, gameObject);
+        GridOccupancyManager.Instance.RegisterOccupant(_currentGridPos, gameObject);
     }
 
     private void Update()
     {
-        if (_player == null || _nodeManager == null) return;
+        if (_player == null || GridManager.Instance == null) return;
 
         Vector3Int playerGridPos = GridManager.Instance.WorldToCell(_player.position);
         if (playerGridPos != _lastKnownPlayerPosition && _currentState == EnemyState.Attacking)
@@ -54,7 +50,7 @@ public class EnemyMovement : GridMovement
 
     private void UpdatePath()
     {
-        if (_player == null || _nodeManager == null) return;
+        if (_player == null || GridManager.Instance == null) return;
 
         Vector3Int enemyGridPos = GridManager.Instance.WorldToCell(transform.position);
         Vector3Int playerGridPos = GridManager.Instance.WorldToCell(_player.position);
@@ -110,9 +106,9 @@ public class EnemyMovement : GridMovement
 
         Vector3Int targetPos = startPos + randomOffset;
 
-        if (!_nodeManager.IsWalkable(targetPos)) return;
+        if (!NodeManager.Instance.IsWalkable(targetPos)) return;
 
-        List<Node> path = _nodeManager.FindPath(startPos, targetPos);
+        List<Node> path = NodeManager.Instance.FindPath(startPos, targetPos);
 
         if (path == null || path.Count == 0) return;
 
@@ -131,7 +127,7 @@ public class EnemyMovement : GridMovement
             return;
         }
 
-        List<Node> path = _nodeManager.FindPath(enemyPos, targetPos);
+        List<Node> path = NodeManager.Instance.FindPath(enemyPos, targetPos);
 
         if (path == null || path.Count == 0) return;
 
@@ -143,7 +139,7 @@ public class EnemyMovement : GridMovement
 
     protected override void OnStep(Vector3Int from, Vector3Int to)
     {
-        _gridOccupancyManager.MoveOccupant(from, to);
+        GridOccupancyManager.Instance.MoveOccupant(from, to);
         _currentGridPos = to;
     }
 
@@ -161,7 +157,7 @@ public class EnemyMovement : GridMovement
         {
             Vector3Int adjacent = playerPos + dir;
             
-            if (_nodeManager.IsWalkable(adjacent)) // only walkable tiles that are different from player
+            if (NodeManager.Instance.IsWalkable(adjacent)) // only walkable tiles that are different from player
             {
                 if (adjacent == enemyPos) continue; // to not go back to the same tile
 

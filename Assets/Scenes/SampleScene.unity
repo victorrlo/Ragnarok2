@@ -179,8 +179,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1231503495}
-        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+      - m_Target: {fileID: 1231503497}
+        m_TargetAssemblyTypeName: PlayerInputHandler, Assembly-CSharp
         m_MethodName: OnMouseClick
         m_Mode: 0
         m_Arguments:
@@ -253,7 +253,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   _mainCamera: {fileID: 419281678}
-  _grid: {fileID: 1360470683}
 --- !u!4 &418643700
 Transform:
   m_ObjectHideFlags: 0
@@ -34478,6 +34477,8 @@ GameObject:
   - component: {fileID: 1231503494}
   - component: {fileID: 1231503493}
   - component: {fileID: 1231503495}
+  - component: {fileID: 1231503497}
+  - component: {fileID: 1231503496}
   m_Layer: 6
   m_Name: player
   m_TagString: Player
@@ -34570,13 +34571,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce9b60a6a8a13194793540f3eb56320c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grid: {fileID: 1360470683}
-  _nodeManager: {fileID: 1360470685}
   _moveSpeed: 3
-  _attackInterval: 1.5
-  _damage: 1
+--- !u!114 &1231503496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231503492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58c377260d23fa941bf87b3648718fb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerMovement: {fileID: 1231503495}
   _targetMarkerPrefab: {fileID: 1418945324112944785, guid: 8b4e3806c2cd2b04dad84e72187bffb1,
     type: 3}
+  _attackInterval: 0.5
+  _damage: 1
+--- !u!114 &1231503497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231503492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7576e2f42eaf53449841cc2026e499fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerMovement: {fileID: 1231503495}
+  _playerCombat: {fileID: 1231503496}
 --- !u!1 &1360470682
 GameObject:
   m_ObjectHideFlags: 0
@@ -34906,7 +34932,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eea841a0fcbb83d46951034628d4c608, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grid: {fileID: 1360470683}
   _detectionRange: 3
   _tiringRange: 6
 --- !u!114 &1617107720
@@ -34921,7 +34946,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fcff5d36743879498ffbd1f1eb93e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 3
+  _maxHealth: 30
 --- !u!1 &1743293515
 GameObject:
   m_ObjectHideFlags: 0

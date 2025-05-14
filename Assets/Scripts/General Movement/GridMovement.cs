@@ -9,7 +9,7 @@ public class GridMovement : MonoBehaviour
     {
         
     }
-    protected virtual IEnumerator FollowPath(List<Node> path, float moveSpeed = 1f)
+    public virtual IEnumerator FollowPath(List<Node> path, float moveSpeed = 1f)
     {
         Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
 
