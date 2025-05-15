@@ -24,10 +24,24 @@ public class PlayerCombat : MonoBehaviour
         _currentTarget = enemy;
         _currentEnemyCell = GridManager.Instance.WorldToCell(enemy.transform.position);
 
-        GridOccupancyManager.Instance.RegisterOccupant(_currentEnemyCell, _currentTarget);
+        // GridOccupancyManager.Instance.RegisterOccupant(_currentEnemyCell, _currentTarget);
 
         
         _combatCoroutine = StartCoroutine(ChaseAndAttack(_currentTarget));
+    }
+
+    public void TryClickToAttack()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            EnemyCombat enemy = hit.collider.GetComponent<EnemyCombat>();
+            if (enemy != null)
+                StartCombat(enemy.gameObject);
+            else
+                StopCombat();
+        }
     }
 
     public void StopCombat()
@@ -65,7 +79,7 @@ public class PlayerCombat : MonoBehaviour
             Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
             Vector3Int enemyPos = GridManager.Instance.WorldToCell(target.transform.position);
 
-            var health = target.GetComponent<EnemyHealth>();
+            var health = target.GetComponent<EnemyCombat>();
 
             if (health != null)
                 if (IsAdjacent(playerPos, enemyPos))
@@ -108,7 +122,7 @@ public class PlayerCombat : MonoBehaviour
         {
             Vector3Int pos = target + dir;
             if (!NodeManager.Instance.IsWalkable(pos)) continue;
-            if (GridOccupancyManager.Instance.IsCellOccupied(pos)) continue;
+            // if (GridOccupancyManager.Instance.IsCellOccupied(pos)) continue;
 
             float dist = Vector3Int.Distance(from, pos);
             if (dist < bestDist)

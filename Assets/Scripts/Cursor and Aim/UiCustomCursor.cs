@@ -23,11 +23,9 @@ public class UiCustomCursor : MonoBehaviour
 
     private void Update()
     {
-        Vector3Int? gridCell = GetMouseGridCell();
+        // Vector3Int? gridCell = GetMouseGridCell();
 
-        if (gridCell.HasValue &&
-            GridOccupancyManager.Instance.TryGetOccupant(gridCell.Value, out GameObject occupant) &&
-            occupant.CompareTag("Enemy"))
+        if (IsMouseOverEnemy())
         {
             Cursor.SetCursor(_attackCursorSprite, _cursorHotSpot, CursorMode.Auto);
         }
@@ -37,17 +35,29 @@ public class UiCustomCursor : MonoBehaviour
         }
     }
 
-    private Vector3Int? GetMouseGridCell()
+    private bool IsMouseOverEnemy()
     {
-        Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+        Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
 
-        if (groundPlane.Raycast(ray, out float enter))
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            Vector3 hitPoint = ray.GetPoint(enter);
-            return GridManager.Instance.WorldToCell(hitPoint);
+            return hit.collider.GetComponent<EnemyMovement>() != null;
         }
 
-        return null;
+        return false;
     }
+
+    // private Vector3Int? GetMouseGridCell()
+    // {
+    //     Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+    //     Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+
+    //     if (groundPlane.Raycast(ray, out float enter))
+    //     {
+    //         Vector3 hitPoint = ray.GetPoint(enter);
+    //         return GridManager.Instance.WorldToCell(hitPoint);
+    //     }
+
+    //     return null;
+    // }
 }

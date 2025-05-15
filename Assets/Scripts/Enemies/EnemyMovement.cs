@@ -1,14 +1,16 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class EnemyMovement : GridMovement
+public class EnemyMovement : MonoBehaviour
 {
     private Transform _player;
     private Coroutine _movementCoroutine;
     private Vector3Int _lastKnownPlayerPosition;
     private Vector3Int _currentGridPos;
+    public Vector3Int CurrentGridPos => _currentGridPos;
 
     private enum EnemyState
     {
@@ -21,19 +23,19 @@ public class EnemyMovement : GridMovement
     private EnemyState _currentState = EnemyState.Passive;
     [SerializeField] private int _detectionRange = 3; // if 3 it means, for example an area of 7x7 around the enemy
     [SerializeField] private int _tiringRange = 6; // it means if the player is far than this area, the enemy will give up attacking
-    protected override void Awake()
-    {
-        base.Awake();
-    }
+    // protected override void Awake()
+    // {
+    //     base.Awake();
+    // }
 
     private void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player").transform;
         // moves each 2 seconds
-        InvokeRepeating(nameof(UpdatePath), 0f, 2f);
+        InvokeRepeating(nameof(UpdatePath), 0f, 10f);
 
         _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
-        GridOccupancyManager.Instance.RegisterOccupant(_currentGridPos, gameObject);
+        // GridOccupancyManager.Instance.RegisterOccupant(_currentGridPos, gameObject);
     }
 
     private void Update()
@@ -41,7 +43,10 @@ public class EnemyMovement : GridMovement
         if (_player == null || GridManager.Instance == null) return;
 
         Vector3Int playerGridPos = GridManager.Instance.WorldToCell(_player.position);
-        if (playerGridPos != _lastKnownPlayerPosition && _currentState == EnemyState.Attacking)
+        if (playerGridPos != _lastKnownPlayerPosition && (_currentState == EnemyState.Attacking 
+                                                        || _currentState == EnemyState.Active 
+                                                        || _currentState == EnemyState.RangedAttacking 
+                                                        || _currentState == EnemyState.SpecialAttacking))
         {
             _lastKnownPlayerPosition = playerGridPos;
             UpdatePath();
@@ -118,6 +123,11 @@ public class EnemyMovement : GridMovement
         _movementCoroutine = StartCoroutine(FollowPath(path));
     }
 
+    public void OnDamagedByPlayer()
+    {
+        _currentState = EnemyState.Attacking;
+    }
+
     private void ChasePlayer(Vector3Int enemyPos, Vector3Int playerPos)
     {
         Vector3Int targetPos = FindAdjacentTile(enemyPos, playerPos);
@@ -137,14 +147,48 @@ public class EnemyMovement : GridMovement
         _movementCoroutine = StartCoroutine(FollowPath(path));
     }
 
-    protected override void OnStep(Vector3Int from, Vector3Int to)
+    private IEnumerator FollowPath(List<Node> path, float moveSpeed = 1f)
     {
-        GridOccupancyManager.Instance.MoveOccupant(from, to);
+        Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
+
+        foreach (Node node in path)
+        {
+            Vector3 destinationWorld = GridManager.Instance.GetCellCenterWorld(node._gridPosition);
+            Vector3 flatDestination = new Vector3(destinationWorld.x, 0, destinationWorld.z);
+
+            while (Vector3.Distance(transform.position, flatDestination) > 0.05f)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, flatDestination, moveSpeed*Time.deltaTime);
+                yield return null;
+            }
+
+            transform.position = flatDestination;
+
+            Vector3Int newCell = node._gridPosition;
+
+            if (newCell != previousCell)
+            {
+                OnStep(previousCell, newCell);
+                previousCell = newCell;
+            }
+        }
+
+        OnPathComplete(previousCell);
+    }
+
+
+
+    private void OnStep(Vector3Int from, Vector3Int to)
+    {
+        // GridOccupancyManager.Instance.MoveOccupant(from, to, gameObject);
+        // Debug.Log("moved grid occupancy");
         _currentGridPos = to;
     }
 
-    protected override void OnPathComplete(Vector3Int finalCell)
+    private void OnPathComplete(Vector3Int finalCell)
     {
+        // if (_currentGridPos != finalCell) GridOccupancyManager.Instance.MoveOccupant(_currentGridPos, finalCell, gameObject);
+        _currentGridPos = finalCell;
         StopMovement();
     }
 
@@ -171,7 +215,8 @@ public class EnemyMovement : GridMovement
                     
             }
         }
-        // if (bestTile == Vector3Int.zero) Debug.LogError("nenhum tile adjacente válido foi encontrado!");
+
+        if (bestTile == Vector3Int.zero) Debug.LogError("nenhum tile adjacente válido foi encontrado!");
 
         return bestTile;
     }
@@ -183,5 +228,10 @@ public class EnemyMovement : GridMovement
             StopCoroutine(_movementCoroutine);
             _movementCoroutine = null;
         }
+    }
+
+    public void SetCurrentGridPosition(Vector3Int validatedPos)
+    {
+        _currentGridPos = validatedPos;
     }
 }

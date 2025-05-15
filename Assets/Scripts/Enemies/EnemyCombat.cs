@@ -1,8 +1,9 @@
 using UnityEngine;
 
-public class EnemyHealth : MonoBehaviour
+public class EnemyCombat : MonoBehaviour
 {
-    [SerializeField] private int _maxHealth = 3;
+    [SerializeField] private EnemyMovement _enemyAi;
+    [SerializeField] private int _maxHealth = 30;
     private int _currentHealth;
 
     private void Start()
@@ -14,6 +15,8 @@ public class EnemyHealth : MonoBehaviour
     {
         _currentHealth -= amount;
 
+        _enemyAi.OnDamagedByPlayer();
+
         if (_currentHealth <= 0)
         {
             Die();
@@ -23,7 +26,7 @@ public class EnemyHealth : MonoBehaviour
     private void Die()
     {
         Vector3Int cell = GridManager.Instance.WorldToCell(transform.position);
-        GridOccupancyManager.Instance.UnregisterOccupant(cell);
+        // GridOccupancyManager.Instance.UnregisterOccupant(cell, gameObject);
         Destroy(gameObject);
     }
 }

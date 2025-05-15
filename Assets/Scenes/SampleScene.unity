@@ -34614,7 +34614,6 @@ GameObject:
   - component: {fileID: 1360470684}
   - component: {fileID: 1360470683}
   - component: {fileID: 1360470685}
-  - component: {fileID: 1360470686}
   - component: {fileID: 1360470687}
   m_Layer: 10
   m_Name: grid
@@ -34666,18 +34665,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _walkableTilemap: {fileID: 699126974}
   _obstacleTilemap: {fileID: 603129710}
---- !u!114 &1360470686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1360470682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcad6686c2c9e64abaaf7c268534914, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1360470687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34842,6 +34829,7 @@ GameObject:
   - component: {fileID: 1617107717}
   - component: {fileID: 1617107719}
   - component: {fileID: 1617107720}
+  - component: {fileID: 1617107721}
   m_Layer: 8
   m_Name: ploft
   m_TagString: Enemy
@@ -34943,10 +34931,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 1617107716}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fcff5d36743879498ffbd1f1eb93e65, type: 3}
+  m_Script: {fileID: 11500000, guid: 652298e83517fcf4ca43100b3034cc74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemyAi: {fileID: 1617107719}
   _maxHealth: 30
+--- !u!65 &1617107721
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617107716}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.8, y: 0.7, z: 0.2}
+  m_Center: {x: 0, y: 0.35, z: 0}
 --- !u!1 &1743293515
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,25 +12,30 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (!context.performed) return;
 
+        _playerCombat.TryClickToAttack();
+
         Vector3Int? cell = AimBehaviour.Instance._lastGridCellPosition;
         if (!cell.HasValue) return;
 
         Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
 
-        if (!GridOccupancyManager.Instance.TryGetOccupant(cell.Value, out GameObject occupant)
-            || !occupant.CompareTag("Enemy"))
-                _playerCombat.StopCombat();
+        // if (!GridOccupancyManager.Instance.TryGetOccupant(cell.Value, out GameObject occupant)
+            // || !occupant.CompareTag("Enemy"))
+                // _playerCombat.StopCombat();
         
         if (!AimBehaviour.Instance.IsWalkable(cell.Value)) return;
 
         List<Node> path = NodeManager.Instance.FindPath(playerPos, cell.Value);
+
         if (path != null && path.Count > 0)
             _playerMovement.MoveAlongPath(path);
 
-        if (GridOccupancyManager.Instance.TryGetOccupant(cell.Value, out occupant)
-            && occupant.CompareTag("Enemy"))
+        
+
+        // if (GridOccupancyManager.Instance.TryGetOccupant(cell.Value, out occupant)
+            // && occupant.CompareTag("Enemy"))
         {
-            _playerCombat.StartCombat(occupant);
+            // _playerCombat.StartCombat(occupant);
             // return;
         }
     }
