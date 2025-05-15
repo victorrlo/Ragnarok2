@@ -22,20 +22,14 @@ public class EnemyMovement : MonoBehaviour
     }
     private EnemyState _currentState = EnemyState.Passive;
     [SerializeField] private int _detectionRange = 3; // if 3 it means, for example an area of 7x7 around the enemy
-    [SerializeField] private int _tiringRange = 6; // it means if the player is far than this area, the enemy will give up attacking
-    // protected override void Awake()
-    // {
-    //     base.Awake();
-    // }
+    [SerializeField] private int _tiringRange = 12; // it means if the player is far than this area, the enemy will give up attacking
 
     private void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player").transform;
-        // moves each 2 seconds
         InvokeRepeating(nameof(UpdatePath), 0f, 10f);
 
         _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
-        // GridOccupancyManager.Instance.RegisterOccupant(_currentGridPos, gameObject);
     }
 
     private void Update()
@@ -180,14 +174,11 @@ public class EnemyMovement : MonoBehaviour
 
     private void OnStep(Vector3Int from, Vector3Int to)
     {
-        // GridOccupancyManager.Instance.MoveOccupant(from, to, gameObject);
-        // Debug.Log("moved grid occupancy");
         _currentGridPos = to;
     }
 
     private void OnPathComplete(Vector3Int finalCell)
     {
-        // if (_currentGridPos != finalCell) GridOccupancyManager.Instance.MoveOccupant(_currentGridPos, finalCell, gameObject);
         _currentGridPos = finalCell;
         StopMovement();
     }
