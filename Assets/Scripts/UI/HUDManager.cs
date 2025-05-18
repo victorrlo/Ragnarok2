@@ -16,12 +16,28 @@ public class HUDManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }   
+        }
     }
 
-    public void UpdateHUD(int currentHp, int maxHp, int currentSp, int maxSp)
+    private void Start()
     {
-        _hpText.text = $"HP: {currentHp}/{maxHp}";
-        _spText.text = $"SP: {currentSp}/{maxSp}";
+        PlayerStats.Instance.OnHPChanged += UpdateHP;
+        PlayerStats.Instance.OnSPChanged += UpdateSP;
+    }
+
+    private void OnDestroy()
+    {
+        PlayerStats.Instance.OnHPChanged -= UpdateHP;
+        PlayerStats.Instance.OnSPChanged -= UpdateSP;
+    }
+
+    public void UpdateHP(int current, int max)
+    {
+        _hpText.text = $"HP: {current}/{max}";
+    }
+
+    public void UpdateSP(int current, int max)
+    {
+        _spText.text = $"SP: {current}/{max}";
     }
 }

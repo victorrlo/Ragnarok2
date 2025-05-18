@@ -8,6 +8,19 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] public PlayerMovement _playerMovement;
     [SerializeField] public PlayerCombat _playerCombat;
 
+    public void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     public void OnMouseClick(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
