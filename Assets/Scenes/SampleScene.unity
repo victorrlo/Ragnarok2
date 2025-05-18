@@ -35144,7 +35144,7 @@ MonoBehaviour:
   _spiritBar: {fileID: 1866717861}
   _statsBar: {fileID: 884285590}
   _mainCamera: {fileID: 419281678}
-  _offset: {x: 0, y: -30, z: 0}
+  _offset: {x: 0, y: -10, z: 0}
   _player: {fileID: 1231503492}
 --- !u!1 &1268888409
 GameObject:
@@ -35609,6 +35609,7 @@ GameObject:
   - component: {fileID: 1617107719}
   - component: {fileID: 1617107720}
   - component: {fileID: 1617107721}
+  - component: {fileID: 1617107722}
   m_Layer: 8
   m_Name: ploft
   m_TagString: Enemy
@@ -35736,6 +35737,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.8, y: 0.7, z: 0.2}
   m_Center: {x: 0, y: 0.35, z: 0}
+--- !u!114 &1617107722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617107716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: feb773a7aff391a46b72c998fdc773e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _damageTextPrefab: {fileID: 1075981461}
+  _poolSize: 30
 --- !u!1 &1668274615
 GameObject:
   m_ObjectHideFlags: 0
