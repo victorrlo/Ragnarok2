@@ -5,6 +5,12 @@ public class EnemyCombat : MonoBehaviour
     [SerializeField] private EnemyMovement _enemyAi;
     [SerializeField] private int _maxHealth = 30;
     private int _currentHealth;
+    private FloatingDamage _floatingDamageSpawn;
+
+    private void Awake()
+    {
+        _floatingDamageSpawn = GetComponent<FloatingDamage>();
+    }
 
     private void Start()
     {
@@ -14,7 +20,7 @@ public class EnemyCombat : MonoBehaviour
     public void TakeDamage(int amount)
     {
         _currentHealth -= amount;
-
+        FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.white);
         _enemyAi.OnDamagedByPlayer();
 
         if (_currentHealth <= 0)

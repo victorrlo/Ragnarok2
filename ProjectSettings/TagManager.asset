@@ -39,14 +39,14 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: UI
-    uniqueID: 1706218913
-    locked: 0
   - name: Ground Tilemap
     uniqueID: 2126955695
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 1706218913
     locked: 0
   m_RenderingLayers:
   - Default

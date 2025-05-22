@@ -35,7 +35,7 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private Image _spiritBar;
     [SerializeField] private GameObject _statsBar;
     [SerializeField] private Camera _mainCamera;
-    [SerializeField] private Vector3 _offset = new Vector3(0, -10f, 0);
+    [SerializeField] private Vector3 _offset = new Vector3(0, -30f, 0);
     [SerializeField] private GameObject _player;
 
     private void Awake()
