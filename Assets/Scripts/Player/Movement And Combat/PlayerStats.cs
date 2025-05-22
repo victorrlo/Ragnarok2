@@ -6,27 +6,24 @@ using UnityEngine.UI;
 public class PlayerStats : MonoBehaviour
 {
     public static PlayerStats Instance {get; private set;}
-    [SerializeField] private int _maxHP = 100;
-    [SerializeField] private int _maxSP = 50;
-    private int _currentHP;
-    private int _currentSP;
+    [SerializeField] private PlayerStatsData _stats;
     public int CurrentHP {
-        get => _currentHP; 
+        get => _stats.GetCurrentHP(); 
         private set
         {
-            _currentHP = Mathf.Clamp(value, 0, _maxHP);
-            OnHPChanged?.Invoke(_currentHP, _maxHP);
-            if (_currentHP <= 0)
+            _stats._currentHP = Mathf.Clamp(value, 0, _stats._maxHP);
+            OnHPChanged?.Invoke(_stats._currentHP, _stats._maxHP);
+            if (_stats._currentHP <= 0)
                 Die();
         }
     }
     public int CurrentSP
     {
-        get => _currentSP;
+        get => _stats.GetCurrentSP();
         private set
         {
-            _currentSP = Mathf.Clamp(value, 0, _maxSP);
-            OnSPChanged?.Invoke(_currentSP, _maxSP);
+            _stats._currentSP = Mathf.Clamp(value, 0, _stats._maxSP);
+            OnSPChanged?.Invoke(_stats._currentSP, _stats._maxSP);
         }
     }
     public event Action<int, int> OnHPChanged;
@@ -49,8 +46,8 @@ public class PlayerStats : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        _currentHP = _maxHP;
-        _currentSP = _maxSP;
+
+        _stats.LoadFromPrefs();
 
         OnHPChanged += UpdateHealthBar;
         OnSPChanged += UpdateSpiritBar;
@@ -58,8 +55,8 @@ public class PlayerStats : MonoBehaviour
 
     private void Start()
     {
-        OnHPChanged?.Invoke(_currentHP, _maxHP);
-        OnSPChanged?.Invoke(_currentSP, _maxSP);
+        OnHPChanged?.Invoke(_stats._currentHP, _stats._maxHP);
+        OnSPChanged?.Invoke(_stats._currentSP, _stats._maxSP);
     }
 
     private void LateUpdate()
