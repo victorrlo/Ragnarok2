@@ -12,7 +12,7 @@ public class GridMovement : MonoBehaviour
     public virtual IEnumerator FollowPath(List<Node> path, float moveSpeed = 1f)
     {
         Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
-        float currentMoveSpeed = 3*moveSpeed*Time.deltaTime;
+        float currentMoveSpeed = moveSpeed*Time.deltaTime;
 
         foreach (Node node in path)
         {

@@ -23,7 +23,7 @@ public class EnemyMovement : GridMovement
     private EnemyState _currentState = EnemyState.Passive;
     [SerializeField] private int _detectionRange = 3; // if 3 it means, for example an area of 7x7 around the enemy
     [SerializeField] private int _tiringRange = 12; // it means if the player is far than this area, the enemy will give up attacking
-    [SerializeField] private float _moveSpeed = 0.5f;
+    private float _moveSpeed = 2f;
 
     private void Start()
     {

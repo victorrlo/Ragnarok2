@@ -8,7 +8,7 @@ public class PlayerMovement : GridMovement
 {   
     private Vector3Int? _startPos;
     private Vector3Int? _finalPos;
-    [SerializeField] public float _moveSpeed = 1f;
+    private float _moveSpeed = 2f;
     
     private bool _isChasing;
     private Coroutine _movementCoroutine;
