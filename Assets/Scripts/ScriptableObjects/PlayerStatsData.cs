@@ -1,12 +1,8 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PlayerStatsData", menuName = "Scriptable Objects/PlayerStatsData")]
-public class PlayerStatsData : ScriptableObject
+public class PlayerStatsData : CharacterStatsData
 {
-    [Header("Initial Player Stats")]
-    public int _maxHP = 100;
-    public int _maxSP = 50;
-
     [Header("Current Stats")]
     [HideInInspector] public int _currentHP;
     [HideInInspector] public int _currentSP;

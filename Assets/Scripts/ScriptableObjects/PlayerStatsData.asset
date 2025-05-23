@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6486882e104c28746b86f03419b8f86d, type: 3}
   m_Name: PlayerStatsData
   m_EditorClassIdentifier: 
+  _characterName: Player
   _maxHP: 100
   _maxSP: 50
+  _attack: 5
+  _moveSpeed: 1
+  _attackSpeed: 1
   _currentHP: 500
   _currentSP: 100
