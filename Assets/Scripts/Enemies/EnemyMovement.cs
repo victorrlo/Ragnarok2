@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class EnemyMovement : MonoBehaviour
+public class EnemyMovement : GridMovement
 {
     private Transform _player;
     private Coroutine _movementCoroutine;
@@ -23,6 +23,7 @@ public class EnemyMovement : MonoBehaviour
     private EnemyState _currentState = EnemyState.Passive;
     [SerializeField] private int _detectionRange = 3; // if 3 it means, for example an area of 7x7 around the enemy
     [SerializeField] private int _tiringRange = 12; // it means if the player is far than this area, the enemy will give up attacking
+    [SerializeField] private float _moveSpeed = 0.5f;
 
     private void Start()
     {
@@ -114,7 +115,7 @@ public class EnemyMovement : MonoBehaviour
         if (_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
 
-        _movementCoroutine = StartCoroutine(FollowPath(path));
+        _movementCoroutine = StartCoroutine(FollowPath(path, _moveSpeed));
     }
 
     public void OnDamagedByPlayer()
@@ -138,46 +139,46 @@ public class EnemyMovement : MonoBehaviour
         if (_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
         
-        _movementCoroutine = StartCoroutine(FollowPath(path));
+        _movementCoroutine = StartCoroutine(FollowPath(path, _moveSpeed));
     }
 
-    private IEnumerator FollowPath(List<Node> path, float moveSpeed = 1f)
-    {
-        Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
+    // private IEnumerator FollowPath(List<Node> path, float moveSpeed = 1f)
+    // {
+    //     Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
 
-        foreach (Node node in path)
-        {
-            Vector3 destinationWorld = GridManager.Instance.GetCellCenterWorld(node._gridPosition);
-            Vector3 flatDestination = new Vector3(destinationWorld.x, 0, destinationWorld.z);
+    //     foreach (Node node in path)
+    //     {
+    //         Vector3 destinationWorld = GridManager.Instance.GetCellCenterWorld(node._gridPosition);
+    //         Vector3 flatDestination = new Vector3(destinationWorld.x, 0, destinationWorld.z);
 
-            while (Vector3.Distance(transform.position, flatDestination) > 0.05f)
-            {
-                transform.position = Vector3.MoveTowards(transform.position, flatDestination, moveSpeed*Time.deltaTime);
-                yield return null;
-            }
+    //         while (Vector3.Distance(transform.position, flatDestination) > 0.05f)
+    //         {
+    //             transform.position = Vector3.MoveTowards(transform.position, flatDestination, moveSpeed*Time.deltaTime);
+    //             yield return null;
+    //         }
 
-            transform.position = flatDestination;
+    //         transform.position = flatDestination;
 
-            Vector3Int newCell = node._gridPosition;
+    //         Vector3Int newCell = node._gridPosition;
 
-            if (newCell != previousCell)
-            {
-                OnStep(previousCell, newCell);
-                previousCell = newCell;
-            }
-        }
+    //         if (newCell != previousCell)
+    //         {
+    //             OnStep(previousCell, newCell);
+    //             previousCell = newCell;
+    //         }
+    //     }
 
-        OnPathComplete(previousCell);
-    }
+    //     OnPathComplete(previousCell);
+    // }
 
 
 
-    private void OnStep(Vector3Int from, Vector3Int to)
+    protected override void OnStep(Vector3Int from, Vector3Int to)
     {
         _currentGridPos = to;
     }
 
-    private void OnPathComplete(Vector3Int finalCell)
+    protected override void OnPathComplete(Vector3Int finalCell)
     {
         _currentGridPos = finalCell;
         StopMovement();
