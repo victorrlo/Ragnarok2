@@ -23,7 +23,7 @@ public class EnemyMovement : GridMovement
     private EnemyState _currentState = EnemyState.Passive;
     [SerializeField] private int _detectionRange = 3; // if 3 it means, for example an area of 7x7 around the enemy
     [SerializeField] private int _tiringRange = 12; // it means if the player is far than this area, the enemy will give up attacking
-    private float _moveSpeed = 2f;
+    [SerializeField] MonsterStatsData _stats;
 
     private void Start()
     {
@@ -115,7 +115,7 @@ public class EnemyMovement : GridMovement
         if (_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
 
-        _movementCoroutine = StartCoroutine(FollowPath(path, _moveSpeed));
+        _movementCoroutine = StartCoroutine(FollowPath(path, _stats._moveSpeed));
     }
 
     public void OnDamagedByPlayer()
@@ -139,39 +139,8 @@ public class EnemyMovement : GridMovement
         if (_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
         
-        _movementCoroutine = StartCoroutine(FollowPath(path, _moveSpeed));
+        _movementCoroutine = StartCoroutine(FollowPath(path, _stats._moveSpeed));
     }
-
-    // private IEnumerator FollowPath(List<Node> path, float moveSpeed = 1f)
-    // {
-    //     Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
-
-    //     foreach (Node node in path)
-    //     {
-    //         Vector3 destinationWorld = GridManager.Instance.GetCellCenterWorld(node._gridPosition);
-    //         Vector3 flatDestination = new Vector3(destinationWorld.x, 0, destinationWorld.z);
-
-    //         while (Vector3.Distance(transform.position, flatDestination) > 0.05f)
-    //         {
-    //             transform.position = Vector3.MoveTowards(transform.position, flatDestination, moveSpeed*Time.deltaTime);
-    //             yield return null;
-    //         }
-
-    //         transform.position = flatDestination;
-
-    //         Vector3Int newCell = node._gridPosition;
-
-    //         if (newCell != previousCell)
-    //         {
-    //             OnStep(previousCell, newCell);
-    //             previousCell = newCell;
-    //         }
-    //     }
-
-    //     OnPathComplete(previousCell);
-    // }
-
-
 
     protected override void OnStep(Vector3Int from, Vector3Int to)
     {

@@ -8,7 +8,7 @@ public class PlayerMovement : GridMovement
 {   
     private Vector3Int? _startPos;
     private Vector3Int? _finalPos;
-    private float _moveSpeed = 2f;
+    [SerializeField] private PlayerStatsData _stats;
     
     private bool _isChasing;
     private Coroutine _movementCoroutine;
@@ -19,7 +19,7 @@ public class PlayerMovement : GridMovement
         if(_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
 
-        _movementCoroutine = StartCoroutine(FollowPath(path, _moveSpeed));
+        _movementCoroutine = StartCoroutine(FollowPath(path, _stats._moveSpeed));
     }
 
     // public void OnSpeedBoost(InputAction.CallbackContext context)
