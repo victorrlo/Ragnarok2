@@ -17,4 +17,4 @@ MonoBehaviour:
   _maxSP: 10
   _attack: 5
   _moveSpeed: 2
-  _attackSpeed: 0
+  _attackSpeed: 1

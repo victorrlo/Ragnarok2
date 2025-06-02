@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 684161066911973323}
   - component: {fileID: 4926073016267285164}
   - component: {fileID: 7798985777758794901}
+  - component: {fileID: 5208352337176137190}
   m_Layer: 8
   m_Name: ploft
   m_TagString: Enemy
@@ -156,6 +157,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damageText: {fileID: 0}
+--- !u!114 &5208352337176137190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850954093980881960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 110302fb0b4310e4f9869cdfc9e2f624, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _monster: {fileID: 850954093980881960}
+  _stats: {fileID: 11400000, guid: b6609764237b74748afdb9c06efc908a, type: 2}
+  _statsBar: {fileID: 8625995376775207396}
+  _healthBar: {fileID: 435192981788293242}
+  _offset: {x: 0, y: -30, z: 0}
 --- !u!1 &3313055147213635945
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,6 +440,7 @@ GameObject:
   - component: {fileID: 2874419145741944794}
   - component: {fileID: 4060642540649421377}
   - component: {fileID: 6594315460782654276}
+  - component: {fileID: 8403706995393973344}
   m_Layer: 6
   m_Name: stats-bar
   m_TagString: Untagged
@@ -514,3 +533,17 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &8403706995393973344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8625995376775207396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 1
