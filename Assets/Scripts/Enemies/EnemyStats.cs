@@ -3,9 +3,10 @@ using UnityEngine.UI;
 
 public class EnemyStats : MonoBehaviour
 {
-    [SerializeField] GameObject _monster;
-    [SerializeField] MonsterStatsData _stats;
+    [SerializeField] private GameObject _monster;
+    [SerializeField] private MonsterStatsData _statsData;
     private int _currentHP;
+    public int MaxHP => _statsData._maxHP;
     [SerializeField] private GameObject _statsBar;
     [SerializeField] private Image _healthBar;
     private bool hasBeenDamaged = false;
@@ -15,29 +16,36 @@ public class EnemyStats : MonoBehaviour
     private void Awake()
     {
         _mainCamera = Camera.main;
-        _currentHP = _stats._maxHP;
+        _currentHP = _statsData._maxHP;
         _statsBar.SetActive(false);
-        _healthBar.gameObject.SetActive(true);
+        _healthBar.gameObject.SetActive(false);
     }
 
     private void LateUpdate()
     {
         if (_monster == null || _mainCamera == null) return;
 
-        SetStatsBarBellow();
+        ShowHealthBar();
     }
 
     private void ShowHealthBar()
     {
-
+        if (!hasBeenDamaged) return;
+        else
+        {
+            _healthBar.gameObject.SetActive(true);
+            SetHealthBarPosition();
+        }
     }
 
     public void TakeDamage(int amount)
     {
         _currentHP -= amount;
+        _healthBar.fillAmount = (float)_currentHP / _statsData._maxHP;
+        hasBeenDamaged = true;
     }
 
-    private void SetStatsBarBellow()
+    private void SetHealthBarPosition()
     {
         _statsBar.SetActive(true);
         if (_mainCamera == null) _mainCamera = Camera.main;

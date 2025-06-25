@@ -3,18 +3,20 @@ using UnityEngine;
 public class EnemyCombat : MonoBehaviour
 {
     [SerializeField] private EnemyMovement _enemyAi;
-    [SerializeField] private int _maxHealth = 30;
+    // [SerializeField] private int _maxHealth = 30;
     private int _currentHealth;
     private FloatingDamage _floatingDamageSpawn;
+    private EnemyStats _monsterStats;
 
     private void Awake()
     {
         _floatingDamageSpawn = GetComponent<FloatingDamage>();
+        _monsterStats = GetComponent<EnemyStats>();
     }
 
     private void Start()
     {
-        _currentHealth = _maxHealth;
+        _currentHealth = _monsterStats.MaxHP;
     }
 
     public void TakeDamage(int amount)
@@ -22,6 +24,7 @@ public class EnemyCombat : MonoBehaviour
         _currentHealth -= amount;
         FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.white);
         _enemyAi.OnDamagedByPlayer();
+        _monsterStats.TakeDamage(amount);
 
         if (_currentHealth <= 0)
         {
@@ -31,7 +34,7 @@ public class EnemyCombat : MonoBehaviour
 
     private void Die()
     {
-        Vector3Int cell = GridManager.Instance.WorldToCell(transform.position);
+        // Vector3Int cell = GridManager.Instance.WorldToCell(transform.position);
         // GridOccupancyManager.Instance.UnregisterOccupant(cell, gameObject);
         Destroy(gameObject);
     }
