@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyCombat : MonoBehaviour
@@ -30,6 +31,12 @@ public class EnemyCombat : MonoBehaviour
         {
             Die();
         }
+    }
+
+    public IEnumerator Attack(GameObject player)
+    {
+        yield return new WaitForSeconds(1f);
+        player.GetComponent<PlayerCombat>().TakeDamage(1);
     }
 
     private void Die()

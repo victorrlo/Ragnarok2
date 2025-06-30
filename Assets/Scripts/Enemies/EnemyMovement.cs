@@ -24,6 +24,13 @@ public class EnemyMovement : GridMovement
     [SerializeField] private int _detectionRange = 3; // if 3 it means, for example an area of 7x7 around the enemy
     [SerializeField] private int _tiringRange = 12; // it means if the player is far than this area, the enemy will give up attacking
     [SerializeField] MonsterStatsData _stats;
+    private EnemyCombat _enemyCombat;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _enemyCombat = GetComponent<EnemyCombat>();
+    }
 
     private void Start()
     {
@@ -87,6 +94,7 @@ public class EnemyMovement : GridMovement
                 else
                 {
                     ChasePlayer(enemyGridPos, playerGridPos);
+                    StartCoroutine(_enemyCombat.Attack(_player.gameObject));
                 } 
                 break;
             }

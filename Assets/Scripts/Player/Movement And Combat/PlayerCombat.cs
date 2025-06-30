@@ -8,12 +8,18 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private GameObject _targetMarkerPrefab;
     [SerializeField] private float _attackInterval = 0.5f;
     [SerializeField] private int _damage = 1;
+    private PlayerStats _playerStats;
 
     private GameObject _currentTarget;
     private Vector3Int _currentEnemyCell;
     private GameObject _activeTargetMarker;
     private Coroutine _combatCoroutine;
     private bool _isChasing;
+
+    private void Awake()
+    {
+        _playerStats = GetComponent<PlayerStats>();
+    }
 
     public void StartCombat(GameObject enemy)
     {
@@ -79,13 +85,13 @@ public class PlayerCombat : MonoBehaviour
             Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
             Vector3Int enemyPos = GridManager.Instance.WorldToCell(target.transform.position);
 
-            var health = target.GetComponent<EnemyCombat>();
+            var enemy = target.GetComponent<EnemyCombat>();
 
-            if (health != null)
+            if (enemy != null)
                 if (IsAdjacent(playerPos, enemyPos))
                 {
                     Debug.Log("Attacking!");
-                    health.TakeDamage(_damage);
+                    enemy.TakeDamage(_damage);
                 }
                 else
                     WalkToEnemy(playerPos, enemyPos);
@@ -94,6 +100,23 @@ public class PlayerCombat : MonoBehaviour
         }
 
         StopCombat();
+    }
+
+    public void TakeDamage(int amount)
+    {
+        _playerStats.TakeDamage(amount);
+        FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.red);
+        // stagger player
+
+        if (_playerStats.CurrentHP <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Destroy(gameObject);
     }
 
     private bool IsAdjacent(Vector3Int a, Vector3Int b)
