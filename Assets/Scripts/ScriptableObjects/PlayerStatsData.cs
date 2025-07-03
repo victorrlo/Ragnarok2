@@ -4,8 +4,8 @@ using UnityEngine;
 public class PlayerStatsData : CharacterStatsData
 {
     [Header("Current Stats")]
-    [HideInInspector] public int _currentHP;
-    [HideInInspector] public int _currentSP;
+    public int _currentHP;
+    public int _currentSP;
 
     public void ResetStats()
     {

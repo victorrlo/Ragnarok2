@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class EnemyCombat : MonoBehaviour
 {
-    [SerializeField] private EnemyMovement _enemyAi;
+    [SerializeField] private EnemyMovementOLD _enemyMovementOLD;
     // [SerializeField] private int _maxHealth = 30;
     private int _currentHealth;
     private FloatingDamage _floatingDamageSpawn;
@@ -24,7 +24,7 @@ public class EnemyCombat : MonoBehaviour
     {
         _currentHealth -= amount;
         FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.white);
-        _enemyAi.OnDamagedByPlayer();
+        _enemyMovementOLD.OnDamagedByPlayer();
         _monsterStats.TakeDamage(amount);
 
         if (_currentHealth <= 0)
@@ -35,7 +35,7 @@ public class EnemyCombat : MonoBehaviour
 
     public IEnumerator Attack(GameObject player)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0f);
         player.GetComponent<PlayerCombat>().TakeDamage(1);
     }
 

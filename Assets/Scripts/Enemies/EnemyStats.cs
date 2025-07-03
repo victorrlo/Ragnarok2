@@ -5,6 +5,7 @@ public class EnemyStats : MonoBehaviour
 {
     [SerializeField] private GameObject _monster;
     [SerializeField] private MonsterStatsData _statsData;
+    public MonsterStatsData StatsData => _statsData;
     private int _currentHP;
     public int MaxHP => _statsData._maxHP;
     [SerializeField] private GameObject _statsBar;

@@ -48,7 +48,7 @@ public class PlayerStats : MonoBehaviour
             Destroy(gameObject);
         }
 
-        _stats.LoadFromPrefs();
+        // _stats.LoadFromPrefs();
 
         OnHPChanged += UpdateHealthBar;
         OnSPChanged += UpdateSpiritBar;
