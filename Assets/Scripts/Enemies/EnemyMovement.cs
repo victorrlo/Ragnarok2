@@ -6,8 +6,6 @@ public class EnemyMovement : GridMovement
     [SerializeField] private EnemyStats _enemyStats;
     private Coroutine _movementCoroutine;
     private Vector3Int _currentGridPos;
-    private bool _isMoving = false;
-    public bool IsMoving => _isMoving;
 
 
     private void Start()
@@ -15,12 +13,13 @@ public class EnemyMovement : GridMovement
         _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
     }
     public void WanderRandomly()
-    {
-        if (_isMoving) return;
-        
+    {   
         Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
+        
         Vector3Int randomOffset = GetRandomDirection();
-        Vector3Int targetPos = startPos + randomOffset;
+        int randomDistance = GetRandomDistance();
+        
+        Vector3Int targetPos = startPos + randomOffset * randomDistance;
 
         if (!NodeManager.Instance.IsWalkable(targetPos)) return;
 
@@ -47,9 +46,14 @@ public class EnemyMovement : GridMovement
         return randomOffset;
     }
 
+    private int GetRandomDistance()
+    {
+        int rand = UnityEngine.Random.Range(0,4);
+        return rand;
+    }
+
     protected override void OnStep(Vector3Int from, Vector3Int to)
     {
-        _isMoving = true;
         _currentGridPos = to;
     }
 
@@ -66,6 +70,5 @@ public class EnemyMovement : GridMovement
             StopCoroutine(_movementCoroutine);
             _movementCoroutine = null;
         }
-        _isMoving = false;
     }
 }

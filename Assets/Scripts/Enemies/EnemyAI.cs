@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -13,9 +14,12 @@ public class EnemyAI : MonoBehaviour
     private EnemyStates _currentState;
     private EnemyStates _previousState;
     private Coroutine _wanderCoroutine;
+    private bool _isMoving;
 
     private void Awake()
     {
+        _isMoving = false;
+
         if (_enemyMovement == null)
             _enemyMovement = GetComponent<EnemyMovement>();
 
@@ -24,24 +28,25 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
-        if (_currentState == EnemyStates.Passive && _wanderCoroutine == null)
+        if (_currentState == EnemyStates.Passive && !_isMoving)
         {
-            _wanderCoroutine = StartCoroutine(PassiveWanderLoop());
-            Debug.LogWarning("calling multiple wanderings");
+            OnStateChanged(_currentState);
         }
             
-
         if (_currentState != _previousState)
         {
-            OnStateChanged(_previousState, _currentState);
+            OnStateChanged(_currentState);
             _previousState = _currentState;
         }
     }
 
-    private void OnStateChanged(EnemyStates previousState, EnemyStates currentState)
+    private void OnStateChanged(EnemyStates currentState)
     {
         if (_wanderCoroutine != null)
+        {
             StopCoroutine(_wanderCoroutine);
+            _isMoving = false;
+        }
 
         switch (_currentState)
         {
@@ -59,7 +64,9 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator PassiveWanderLoop()
     {
+        _isMoving = true;
         _enemyMovement.WanderRandomly();
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(4f);
+        _isMoving = false;
     }
 }
