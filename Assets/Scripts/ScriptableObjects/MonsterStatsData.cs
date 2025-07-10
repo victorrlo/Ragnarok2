@@ -8,5 +8,9 @@ public class MonsterStatsData : CharacterStatsData
         Passive,
         Aggressive
     }
-    public MonsterNature _monsterNature;
+    [SerializeField] private MonsterNature _monsterNature;
+    [SerializeField] private float _restTime; // time between new movements when wandering
+
+    public MonsterNature Nature => _monsterNature;
+    public float RestTime => _restTime;
 }
