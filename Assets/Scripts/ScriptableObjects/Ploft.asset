@@ -19,4 +19,4 @@ MonoBehaviour:
   _moveSpeed: 2
   _attackSpeed: 1
   _monsterNature: 0
-  _restTime: 5
+  _maxRestTime: 5

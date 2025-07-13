@@ -5,12 +5,12 @@ public class PassiveState : IEnemyState
 {
     private EnemyAI _enemy;
     private Coroutine _routine;
-    private float _restTime = 4f;
+    private float _maxRestTime = 4f;
 
     public void Enter(EnemyAI enemy, MonsterStatsData monsterData)
     {
         _enemy = enemy;
-        _restTime = monsterData.RestTime;
+        _maxRestTime = monsterData.MaximumRestTime;
         _routine = _enemy.StartCoroutine(WanderRoutine());
     }
 
@@ -31,8 +31,9 @@ public class PassiveState : IEnemyState
     private IEnumerator WanderRoutine()
     {
         yield return _enemy.Movement.WanderRandomly();
-
-        yield return new WaitForSeconds(_restTime);
+        
+        var randomRestTime = UnityEngine.Random.Range(0, _maxRestTime);
+        yield return new WaitForSeconds(randomRestTime);
 
         _enemy.ChangeState(new PassiveState());
     }

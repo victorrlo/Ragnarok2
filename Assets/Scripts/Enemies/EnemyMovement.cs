@@ -14,34 +14,6 @@ public class EnemyMovement : GridMovement
     {
         _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
     }
-    // public void WanderRandomly()
-    // {   
-    //     Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
-        
-    //     Vector3Int randomOffset = GetRandomDirection();
-    //     int randomDistance = GetRandomDistance();
-        
-    //     Vector3Int targetPos = startPos + randomOffset * randomDistance;
-
-    //     if (!NodeManager.Instance.IsWalkable(targetPos))
-    //     {
-    //         _enemyAI.ChangeState(EnemyAI.EnemyStates.Passive);
-    //         return;
-    //     } 
-
-    //     List<Node> path = NodeManager.Instance.FindPath(startPos, targetPos);
-
-    //     if (path == null || path.Count == 0) 
-    //     {
-    //         _enemyAI.ChangeState(EnemyAI.EnemyStates.Passive);
-    //         return;
-    //     }
-
-    //     if(_movementCoroutine != null)
-    //         StopCoroutine(_movementCoroutine);
-
-    //     _movementCoroutine = StartCoroutine(FollowPath(path, _enemyStats.StatsData._moveSpeed));
-    // }
 
         public IEnumerator WanderRandomly()
     {   
@@ -62,8 +34,7 @@ public class EnemyMovement : GridMovement
 
         if(_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
-
-        // _movementCoroutine = StartCoroutine(FollowPath(path, _enemyStats.StatsData._moveSpeed));
+            
         yield return FollowPath(path, _enemyStats.StatsData._moveSpeed);
     }
 

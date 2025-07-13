@@ -16,7 +16,7 @@ MonoBehaviour:
   _maxHP: 100
   _maxSP: 50
   _attack: 5
-  _moveSpeed: 2
+  _moveSpeed: 3
   _attackSpeed: 1
   _currentHP: 100
   _currentSP: 50

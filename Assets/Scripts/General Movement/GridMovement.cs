@@ -14,6 +14,8 @@ public class GridMovement : MonoBehaviour
         Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
         float currentMoveSpeed = moveSpeed*Time.deltaTime;
 
+        if (path == null) yield return null;
+        
         foreach (Node node in path)
         {
             Vector3 destinationWorld = GridManager.Instance.GetCellCenterWorld(node._gridPosition);
