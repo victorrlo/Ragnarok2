@@ -29,9 +29,6 @@ public class PlayerCombat : MonoBehaviour
         MarkTarget(enemy);
         _currentTarget = enemy;
         _currentEnemyCell = GridManager.Instance.WorldToCell(enemy.transform.position);
-
-        // GridOccupancyManager.Instance.RegisterOccupant(_currentEnemyCell, _currentTarget);
-
         
         _combatCoroutine = StartCoroutine(ChaseAndAttack(_currentTarget));
     }

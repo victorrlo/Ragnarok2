@@ -18,6 +18,8 @@ public class GridMovement : MonoBehaviour
         
         foreach (Node node in path)
         {
+            if (node == null) continue;
+            
             Vector3 destinationWorld = GridManager.Instance.GetCellCenterWorld(node._gridPosition);
             Vector3 flatDestination = new Vector3(destinationWorld.x, 0, destinationWorld.z);
 

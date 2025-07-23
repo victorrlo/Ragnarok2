@@ -4,19 +4,22 @@ using UnityEngine;
 public class PassiveState : IEnemyState
 {
     private EnemyAI _enemy;
+    private Transform _player;
     private Coroutine _routine;
-    private float _maxRestTime = 4f;
 
-    public void Enter(EnemyAI enemy, MonsterStatsData monsterData)
+    public void Enter(EnemyAI enemy)
     {
         _enemy = enemy;
-        _maxRestTime = monsterData.MaximumRestTime;
+        _player = GameObject.FindWithTag("Player")?.transform;
         _routine = _enemy.StartCoroutine(WanderRoutine());
     }
 
     public void Execute()
     {
         // condicionais de mudanças de estado
+        if (_enemy.MonsterStatsData.Nature == MonsterStatsData.MonsterNature.Aggressive)
+            if (DistanceHelper.IsPlayerInRange(_player.transform, _enemy))
+                _enemy.ChangeState(new AggressiveState());
     }
 
     public void Exit()
@@ -30,9 +33,10 @@ public class PassiveState : IEnemyState
 
     private IEnumerator WanderRoutine()
     {
-        yield return _enemy.Movement.WanderRandomly();
+        var randomRestTime = UnityEngine.Random.Range(0, _enemy.MonsterStatsData.MaximumRestTime);
         
-        var randomRestTime = UnityEngine.Random.Range(0, _maxRestTime);
+        yield return new WaitForSeconds(randomRestTime);
+        yield return _enemy.Movement.WanderRandomly();
         yield return new WaitForSeconds(randomRestTime);
 
         _enemy.ChangeState(new PassiveState());

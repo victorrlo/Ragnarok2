@@ -2,7 +2,7 @@ using UnityEngine;
 
 public interface IEnemyState
 {
-    void Enter(EnemyAI enemy, MonsterStatsData monsterData);
+    void Enter(EnemyAI enemy);
     void Execute();
     void Exit();
 }

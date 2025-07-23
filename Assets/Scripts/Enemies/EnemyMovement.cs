@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyMovement : GridMovement
@@ -8,14 +9,24 @@ public class EnemyMovement : GridMovement
     [SerializeField] private EnemyAI _enemyAI;
     private Coroutine _movementCoroutine;
     private Vector3Int _currentGridPos;
+    private Transform _player;
 
+    protected override void Awake()
+    {
+        _player = GameObject.FindWithTag("Player")?.transform;
+    }
 
     private void Start()
     {
         _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
     }
 
-        public IEnumerator WanderRandomly()
+    public void MoveToward(Vector3 targetPosition)
+    {
+
+    }
+
+    public IEnumerator WanderRandomly()
     {   
         Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
         
@@ -23,7 +34,7 @@ public class EnemyMovement : GridMovement
         int randomDistance = GetRandomDistance();
         
         Vector3Int targetPos = startPos + randomOffset * randomDistance;
-
+ 
         if (!NodeManager.Instance.IsWalkable(targetPos))
             yield return null;
 
@@ -75,5 +86,24 @@ public class EnemyMovement : GridMovement
             StopCoroutine(_movementCoroutine);
             _movementCoroutine = null;
         }
+    }
+
+    public IEnumerator ChasePlayer(System.Action onChaseComplete = null)
+    {
+        
+        while(true)
+        {
+            _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
+            var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
+
+            if (_currentGridPos == playerTargetPos)
+                break;
+
+            Debug.LogWarning("ENEMY WANTS TO GET YOU!!!!");
+            // MoveTowards(_player);
+            yield return new WaitForSeconds(0.1f);
+        }
+        onChaseComplete?.Invoke();
+        yield return null;
     }
 }

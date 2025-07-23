@@ -3,29 +3,31 @@ using UnityEngine;
 
 public class EnemyCombat : MonoBehaviour
 {
-    [SerializeField] private EnemyMovementOLD _enemyMovementOLD;
-    // [SerializeField] private int _maxHealth = 30;
-    private int _currentHealth;
-    private FloatingDamage _floatingDamageSpawn;
-    private EnemyStats _monsterStats;
+    [SerializeField] private EnemyDamageEvent _onDamagedEvent;
+    private int _currentHealth; // 1
+    // private FloatingDamage _floatingDamageSpawn;
+    private EnemyStats _monsterStats; // 2
 
     private void Awake()
     {
-        _floatingDamageSpawn = GetComponent<FloatingDamage>();
-        _monsterStats = GetComponent<EnemyStats>();
+        // _floatingDamageSpawn = GetComponent<FloatingDamage>();
+        _monsterStats = GetComponent<EnemyStats>(); // 2
     }
 
     private void Start()
     {
-        _currentHealth = _monsterStats.MaxHP;
+        _currentHealth = _monsterStats.MaxHP; // 1
     }
 
     public void TakeDamage(int amount)
     {
-        _currentHealth -= amount;
+        _currentHealth -= amount; // acho que dá para tirar isso daqui também 1
         FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.white);
-        _enemyMovementOLD.OnDamagedByPlayer();
-        _monsterStats.TakeDamage(amount);
+        _monsterStats.TakeDamage(amount); // usar evento igual abaixo 2
+
+        // _enemyAI.ChangeState(new AttackingState()); usarei eventos para evitar isso aqui 3
+        var data = new EnemyDamageEventData(gameObject, amount);
+        _onDamagedEvent.Raise(data);
 
         if (_currentHealth <= 0)
         {
@@ -41,8 +43,6 @@ public class EnemyCombat : MonoBehaviour
 
     private void Die()
     {
-        // Vector3Int cell = GridManager.Instance.WorldToCell(transform.position);
-        // GridOccupancyManager.Instance.UnregisterOccupant(cell, gameObject);
         Destroy(gameObject);
     }
 }

@@ -18,5 +18,7 @@ MonoBehaviour:
   _attack: 5
   _moveSpeed: 2
   _attackSpeed: 1
-  _monsterNature: 0
+  _monsterNature: 1
   _maxRestTime: 5
+  _aggressiveVisionRange: 1
+  _sightRange: 3
