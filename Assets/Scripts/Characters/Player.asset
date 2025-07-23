@@ -18,5 +18,6 @@ MonoBehaviour:
   _attack: 5
   _moveSpeed: 3
   _attackSpeed: 1
+  _attackRange: 1
   _currentHP: 100
   _currentSP: 50

@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class AggressiveState : IEnemyState
 {
-    //definir uma área de efeito desse estado (o monstro não pode seguir o jogador pelo mapa inteiro, a não ser que eu quisesse por algum motivo)
     private EnemyAI _enemy;
     private Transform _player;
     private bool _isWandering;
@@ -32,11 +31,6 @@ public class AggressiveState : IEnemyState
         {
             StartChase();
         }
-            
-        // use IsPlayerInRange to check if Aggressive State is possible or should become Passive once again.
-        // there are enemies that are always aggressive, so I think I should create a different state for attacking enemy and aggressive ones.
-        
-        // condicionais de mudanças de estado
     }
 
     public void Exit()
@@ -53,6 +47,7 @@ public class AggressiveState : IEnemyState
             _chasingCoroutine = _enemy.StartCoroutine(_enemy.Movement.ChasePlayer(() =>
             {
                 _isChasing = false;
+                StopChase();
             }));
         }
     }

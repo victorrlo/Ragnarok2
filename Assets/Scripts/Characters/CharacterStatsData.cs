@@ -16,4 +16,8 @@ public class CharacterStatsData : ScriptableObject
     // public int _AGI; // esquiva e velocidade de ataque
     public int _moveSpeed;
     public int _attackSpeed;
+    public int _attackRange;
+
+    public int MoveSpeed => _moveSpeed;
+    public int AttackRange => _attackRange;
 }

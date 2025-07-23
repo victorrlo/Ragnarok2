@@ -15,12 +15,19 @@ public static class DistanceHelper
     {
         var playerPosition = GridManager.Instance.WorldToCell(player.transform.position);
         var enemyPosition = GridManager.Instance.WorldToCell(enemy.transform.position);
-        var distance = DistanceHelper.GetCellDistance(playerPosition, enemyPosition);
+        var distance = GetCellDistance(playerPosition, enemyPosition);
         var sightRange = enemy.MonsterStatsData.SightRange;
 
-        if (distance < sightRange) 
+        if (distance <= sightRange) 
             return true;
 
         return false;
+    }
+
+    public static bool IsAdjacent(Vector3Int a, Vector3Int b, int range)
+    {
+        int dx = Mathf.Abs(a.x - b.x);
+        int dy = Mathf.Abs(a.y - b.y);
+        return dx <= range && dy <= range && (dx + dy) > 0;
     }
 }

@@ -21,11 +21,6 @@ public class EnemyMovement : GridMovement
         _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
     }
 
-    public void MoveToward(Vector3 targetPosition)
-    {
-
-    }
-
     public IEnumerator WanderRandomly()
     {   
         Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
@@ -46,7 +41,7 @@ public class EnemyMovement : GridMovement
         if(_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
             
-        yield return FollowPath(path, _enemyStats.StatsData._moveSpeed);
+        yield return FollowPath(path, _enemyStats.StatsData.MoveSpeed);
     }
 
     private Vector3Int GetRandomDirection()
@@ -90,19 +85,18 @@ public class EnemyMovement : GridMovement
 
     public IEnumerator ChasePlayer(System.Action onChaseComplete = null)
     {
+        _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
+        var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
+
+        List<Node> path = NodeManager.Instance.FindPath(_currentGridPos, playerTargetPos);
+
+        if (path == null || DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyStats.StatsData.AttackRange)) 
+            yield return null;
+
+        path.RemoveAt(path.Count -1);
+        yield return FollowPath(path, _enemyStats.StatsData.MoveSpeed);
         
-        while(true)
-        {
-            _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
-            var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
-
-            if (_currentGridPos == playerTargetPos)
-                break;
-
-            Debug.LogWarning("ENEMY WANTS TO GET YOU!!!!");
-            // MoveTowards(_player);
-            yield return new WaitForSeconds(0.1f);
-        }
+        StopMovement();
         onChaseComplete?.Invoke();
         yield return null;
     }
