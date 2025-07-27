@@ -36,7 +36,7 @@ public class PassiveState : IEnemyState
         var randomRestTime = UnityEngine.Random.Range(0, _enemy.MonsterStatsData.MaximumRestTime);
         
         yield return new WaitForSeconds(randomRestTime);
-        yield return _enemy.Movement.WanderRandomly();
+        _enemy.Movement.StartWandering();
         yield return new WaitForSeconds(randomRestTime);
 
         _enemy.ChangeState(new PassiveState());

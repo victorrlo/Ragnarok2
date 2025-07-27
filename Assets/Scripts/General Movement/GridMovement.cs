@@ -1,22 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GridMovement : MonoBehaviour
 {
+    List<Node> _currentPath;
 
     protected virtual void Awake()
     {
         
     }
-    public virtual IEnumerator FollowPath(List<Node> path, float moveSpeed = 2f)
+    public virtual IEnumerator FollowPath(Func<List<Node>> getPath, float moveSpeed = 2f)
     {
         Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
         float currentMoveSpeed = moveSpeed*Time.deltaTime;
 
-        if (path == null) yield return null;
+        if (getPath() == null) yield return null;
         
-        foreach (Node node in path)
+        foreach (Node node in getPath())
         {
             if (node == null) continue;
             
@@ -35,7 +37,7 @@ public class GridMovement : MonoBehaviour
 
             if (newCell != previousCell)
             {
-                OnStep(previousCell, newCell);
+                OnStep(newCell);
                 previousCell = newCell;
             }
         }
@@ -43,6 +45,9 @@ public class GridMovement : MonoBehaviour
         OnPathComplete(previousCell);
     }
 
-    protected virtual void OnStep(Vector3Int from, Vector3Int to) {}
+    protected virtual void OnStep(Vector3Int newPos) {}
     protected virtual void OnPathComplete(Vector3Int finalCell) {}
+    public virtual void UpdatePath(List<Node> newPath) {
+        _currentPath = newPath;
+    }
 }

@@ -3,21 +3,23 @@ using UnityEngine;
 public class AggressiveState : IEnemyState
 {
     private EnemyAI _enemy;
-    private Transform _player;
-    private bool _isWandering;
-    private bool _isChasing;
-    private Coroutine _chasingCoroutine;
+    private GameObject _player;
+    private PlayerMovement _playerMovement;
 
     public void Enter(EnemyAI enemy)
     {
         _enemy = enemy;
-        _player = GameObject.FindWithTag("Player")?.transform;
+        _player = GameObject.FindWithTag("Player");
+        _player.TryGetComponent<PlayerMovement>(out _playerMovement);
 
         if (_player == null)
         {
             _enemy.ChangeState(new PassiveState());
             return;
         }
+
+        _playerMovement.OnPlayerMoved += MoveEnemy;
+        StartChase();
     }
     public void Execute()
     {
@@ -27,41 +29,26 @@ public class AggressiveState : IEnemyState
             return;
         }
 
-        if (!_isChasing)
+        if (_player == null)
         {
-            StartChase();
+            _enemy.ChangeState(new PassiveState());
+            return;
         }
     }
 
     public void Exit()
     {
-        StopChase();
+        _playerMovement.OnPlayerMoved -= MoveEnemy;
+    }
+
+    private void MoveEnemy(Vector3Int newPos)
+    {
+        Vector3Int startPos = GridManager.Instance.WorldToCell(_enemy.transform.position);
+        _enemy.Movement.UpdatePath(startPos, newPos);
     }
 
     private void StartChase()
     {
-        if (_chasingCoroutine == null)
-        {
-            _isChasing = true;
-            
-            _chasingCoroutine = _enemy.StartCoroutine(_enemy.Movement.ChasePlayer(() =>
-            {
-                _isChasing = false;
-                StopChase();
-            }));
-        }
+        _enemy.Movement.StartChasing();
     }
-
-    private void StopChase()
-    {
-        if (_chasingCoroutine != null)
-        {
-            _enemy.StopCoroutine(_chasingCoroutine);
-            _chasingCoroutine = null;
-        }
-
-        _isChasing = false;
-    }
-
-
 }

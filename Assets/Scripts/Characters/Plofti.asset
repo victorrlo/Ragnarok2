@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4900ea4f3dfd6c84c824369f66cd3507, type: 3}
   m_Name: Plofti
   m_EditorClassIdentifier: 
+  _basicTimeForEachAttack: 60
   _characterName: Plofti
   _maxHP: 50
   _maxSP: 10
   _attack: 5
   _moveSpeed: 2
-  _attackSpeed: 1
-  _attackRange: 1
+  _attackRange: 2
+  _agility: 1
   _monsterNature: 1
   _maxRestTime: 5
   _aggressiveVisionRange: 1

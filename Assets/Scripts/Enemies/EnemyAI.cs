@@ -3,24 +3,23 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     private IEnemyState _currentState;
-    private MonsterStatsData _monsterData;
-    public MonsterStatsData MonsterStatsData => _monsterData;
+    [SerializeField] private MonsterStatsData _monsterData;
     [SerializeField] private EnemyMovement _movement;
+    [SerializeField] private EnemyEventBus _enemyEventBus;
+    public MonsterStatsData MonsterStatsData => _monsterData;
     public EnemyMovement Movement => _movement;
-    [SerializeField] private EnemyDamageEvent _onDamagedEvent;
 
     private void Awake()
     {
-        if (_movement == null)
-            _movement = GetComponent<EnemyMovement>();
-
-        _monsterData = GetComponent<EnemyStats>().StatsData;
+        if (_enemyEventBus == null)
+            TryGetComponent<EnemyEventBus>(out _enemyEventBus);
+            
         _currentState = null;
     }
 
     private void OnEnable()
     {
-        _onDamagedEvent.OnRaised += OnDamageTaken;
+        _enemyEventBus.OnDamaged.OnRaised += OnDamageTaken;
     }
 
     private void Start()
@@ -36,7 +35,7 @@ public class EnemyAI : MonoBehaviour
 
     private void OnDisable()
     {
-        _onDamagedEvent.OnRaised -= OnDamageTaken;
+        _enemyEventBus.OnDamaged.OnRaised -= OnDamageTaken;
     }
 
     public void ChangeState(IEnemyState newState)

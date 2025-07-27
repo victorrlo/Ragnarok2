@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Numerics;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -7,9 +9,11 @@ public class EnemyMovement : GridMovement
 {
     [SerializeField] private EnemyStats _enemyStats;
     [SerializeField] private EnemyAI _enemyAI;
-    private Coroutine _movementCoroutine;
+    private Coroutine _currentBehaviorCoroutine;
     private Vector3Int _currentGridPos;
     private Transform _player;
+
+    private List<Node> _currentPath;
 
     protected override void Awake()
     {
@@ -21,7 +25,17 @@ public class EnemyMovement : GridMovement
         _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
     }
 
-    public IEnumerator WanderRandomly()
+    public void StartWandering()
+    {
+        SwitchToBehavior(WanderRandomly());
+    }
+
+    public void StartChasing()
+    {
+        SwitchToBehavior(ChasePlayer());
+    }
+
+    private IEnumerator WanderRandomly()
     {   
         Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
         
@@ -33,15 +47,9 @@ public class EnemyMovement : GridMovement
         if (!NodeManager.Instance.IsWalkable(targetPos))
             yield return null;
 
-        List<Node> path = NodeManager.Instance.FindPath(startPos, targetPos);
-
-        if (path == null || path.Count == 0) 
-            yield return null;
-
-        if(_movementCoroutine != null)
-            StopCoroutine(_movementCoroutine);
+        UpdatePath(startPos, targetPos);
             
-        yield return FollowPath(path, _enemyStats.StatsData.MoveSpeed);
+        yield return FollowPath(GetPath, _enemyStats.StatsData.MoveSpeed);
     }
 
     private Vector3Int GetRandomDirection()
@@ -63,41 +71,93 @@ public class EnemyMovement : GridMovement
         return rand;
     }
 
-    protected override void OnStep(Vector3Int from, Vector3Int to)
+    protected override void OnStep(Vector3Int newPos)
     {
-        _currentGridPos = to;
+        _currentGridPos = newPos;
     }
 
     protected override void OnPathComplete(Vector3Int finalCell)
     {
         _currentGridPos = finalCell;
-        StopMovement();
     }
 
-    private void StopMovement()
+    private IEnumerator ChasePlayer()
     {
-        if (_movementCoroutine != null)
+        bool isChasing = true;
+
+        WaitForSeconds delay = new WaitForSeconds(0.2f);
+        yield return delay;
+        
+        while(isChasing)
         {
-            StopCoroutine(_movementCoroutine);
-            _movementCoroutine = null;
+            _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
+            var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
+
+            if (DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyStats.StatsData.AttackRange))
+            {
+                isChasing = false;
+                yield break;
+            } 
+
+            _currentPath = NodeManager.Instance.FindPath(_currentGridPos, playerTargetPos);
+
+            if (_currentPath == null || _currentPath.Count < 2)
+            {
+                yield return delay;
+                continue;
+            }
+
+            _currentPath.RemoveAt(_currentPath.Count-1);
+            isChasing = false;
+            yield return FollowPath(GetPath, _enemyStats.StatsData.MoveSpeed);
+
+            yield return delay;
         }
     }
 
-    public IEnumerator ChasePlayer(System.Action onChaseComplete = null)
+    private IEnumerator IsAdjacentToPlayer()
     {
-        _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
-        var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
+        bool isAdjacent = true;
 
-        List<Node> path = NodeManager.Instance.FindPath(_currentGridPos, playerTargetPos);
+        WaitForSeconds delay = new WaitForSeconds(0.2f);
+        yield return delay;
 
-        if (path == null || DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyStats.StatsData.AttackRange)) 
-            yield return null;
+        while(isAdjacent)
+        {
+            _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
+            var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
 
-        path.RemoveAt(path.Count -1);
-        yield return FollowPath(path, _enemyStats.StatsData.MoveSpeed);
+            //checks if player has moved away from the enemy
+            if (!DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyStats.StatsData.AttackRange))
+            {
+                isAdjacent = false;
+                yield break;
+            } 
+        }
+    }
+
+    public void SwitchToBehavior(IEnumerator newBehavior)
+    {
+        if (_currentBehaviorCoroutine != null)
+        {
+            StopCoroutine(_currentBehaviorCoroutine);
+        }
+
+        _currentBehaviorCoroutine = StartCoroutine(newBehavior);
+    }
+
+    public List<Node> UpdatePath(Vector3Int from, Vector3Int to)
+    {
+        _currentPath = NodeManager.Instance.FindPath(from, to);
         
-        StopMovement();
-        onChaseComplete?.Invoke();
-        yield return null;
+        if (_currentPath == null || _currentPath.Count == 0) 
+            return null;
+
+        return _currentPath; 
+    }
+
+    private List<Node> GetPath()
+    {
+        return _currentPath;
     }
 }

@@ -88,7 +88,7 @@ public class PlayerCombat : MonoBehaviour
                 if (IsAdjacent(playerPos, enemyPos))
                 {
                     Debug.Log("Attacking!");
-                    enemy.TakeDamage(_damage);
+                    // enemy.TakeDamage(_damage);
                 }
                 else
                     WalkToEnemy(playerPos, enemyPos);

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 611820514925056508}
   - component: {fileID: 4056367051433577250}
   - component: {fileID: 4926073016267285164}
+  - component: {fileID: 2356809419150044404}
   - component: {fileID: 684161066911973323}
   - component: {fileID: 7116505063230905466}
   - component: {fileID: 2309635511653084639}
@@ -115,6 +116,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.8, y: 0.7, z: 0.2}
   m_Center: {x: 0, y: 0.35, z: 0}
+--- !u!114 &2356809419150044404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850954093980881960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 955d2753bf66dbc4b95223e221560aeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnDamaged: {fileID: 11400000, guid: 5cb81de39f048314a83a2144baa65c04, type: 2}
 --- !u!114 &684161066911973323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 652298e83517fcf4ca43100b3034cc74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _onDamagedEvent: {fileID: 0}
+  _onDamagedEvent: {fileID: 11400000, guid: 5cb81de39f048314a83a2144baa65c04, type: 2}
 --- !u!114 &7116505063230905466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,8 +154,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f63b949580cc154fb856b866868fbee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _movement: {fileID: 0}
-  _onDamagedEvent: {fileID: 0}
+  _monsterData: {fileID: 11400000, guid: b6609764237b74748afdb9c06efc908a, type: 2}
+  _movement: {fileID: 2309635511653084639}
+  _enemyEventBus: {fileID: 2356809419150044404}
 --- !u!114 &2309635511653084639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,8 +183,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110302fb0b4310e4f9869cdfc9e2f624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemyEventBus: {fileID: 2356809419150044404}
   _monster: {fileID: 850954093980881960}
-  _statsData: {fileID: 0}
+  _statsData: {fileID: 11400000, guid: b6609764237b74748afdb9c06efc908a, type: 2}
   _statsBar: {fileID: 8625995376775207396}
   _healthBar: {fileID: 435192981788293242}
   _offset: {x: 0, y: -30, z: 0}
