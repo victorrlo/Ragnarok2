@@ -53,7 +53,6 @@ public class EnemyAI : MonoBehaviour
     {
         if (data._target != gameObject) return;
 
-        Debug.LogWarning($"{name} foi atacado!!!");
         ChangeState(new AggressiveState());
     }
 }

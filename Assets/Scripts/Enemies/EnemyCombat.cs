@@ -7,27 +7,23 @@ public class EnemyCombat : MonoBehaviour
     private EnemyContext _enemyContext;
     private int _currentHealth; // 1
     // private FloatingDamage _floatingDamageSpawn;
-    private EnemyStats _monsterStats; // 2
 
     private void Awake()
     {
         if(_enemyContext== null)
             TryGetComponent<EnemyContext>(out _enemyContext);
-
-        // _floatingDamageSpawn = GetComponent<FloatingDamage>();
-        _monsterStats = GetComponent<EnemyStats>();
     }
 
     private void Start()
     {
-        _currentHealth = _monsterStats.MaxHP;
+        _currentHealth = _enemyContext.Stats.MaxHP;
     }
 
     public void TakeDamage(int amount)
     {
         _currentHealth -= amount; // acho que dá para tirar isso daqui também 1
         FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.white);
-        _monsterStats.TakeDamage(amount); // usar evento igual abaixo 2
+        _enemyContext.StatsManager.TakeDamage(amount); // usar evento igual abaixo 2
 
         // _enemyAI.ChangeState(new AttackingState()); usarei eventos para evitar isso aqui 3
         

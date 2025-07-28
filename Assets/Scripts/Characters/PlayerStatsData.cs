@@ -9,8 +9,8 @@ public class PlayerStatsData : CharacterStatsData
 
     public void ResetStats()
     {
-        _currentHP = _maxHP;
-        _currentSP = _maxSP;
+        _currentHP = MaxHP;
+        _currentSP = MaxSP;
     }
 
     public int GetCurrentHP()

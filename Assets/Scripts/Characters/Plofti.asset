@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Plofti
   m_EditorClassIdentifier: 
   _basicTimeForEachAttack: 60
-  _characterName: Plofti
-  _maxHP: 50
-  _maxSP: 10
-  _attack: 5
-  _moveSpeed: 2
-  _attackRange: 2
-  _agility: 1
+  <CharacterName>k__BackingField: Plofti
+  <MaxHP>k__BackingField: 100
+  <MaxSP>k__BackingField: 50
+  <Attack>k__BackingField: 5
+  <MoveSpeed>k__BackingField: 2
+  <AttackRange>k__BackingField: 1
+  <Agility>k__BackingField: 1
   _monsterNature: 1
   _maxRestTime: 5
   _aggressiveVisionRange: 1

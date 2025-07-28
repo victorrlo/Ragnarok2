@@ -18,7 +18,7 @@ public class PlayerMovement : GridMovement
         if(_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
 
-        _movementCoroutine = StartCoroutine(FollowPath(GetPath, _stats._moveSpeed));
+        _movementCoroutine = StartCoroutine(FollowPath(GetPath, _stats.MoveSpeed));
     }
 
     protected override void OnStep(Vector3Int newPos) 

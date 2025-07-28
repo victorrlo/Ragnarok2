@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(EnemyContext))]
-public class EnemyStats : MonoBehaviour
+public class EnemyStatsManager : MonoBehaviour
 {
     private EnemyContext _enemyContext;
     private int _currentHP;
@@ -11,7 +11,6 @@ public class EnemyStats : MonoBehaviour
     private bool hasBeenDamaged = false;
     private Camera _mainCamera;
     [SerializeField] private Vector3 _offset = new Vector3(0, -30f, 0);
-    public int MaxHP => _enemyContext.Stats._maxHP;
 
     private void Awake()
     {
@@ -19,7 +18,7 @@ public class EnemyStats : MonoBehaviour
             TryGetComponent<EnemyContext>(out _enemyContext);
 
         _mainCamera = Camera.main;
-        _currentHP = _enemyContext.Stats._maxHP;
+        _currentHP = _enemyContext.Stats.MaxHP;
         _statsBar.SetActive(false);
         _healthBar.gameObject.SetActive(false);
     }
@@ -44,7 +43,7 @@ public class EnemyStats : MonoBehaviour
     public void TakeDamage(int amount)
     {
         _currentHP -= amount;
-        _healthBar.fillAmount = (float)_currentHP / _enemyContext.Stats._maxHP;
+        _healthBar.fillAmount = (float)_currentHP / _enemyContext.Stats.MaxHP;
         hasBeenDamaged = true;
         var data = new EnemyDamageEventData(gameObject, amount);
         _enemyContext.EventBus.OnDamaged.Raise(data);

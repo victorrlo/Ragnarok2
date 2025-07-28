@@ -10,8 +10,8 @@ public class PlayerStats : MonoBehaviour
         get => _stats.GetCurrentHP(); 
         private set
         {
-            _stats._currentHP = Mathf.Clamp(value, 0, _stats._maxHP);
-            OnHPChanged?.Invoke(_stats._currentHP, _stats._maxHP);
+            _stats._currentHP = Mathf.Clamp(value, 0, _stats.MaxHP);
+            OnHPChanged?.Invoke(_stats._currentHP, _stats.MaxHP);
             if (_stats._currentHP <= 0)
                 Die();
         }
@@ -21,8 +21,8 @@ public class PlayerStats : MonoBehaviour
         get => _stats.GetCurrentSP();
         private set
         {
-            _stats._currentSP = Mathf.Clamp(value, 0, _stats._maxSP);
-            OnSPChanged?.Invoke(_stats._currentSP, _stats._maxSP);
+            _stats._currentSP = Mathf.Clamp(value, 0, _stats.MaxSP);
+            OnSPChanged?.Invoke(_stats._currentSP, _stats.MaxSP);
         }
     }
     public event Action<int, int> OnHPChanged;
@@ -55,8 +55,8 @@ public class PlayerStats : MonoBehaviour
 
     private void Start()
     {
-        OnHPChanged?.Invoke(_stats._currentHP, _stats._maxHP);
-        OnSPChanged?.Invoke(_stats._currentSP, _stats._maxSP);
+        OnHPChanged?.Invoke(_stats._currentHP, _stats.MaxHP);
+        OnSPChanged?.Invoke(_stats._currentSP, _stats.MaxSP);
     }
 
     private void LateUpdate()
