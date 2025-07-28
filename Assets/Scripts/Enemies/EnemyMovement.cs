@@ -40,7 +40,6 @@ public class EnemyMovement : GridMovement
 
     private IEnumerator WanderRandomly()
     {   
-        
         Debug.LogWarning($"{name} is wandering...");
         yield return new WaitForSeconds(1f);
         

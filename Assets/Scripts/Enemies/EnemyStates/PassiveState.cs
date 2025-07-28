@@ -8,6 +8,9 @@ public class PassiveState : IEnemyState
     private Transform _player;
     private Coroutine _routine;
 
+    private float _nextAggroCheckTime;
+    private float _aggroCooldown = 30f;
+
     public void Enter(EnemyAI enemy)
     {
         _enemy = enemy;
@@ -15,11 +18,17 @@ public class PassiveState : IEnemyState
 
         _player = GameObject.FindWithTag("Player")?.transform;
 
+        _nextAggroCheckTime = Time.time + _aggroCooldown;
+
         _routine = _enemy.StartCoroutine(WanderRoutine());
     }
-    
+
     public void Execute()
     {
+
+        if (Time.time < _nextAggroCheckTime)
+            return;
+
         if (_enemyContext.Stats.Nature == MonsterStatsData.MonsterNature.Aggressive)
             if (DistanceHelper.IsPlayerInRange(_player.transform, _enemy))
                 _enemy.ChangeState(new AggressiveState());
