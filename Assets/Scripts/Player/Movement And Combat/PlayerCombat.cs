@@ -4,12 +4,9 @@ using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
-    [SerializeField] PlayerMovement _playerMovement;
+    private PlayerContext _playerContext;
     [SerializeField] private GameObject _targetMarkerPrefab;
     [SerializeField] private float _attackInterval = 0.5f;
-    [SerializeField] private int _damage = 1;
-    private PlayerStats _playerStats;
-
     private GameObject _currentTarget;
     private Vector3Int _currentEnemyCell;
     private GameObject _activeTargetMarker;
@@ -18,7 +15,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void Awake()
     {
-        _playerStats = GetComponent<PlayerStats>();
+        if (_playerContext == null)
+            TryGetComponent<PlayerContext>(out _playerContext);
     }
 
     public void StartCombat(GameObject enemy)
@@ -87,7 +85,7 @@ public class PlayerCombat : MonoBehaviour
             if (enemy != null)
                 if (IsAdjacent(playerPos, enemyPos))
                 {
-                    enemy.TakeDamage(_damage);
+                    enemy.TakeDamage(_playerContext.Stats.Attack);
                 }
                 else
                     WalkToEnemy(playerPos, enemyPos);
@@ -100,11 +98,11 @@ public class PlayerCombat : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        _playerStats.TakeDamage(amount);
+        _playerContext.StatsManager.TakeDamage(amount);
         FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.red);
         // stagger player
 
-        if (_playerStats.CurrentHP <= 0)
+        if (_playerContext.StatsManager.CurrentHP <= 0)
         {
             Die();
         }
@@ -129,7 +127,7 @@ public class PlayerCombat : MonoBehaviour
         
         List<Node> path = NodeManager.Instance.FindPath(playerPos, tile);
         if (path != null && path.Count > 0)
-            _playerMovement.MoveAlongPath(path);
+            _playerContext.Movement.MoveAlongPath(path);
     }
 
     private Vector3Int FindAdjacentTile(Vector3Int from, Vector3Int target)

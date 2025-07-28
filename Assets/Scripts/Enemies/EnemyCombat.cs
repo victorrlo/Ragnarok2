@@ -5,7 +5,6 @@ using UnityEngine;
 public class EnemyCombat : MonoBehaviour
 {
     private EnemyContext _enemyContext;
-    private int _currentHealth; // 1
     // private FloatingDamage _floatingDamageSpawn;
 
     private void Awake()
@@ -16,19 +15,14 @@ public class EnemyCombat : MonoBehaviour
 
     private void Start()
     {
-        _currentHealth = _enemyContext.Stats.MaxHP;
     }
 
     public void TakeDamage(int amount)
     {
-        _currentHealth -= amount; // acho que dá para tirar isso daqui também 1
         FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.white);
-        _enemyContext.StatsManager.TakeDamage(amount); // usar evento igual abaixo 2
+        _enemyContext.StatsManager.TakeDamage(amount);
 
-        // _enemyAI.ChangeState(new AttackingState()); usarei eventos para evitar isso aqui 3
-        
-
-        if (_currentHealth <= 0)
+        if (_enemyContext.StatsManager.CurrentHP <= 0)
         {
             Die();
         }
@@ -42,6 +36,7 @@ public class EnemyCombat : MonoBehaviour
 
     private void Die()
     {
+        _enemyContext.AI.CurrentState?.Exit();
         Destroy(gameObject);
     }
 }

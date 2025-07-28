@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4900ea4f3dfd6c84c824369f66cd3507, type: 3}
-  m_Name: Plofti
+  m_Name: PloftiBaseData
   m_EditorClassIdentifier: 
   _basicTimeForEachAttack: 60
   <CharacterName>k__BackingField: Plofti
@@ -22,5 +22,6 @@ MonoBehaviour:
   <Agility>k__BackingField: 1
   _monsterNature: 1
   _maxRestTime: 5
-  _aggressiveVisionRange: 1
   _sightRange: 3
+  AggressiveStateSightRange: 10
+  StaminaToChaseInSeconds: 10

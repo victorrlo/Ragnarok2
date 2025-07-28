@@ -14,7 +14,6 @@ public class GridMovement : MonoBehaviour
     public virtual IEnumerator FollowPath(Func<List<Node>> getPath, float moveSpeed = 2f)
     {
         Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
-        float currentMoveSpeed = moveSpeed*Time.deltaTime;
 
         if (getPath() == null) yield return null;
         
@@ -27,6 +26,7 @@ public class GridMovement : MonoBehaviour
 
             while (Vector3.Distance(transform.position, flatDestination) > 0.05f)
             {
+                float currentMoveSpeed = moveSpeed*Time.deltaTime;
                 transform.position = Vector3.MoveTowards(transform.position, flatDestination, currentMoveSpeed);
                 yield return null;
             }

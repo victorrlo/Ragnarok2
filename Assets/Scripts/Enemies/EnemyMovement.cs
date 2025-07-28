@@ -12,8 +12,8 @@ public class EnemyMovement : GridMovement
     private Coroutine _currentBehaviorCoroutine;
     private Vector3Int _currentGridPos;
     private Transform _player;
-
     private List<Node> _currentPath;
+    private float _chaseStartTime;
 
     protected override void Awake()
     {
@@ -92,6 +92,8 @@ public class EnemyMovement : GridMovement
         WaitForSeconds delay = new WaitForSeconds(0.2f);
         yield return delay;
         
+        _chaseStartTime = Time.time;
+
         while(true)
         {
             _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
@@ -99,9 +101,17 @@ public class EnemyMovement : GridMovement
 
             if (DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyContext.Stats.AttackRange))
             {
+                _chaseStartTime = Time.time;
                 SwitchToBehavior(IsNearPlayer());
                 yield break;
             } 
+
+            if (Time.time - _chaseStartTime > _enemyContext.Stats.StaminaToChaseInSeconds)
+            {
+                Debug.Log("enemy is tired after chasing for too long");
+                SwitchToBehavior(RestAndReturnToPassive());
+                yield break;
+            }
 
             _currentPath = NodeManager.Instance.FindPath(_currentGridPos, playerTargetPos);
 
@@ -132,8 +142,20 @@ public class EnemyMovement : GridMovement
                 SwitchToBehavior(ChasePlayer());
                 yield break;
             } 
+
+
             yield return null;
         }
+    }
+
+    private IEnumerator RestAndReturnToPassive()
+    {
+        // animation for tired emote to show enemy is tired of chasing the player and gave up
+        Debug.Log("Show emote for tired");
+
+        yield return new WaitForSeconds(_enemyContext.Stats.MaximumRestTime);
+
+        _enemyContext.AI.ChangeState(new PassiveState());
     }
 
     public void SwitchToBehavior(IEnumerator newBehavior)

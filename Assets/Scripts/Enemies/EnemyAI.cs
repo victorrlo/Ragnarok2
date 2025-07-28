@@ -3,6 +3,7 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     private IEnemyState _currentState;
+    public IEnemyState CurrentState => _currentState;
     private EnemyContext _enemyContext;
     private EnemyEventBus _enemyEventBus;
     private EnemyMovement _enemyMovement;

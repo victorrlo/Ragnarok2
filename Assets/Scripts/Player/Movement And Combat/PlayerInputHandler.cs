@@ -5,11 +5,13 @@ using UnityEngine.InputSystem;
 public class PlayerInputHandler : MonoBehaviour
 {
     public static PlayerInputHandler Instance {get; private set;}
-    [SerializeField] public PlayerMovement _playerMovement;
-    [SerializeField] public PlayerCombat _playerCombat;
+    private PlayerContext _playerContext;
 
     public void Awake()
     {
+        if (_playerContext == null)
+            TryGetComponent<PlayerContext>(out _playerContext);
+
         if (Instance == null)
         {
             Instance = this;
@@ -25,7 +27,7 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (!context.performed) return;
 
-        _playerCombat.TryClickToAttack();
+        _playerContext.Combat.TryClickToAttack();
 
         Vector3Int? cell = AimBehaviour.Instance._lastGridCellPosition;
         if (!cell.HasValue) return;
@@ -41,7 +43,7 @@ public class PlayerInputHandler : MonoBehaviour
         List<Node> path = NodeManager.Instance.FindPath(playerPos, cell.Value);
 
         if (path != null && path.Count > 0)
-            _playerMovement.MoveAlongPath(path);
+            _playerContext.Movement.MoveAlongPath(path);
 
         
 

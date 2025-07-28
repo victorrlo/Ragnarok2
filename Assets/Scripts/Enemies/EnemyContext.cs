@@ -1,8 +1,10 @@
 using UnityEngine;
 
+[RequireComponent(typeof(EnemyMovement))]
 [RequireComponent(typeof(EnemyAI))]
 [RequireComponent(typeof(EnemyEventBus))]
-[RequireComponent(typeof(EnemyMovement))]
+[RequireComponent(typeof(EnemyStatsManager))]
+
 public class EnemyContext : MonoBehaviour
 {
     [field: SerializeField] public MonsterStatsData Stats {get; private set;}

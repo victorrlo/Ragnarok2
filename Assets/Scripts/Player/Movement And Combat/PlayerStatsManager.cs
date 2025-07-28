@@ -2,27 +2,27 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStatsManager : MonoBehaviour
 {
-    public static PlayerStats Instance {get; private set;}
-    [SerializeField] private PlayerStatsData _stats;
+    public static PlayerStatsManager Instance {get; private set;}
+    private PlayerContext _playerContext;
     public int CurrentHP {
-        get => _stats.GetCurrentHP(); 
+        get => _playerContext.Stats.GetCurrentHP(); 
         private set
         {
-            _stats._currentHP = Mathf.Clamp(value, 0, _stats.MaxHP);
-            OnHPChanged?.Invoke(_stats._currentHP, _stats.MaxHP);
-            if (_stats._currentHP <= 0)
+            _playerContext.Stats._currentHP = Mathf.Clamp(value, 0, _playerContext.Stats.MaxHP);
+            OnHPChanged?.Invoke(_playerContext.Stats._currentHP, _playerContext.Stats.MaxHP);
+            if (_playerContext.Stats._currentHP <= 0)
                 Die();
         }
     }
     public int CurrentSP
     {
-        get => _stats.GetCurrentSP();
+        get => _playerContext.Stats.GetCurrentSP();
         private set
         {
-            _stats._currentSP = Mathf.Clamp(value, 0, _stats.MaxSP);
-            OnSPChanged?.Invoke(_stats._currentSP, _stats.MaxSP);
+            _playerContext.Stats._currentSP = Mathf.Clamp(value, 0, _playerContext.Stats.MaxSP);
+            OnSPChanged?.Invoke(_playerContext.Stats._currentSP, _playerContext.Stats.MaxSP);
         }
     }
     public event Action<int, int> OnHPChanged;
@@ -36,6 +36,9 @@ public class PlayerStats : MonoBehaviour
 
     private void Awake()
     {
+        if (_playerContext == null)
+            TryGetComponent<PlayerContext>(out _playerContext);
+
         _mainCamera = Camera.main;
         if (Instance == null)
         {
@@ -55,8 +58,8 @@ public class PlayerStats : MonoBehaviour
 
     private void Start()
     {
-        OnHPChanged?.Invoke(_stats._currentHP, _stats.MaxHP);
-        OnSPChanged?.Invoke(_stats._currentSP, _stats.MaxSP);
+        OnHPChanged?.Invoke(_playerContext.Stats._currentHP, _playerContext.Stats.MaxHP);
+        OnSPChanged?.Invoke(_playerContext.Stats._currentSP, _playerContext.Stats.MaxSP);
     }
 
     private void LateUpdate()

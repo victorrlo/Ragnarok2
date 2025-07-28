@@ -134,6 +134,7 @@ MonoBehaviour:
   <Movement>k__BackingField: {fileID: 2309635511653084639}
   <AI>k__BackingField: {fileID: 7116505063230905466}
   <EventBus>k__BackingField: {fileID: 2356809419150044404}
+  <StatsManager>k__BackingField: {fileID: 5208352337176137190}
 --- !u!114 &2356809419150044404
 MonoBehaviour:
   m_ObjectHideFlags: 0

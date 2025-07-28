@@ -6,6 +6,7 @@ public class EnemyStatsManager : MonoBehaviour
 {
     private EnemyContext _enemyContext;
     private int _currentHP;
+    public int CurrentHP => _currentHP;
     [SerializeField] private GameObject _statsBar;
     [SerializeField] private Image _healthBar;
     private bool hasBeenDamaged = false;

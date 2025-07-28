@@ -11,7 +11,7 @@ public static class DistanceHelper
         return Mathf.Max(dx, dy);
     }
 
-    public static bool IsPlayerInRange(Transform player, EnemyAI enemy)
+    public static bool IsPlayerInSight(Transform player, EnemyAI enemy)
     {
         var playerPosition = GridManager.Instance.WorldToCell(player.transform.position);
         var enemyPosition = GridManager.Instance.WorldToCell(enemy.transform.position);
@@ -24,6 +24,21 @@ public static class DistanceHelper
             return true;
 
         return false;
+    }
+
+    public static bool IsPlayerOutOfReach(Transform player, EnemyAI enemy)
+    {
+        var playerPosition = GridManager.Instance.WorldToCell(player.transform.position);
+        var enemyPosition = GridManager.Instance.WorldToCell(enemy.transform.position);
+        var distance = GetCellDistance(playerPosition, enemyPosition);
+        
+        enemy.TryGetComponent<EnemyContext>(out var enemyContext);
+        var sightRange = enemyContext.Stats.AggressiveStateSightRange;
+
+        if (distance <= sightRange) 
+            return false;
+
+        return true;
     }
 
     public static bool IsAdjacent(Vector3Int a, Vector3Int b, int range)

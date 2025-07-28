@@ -18,14 +18,14 @@ public class HUDManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        PlayerStats.Instance.OnHPChanged += UpdateHP;
-        PlayerStats.Instance.OnSPChanged += UpdateSP;
+        PlayerStatsManager.Instance.OnHPChanged += UpdateHP;
+        PlayerStatsManager.Instance.OnSPChanged += UpdateSP;
     }
 
     private void OnDestroy()
     {
-        PlayerStats.Instance.OnHPChanged -= UpdateHP;
-        PlayerStats.Instance.OnSPChanged -= UpdateSP;
+        PlayerStatsManager.Instance.OnHPChanged -= UpdateHP;
+        PlayerStatsManager.Instance.OnSPChanged -= UpdateSP;
     }
 
     public void UpdateHP(int current, int max)

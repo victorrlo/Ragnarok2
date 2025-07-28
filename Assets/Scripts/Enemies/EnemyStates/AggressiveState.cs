@@ -26,11 +26,11 @@ public class AggressiveState : IEnemyState
     }
     public void Execute()
     {
-        if (!DistanceHelper.IsPlayerInRange(_player.transform, _enemy)) 
+        if (DistanceHelper.IsPlayerOutOfReach(_player.transform, _enemy)) 
         {
             _enemy.ChangeState(new PassiveState());
-            // animation for tired emote to show enemy is tired of chasing the player and gave up
-            Debug.Log("Show Emote for tired");
+            
+            Debug.Log("Player too far away");
             return;
         }
 
@@ -48,6 +48,12 @@ public class AggressiveState : IEnemyState
 
     private void MoveEnemy(Vector3Int newPos)
     {
+        if (_enemy == null )
+        {
+            Exit();
+            return;
+        }
+
         Vector3Int startPos = GridManager.Instance.WorldToCell(_enemy.transform.position);
         _enemyContext.Movement.UpdatePath(startPos, newPos);
     }
