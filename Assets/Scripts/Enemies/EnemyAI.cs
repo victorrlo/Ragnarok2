@@ -1,19 +1,23 @@
 using UnityEngine;
-
+[RequireComponent(typeof(EnemyContext))]
 public class EnemyAI : MonoBehaviour
 {
     private IEnemyState _currentState;
-    [SerializeField] private MonsterStatsData _monsterData;
-    [SerializeField] private EnemyMovement _movement;
-    [SerializeField] private EnemyEventBus _enemyEventBus;
-    public MonsterStatsData MonsterStatsData => _monsterData;
-    public EnemyMovement Movement => _movement;
+    private EnemyContext _enemyContext;
+    private EnemyEventBus _enemyEventBus;
+    private EnemyMovement _enemyMovement;
 
     private void Awake()
     {
+        if (_enemyContext == null)
+            TryGetComponent<EnemyContext>(out _enemyContext);
+
         if (_enemyEventBus == null)
             TryGetComponent<EnemyEventBus>(out _enemyEventBus);
-            
+
+        if (_enemyMovement == null)
+            TryGetComponent<EnemyMovement>(out _enemyMovement);
+
         _currentState = null;
     }
 
@@ -24,7 +28,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Start()
     {
-        ChangeState(_monsterData.Nature == MonsterStatsData.MonsterNature.Passive ?
+        ChangeState(_enemyContext.Stats.Nature == MonsterStatsData.MonsterNature.Passive ?
                                     new PassiveState() : new AggressiveState());
     }
 

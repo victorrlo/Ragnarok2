@@ -16,7 +16,9 @@ public static class DistanceHelper
         var playerPosition = GridManager.Instance.WorldToCell(player.transform.position);
         var enemyPosition = GridManager.Instance.WorldToCell(enemy.transform.position);
         var distance = GetCellDistance(playerPosition, enemyPosition);
-        var sightRange = enemy.MonsterStatsData.SightRange;
+        
+        enemy.TryGetComponent<EnemyContext>(out var enemyContext);
+        var sightRange = enemyContext.Stats.SightRange;
 
         if (distance <= sightRange) 
             return true;

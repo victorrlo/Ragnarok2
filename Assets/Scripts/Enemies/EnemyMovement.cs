@@ -5,10 +5,10 @@ using System.Numerics;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(EnemyContext))]
 public class EnemyMovement : GridMovement
-{
-    [SerializeField] private EnemyStats _enemyStats;
-    [SerializeField] private EnemyAI _enemyAI;
+{   
+    private EnemyContext _enemyContext;
     private Coroutine _currentBehaviorCoroutine;
     private Vector3Int _currentGridPos;
     private Transform _player;
@@ -17,6 +17,9 @@ public class EnemyMovement : GridMovement
 
     protected override void Awake()
     {
+        if (_enemyContext == null)
+            TryGetComponent<EnemyContext>(out _enemyContext);
+
         _player = GameObject.FindWithTag("Player")?.transform;
     }
 
@@ -37,7 +40,10 @@ public class EnemyMovement : GridMovement
 
     private IEnumerator WanderRandomly()
     {   
+        
         Debug.LogWarning($"{name} is wandering...");
+        yield return new WaitForSeconds(1f);
+        
         Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
         
         Vector3Int randomOffset = GetRandomDirection();
@@ -50,7 +56,7 @@ public class EnemyMovement : GridMovement
 
         UpdatePath(startPos, targetPos);
             
-        yield return FollowPath(GetPath, _enemyStats.StatsData.MoveSpeed);
+        yield return FollowPath(GetPath, _enemyContext.Stats.MoveSpeed);
     }
 
     private Vector3Int GetRandomDirection()
@@ -84,8 +90,6 @@ public class EnemyMovement : GridMovement
 
     private IEnumerator ChasePlayer()
     {
-        Debug.LogWarning($"{name} is chasing player...");
-
         WaitForSeconds delay = new WaitForSeconds(0.2f);
         yield return delay;
         
@@ -94,7 +98,7 @@ public class EnemyMovement : GridMovement
             _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
             var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
 
-            if (DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyStats.StatsData.AttackRange))
+            if (DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyContext.Stats.AttackRange))
             {
                 SwitchToBehavior(IsNearPlayer());
                 yield break;
@@ -109,13 +113,12 @@ public class EnemyMovement : GridMovement
             }
 
             _currentPath.RemoveAt(_currentPath.Count-1);
-            yield return FollowPath(GetPath, _enemyStats.StatsData.MoveSpeed);
+            yield return FollowPath(GetPath, _enemyContext.Stats.MoveSpeed);
         }
     }
 
     private IEnumerator IsNearPlayer()
     {
-        Debug.LogWarning($"{name} is near player...");
         WaitForSeconds delay = new WaitForSeconds(0.2f);
         yield return delay;
 
@@ -125,7 +128,7 @@ public class EnemyMovement : GridMovement
             var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
 
             //checks if player has moved away from the enemy
-            if (!DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyStats.StatsData.AttackRange))
+            if (!DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyContext.Stats.AttackRange))
             {
                 SwitchToBehavior(ChasePlayer());
                 yield break;
@@ -147,7 +150,6 @@ public class EnemyMovement : GridMovement
 
     public List<Node> UpdatePath(Vector3Int from, Vector3Int to)
     {
-        Debug.LogWarning($"{name} is updating path...");
         _currentPath = NodeManager.Instance.FindPath(from, to);
         
         if (_currentPath == null || _currentPath.Count == 0) 

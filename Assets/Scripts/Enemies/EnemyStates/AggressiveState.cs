@@ -3,12 +3,15 @@ using UnityEngine;
 public class AggressiveState : IEnemyState
 {
     private EnemyAI _enemy;
+    private EnemyContext _enemyContext;
     private GameObject _player;
     private PlayerMovement _playerMovement;
 
     public void Enter(EnemyAI enemy)
     {
         _enemy = enemy;
+        _enemy.TryGetComponent<EnemyContext>(out _enemyContext);
+        
         _player = GameObject.FindWithTag("Player");
         _player.TryGetComponent<PlayerMovement>(out _playerMovement);
 
@@ -26,6 +29,8 @@ public class AggressiveState : IEnemyState
         if (!DistanceHelper.IsPlayerInRange(_player.transform, _enemy)) 
         {
             _enemy.ChangeState(new PassiveState());
+            // animation for tired emote to show enemy is tired of chasing the player and gave up
+            Debug.Log("Show Emote for tired");
             return;
         }
 
@@ -44,11 +49,11 @@ public class AggressiveState : IEnemyState
     private void MoveEnemy(Vector3Int newPos)
     {
         Vector3Int startPos = GridManager.Instance.WorldToCell(_enemy.transform.position);
-        _enemy.Movement.UpdatePath(startPos, newPos);
+        _enemyContext.Movement.UpdatePath(startPos, newPos);
     }
 
     private void StartChase()
     {
-        _enemy.Movement.StartChasing();
+        _enemyContext.Movement.StartChasing();
     }
 }

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4900ea4f3dfd6c84c824369f66cd3507, type: 3}
+  m_Name: Plofti Testes
+  m_EditorClassIdentifier: 
+  _basicTimeForEachAttack: 60
+  _characterName: Plofti
+  _maxHP: 50
+  _maxSP: 10
+  _attack: 5
+  _moveSpeed: 2
+  _attackRange: 2
+  _agility: 1
+  _monsterNature: 0
+  _maxRestTime: 5
+  _aggressiveVisionRange: 1
+  _sightRange: 3

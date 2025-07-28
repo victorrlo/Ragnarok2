@@ -87,8 +87,7 @@ public class PlayerCombat : MonoBehaviour
             if (enemy != null)
                 if (IsAdjacent(playerPos, enemyPos))
                 {
-                    Debug.Log("Attacking!");
-                    // enemy.TakeDamage(_damage);
+                    enemy.TakeDamage(_damage);
                 }
                 else
                     WalkToEnemy(playerPos, enemyPos);
@@ -142,7 +141,6 @@ public class PlayerCombat : MonoBehaviour
         {
             Vector3Int pos = target + dir;
             if (!NodeManager.Instance.IsWalkable(pos)) continue;
-            // if (GridOccupancyManager.Instance.IsCellOccupied(pos)) continue;
 
             float dist = Vector3Int.Distance(from, pos);
             if (dist < bestDist)
