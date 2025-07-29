@@ -44,40 +44,6 @@ public class EnemyCombat : MonoBehaviour
                 player.TakeDamage(_enemyContext.Stats.Attack);
     }
 
-    // public void StartAttacking(EnemyStartAttackData data)
-    // {
-    //     var player = data._target;
-
-    //     SwitchToBehavior(Attacking(player));
-    // }
-
-    // private IEnumerator Attacking(GameObject target)
-    // {
-    //     var player = target.GetComponent<PlayerCombat>();
-
-    //     if (player != null)
-    //     {
-    //         while(true)
-    //         {
-    //             if (_enemyContext == null) yield break;
-
-    //             Debug.Log("Player taking damage!");
-    //             player.TakeDamage(_enemyContext.Stats.Attack);
-    //             yield return new WaitForSeconds(_enemyContext.Stats.AttackSpeed);
-    //         }
-    //     }
-    // }
-
-    // private void SwitchToBehavior(IEnumerator newBehavior)
-    // {
-    //     if (_currentBehaviorCoroutine != null)
-    //     {
-    //         StopCoroutine(_currentBehaviorCoroutine);
-    //     }
-
-    //     _currentBehaviorCoroutine = StartCoroutine(newBehavior);
-    // }
-
     private void Die()
     {
         _enemyContext.AI.CurrentState?.Exit();
