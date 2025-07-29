@@ -5,7 +5,6 @@ using UnityEngine;
 public class CharacterStatsData : ScriptableObject
 {
     [Header("Constants for characters behaviour")]
-    [SerializeField] private float _basicTimeForEachAttack = 60f;
     [field: SerializeField] public string CharacterName {get; private set;}
     [field: SerializeField] public int MaxHP {get; private set;}
     [field: SerializeField] public int MaxSP {get; private set;}
@@ -22,5 +21,5 @@ public class CharacterStatsData : ScriptableObject
     // public int _INT; // força de habilidades (no caso de inimigos, defesa à habilidades também)
     
     [Header("Calculations")]
-    public float AttackSpeed => _basicTimeForEachAttack / Agility;
+    public float AttackSpeed => 1f / Agility;
 }

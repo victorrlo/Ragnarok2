@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyCombat : MonoBehaviour
 {
     private EnemyContext _enemyContext;
-    // private FloatingDamage _floatingDamageSpawn;
+    private Coroutine _currentBehaviorCoroutine;
 
     private void Awake()
     {
@@ -13,8 +13,14 @@ public class EnemyCombat : MonoBehaviour
             TryGetComponent<EnemyContext>(out _enemyContext);
     }
 
-    private void Start()
+    private void OnEnable()
     {
+        _enemyContext.EventBus.OnStartAttack.OnRaised += Attack;
+    }
+
+    private void OnDisable()
+    {
+        _enemyContext.EventBus.OnStartAttack.OnRaised -= Attack;
     }
 
     public void TakeDamage(int amount)
@@ -28,11 +34,49 @@ public class EnemyCombat : MonoBehaviour
         }
     }
 
-    public IEnumerator Attack(GameObject player)
+    private void Attack(EnemyStartAttackData data)
     {
-        player.GetComponent<PlayerCombat>().TakeDamage(1);
-        yield return new WaitForSeconds(_enemyContext.Stats.AttackSpeed);
+        PlayerCombat player;
+        data._target.TryGetComponent<PlayerCombat>(out player);
+
+        if (player != null)
+            if (_enemyContext != null)
+                player.TakeDamage(_enemyContext.Stats.Attack);
     }
+
+    // public void StartAttacking(EnemyStartAttackData data)
+    // {
+    //     var player = data._target;
+
+    //     SwitchToBehavior(Attacking(player));
+    // }
+
+    // private IEnumerator Attacking(GameObject target)
+    // {
+    //     var player = target.GetComponent<PlayerCombat>();
+
+    //     if (player != null)
+    //     {
+    //         while(true)
+    //         {
+    //             if (_enemyContext == null) yield break;
+
+    //             Debug.Log("Player taking damage!");
+    //             player.TakeDamage(_enemyContext.Stats.Attack);
+    //             yield return new WaitForSeconds(_enemyContext.Stats.AttackSpeed);
+    //         }
+    //     }
+    // }
+
+    // private void SwitchToBehavior(IEnumerator newBehavior)
+    // {
+    //     if (_currentBehaviorCoroutine != null)
+    //     {
+    //         StopCoroutine(_currentBehaviorCoroutine);
+    //     }
+
+    //     _currentBehaviorCoroutine = StartCoroutine(newBehavior);
+    // }
 
     private void Die()
     {

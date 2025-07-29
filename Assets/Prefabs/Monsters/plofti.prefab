@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnDamaged: {fileID: 11400000, guid: 5cb81de39f048314a83a2144baa65c04, type: 2}
+  OnStartAttack: {fileID: 11400000, guid: 240c8b363e7a90b4c953ed05022726ea, type: 2}
 --- !u!114 &684161066911973323
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -20,6 +20,9 @@ public class PassiveState : IEnemyState
 
     public void Execute()
     {
+        if (_player == null)
+            return;
+            
         if (_enemyContext.Stats.Nature == MonsterStatsData.MonsterNature.Aggressive)
             if (DistanceHelper.IsPlayerInSight(_player.transform, _enemy))
                 _enemy.ChangeState(new AggressiveState());

@@ -54,6 +54,8 @@ public class PlayerStatsManager : MonoBehaviour
 
         OnHPChanged += UpdateHealthBar;
         OnSPChanged += UpdateSpiritBar;
+
+        _playerContext.Stats.ResetStats();
     }
 
     private void Start()

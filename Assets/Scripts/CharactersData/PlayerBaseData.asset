@@ -12,13 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6486882e104c28746b86f03419b8f86d, type: 3}
   m_Name: PlayerBaseData
   m_EditorClassIdentifier: 
-  _basicTimeForEachAttack: 60
   <CharacterName>k__BackingField: Player
   <MaxHP>k__BackingField: 100
   <MaxSP>k__BackingField: 50
   <Attack>k__BackingField: 5
   <MoveSpeed>k__BackingField: 3
-  <AttackRange>k__BackingField: 1
+  <AttackRange>k__BackingField: 2
   <Agility>k__BackingField: 1
-  _currentHP: 100
+  _currentHP: 75
   _currentSP: 50

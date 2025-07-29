@@ -26,15 +26,7 @@ public class AggressiveState : IEnemyState
     }
     public void Execute()
     {
-        if (DistanceHelper.IsPlayerOutOfReach(_player.transform, _enemy)) 
-        {
-            _enemy.ChangeState(new PassiveState());
-            
-            Debug.Log("Player too far away");
-            return;
-        }
-
-        if (_player == null)
+        if ( _player == null || DistanceHelper.IsPlayerOutOfReach(_player.transform, _enemy)) 
         {
             _enemy.ChangeState(new PassiveState());
             return;
@@ -48,12 +40,6 @@ public class AggressiveState : IEnemyState
 
     private void MoveEnemy(Vector3Int newPos)
     {
-        if (_enemy == null )
-        {
-            Exit();
-            return;
-        }
-
         Vector3Int startPos = GridManager.Instance.WorldToCell(_enemy.transform.position);
         _enemyContext.Movement.UpdatePath(startPos, newPos);
     }

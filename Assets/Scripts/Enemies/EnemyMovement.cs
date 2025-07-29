@@ -14,6 +14,7 @@ public class EnemyMovement : GridMovement
     private Transform _player;
     private List<Node> _currentPath;
     private float _chaseStartTime;
+    private float _lastAttackSignalTime;
 
     protected override void Awake()
     {
@@ -40,7 +41,6 @@ public class EnemyMovement : GridMovement
 
     private IEnumerator WanderRandomly()
     {   
-        Debug.LogWarning($"{name} is wandering...");
         yield return new WaitForSeconds(1f);
         
         Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
@@ -108,7 +108,6 @@ public class EnemyMovement : GridMovement
 
             if (Time.time - _chaseStartTime > _enemyContext.Stats.StaminaToChaseInSeconds)
             {
-                Debug.Log("enemy is tired after chasing for too long");
                 SwitchToBehavior(RestAndReturnToPassive());
                 yield break;
             }
@@ -136,16 +135,43 @@ public class EnemyMovement : GridMovement
             _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
             var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
 
-            //checks if player has moved away from the enemy
             if (!DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyContext.Stats.AttackRange))
             {
                 SwitchToBehavior(ChasePlayer());
                 yield break;
             } 
 
-
+            SwitchToBehavior(IsAttacking());
+            
             yield return null;
         }
+    }
+
+    private IEnumerator IsAttacking()
+    {
+        while (true)
+        {
+            if (_player == null) 
+                yield break;
+                
+            var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
+            _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
+            
+            if (!DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyContext.Stats.AttackRange))
+            {
+                SwitchToBehavior(ChasePlayer());
+                yield break;
+            }
+
+            Attack();
+            yield return new WaitForSeconds(_enemyContext.Stats.AttackSpeed);
+        }
+    }
+
+    private void Attack()
+    {
+        var data = new EnemyStartAttackData(_player.gameObject);
+        _enemyContext.EventBus.OnStartAttack?.Raise(data);
     }
 
     private IEnumerator RestAndReturnToPassive()
@@ -158,9 +184,8 @@ public class EnemyMovement : GridMovement
         _enemyContext.AI.ChangeState(new PassiveState());
     }
 
-    public void SwitchToBehavior(IEnumerator newBehavior)
+    private void SwitchToBehavior(IEnumerator newBehavior)
     {
-        Debug.LogWarning($"{name} is switching behavior...");
         if (_currentBehaviorCoroutine != null)
         {
             StopCoroutine(_currentBehaviorCoroutine);
