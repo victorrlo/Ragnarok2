@@ -6,7 +6,6 @@ public class PlayerCombat : MonoBehaviour
 {
     private PlayerContext _playerContext;
     [SerializeField] private GameObject _targetMarkerPrefab;
-    [SerializeField] private float _attackInterval = 0.5f;
     private GameObject _currentTarget;
     private Vector3Int _currentEnemyCell;
     private GameObject _activeTargetMarker;
@@ -90,7 +89,7 @@ public class PlayerCombat : MonoBehaviour
                 else
                     WalkToEnemy(playerPos, enemyPos);
 
-            yield return new WaitForSeconds(_attackInterval);
+            yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed);
         }
 
         StopCombat();

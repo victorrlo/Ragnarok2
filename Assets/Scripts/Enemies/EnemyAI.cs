@@ -14,10 +14,10 @@ public class EnemyAI : MonoBehaviour
             TryGetComponent<EnemyContext>(out _enemyContext);
 
         if (_enemyEventBus == null)
-            TryGetComponent<EnemyEventBus>(out _enemyEventBus);
+            _enemyContext.TryGetComponent<EnemyEventBus>(out _enemyEventBus);
 
         if (_enemyMovement == null)
-            TryGetComponent<EnemyMovement>(out _enemyMovement);
+            _enemyContext.TryGetComponent<EnemyMovement>(out _enemyMovement);
 
         _currentState = null;
     }
