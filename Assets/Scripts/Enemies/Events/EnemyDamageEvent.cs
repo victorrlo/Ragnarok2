@@ -9,7 +9,7 @@ public class EnemyDamageEvent : ScriptableObject
     public void Raise(EnemyDamageEventData data)
     {
         #if UNITY_EDITOR
-        Debug.LogWarning($"[EnemyDamageEvent] raised for: {data._target.name}, damage: {data._damageAmount}");
+        // Debug.LogWarning($"[EnemyDamageEvent] raised for: {data._target.name}, damage: {data._damageAmount}");
         #endif
 
         OnRaised?.Invoke(data);

@@ -9,7 +9,7 @@ public class EnemyStartAttackEvent : ScriptableObject
     public void Raise(EnemyStartAttackData data)
     {
         #if UNITY_EDITOR
-        Debug.LogWarning($"[EnemyStartAttackEvent] raised for: {data._target.name}");
+        // Debug.LogWarning($"[EnemyStartAttackEvent] raised for: {data._target.name}");
         #endif
 
         OnRaised?.Invoke(data);
