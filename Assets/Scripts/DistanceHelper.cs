@@ -45,6 +45,6 @@ public static class DistanceHelper
     {
         int dx = Mathf.Abs(a.x - b.x);
         int dy = Mathf.Abs(a.y - b.y);
-        return dx <= range && dy <= range && (dx + dy) > 0;
+        return dx <= range && dy <= range;
     }
 }
