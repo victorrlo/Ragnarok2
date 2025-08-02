@@ -148,7 +148,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnDamaged: {fileID: 11400000, guid: 5cb81de39f048314a83a2144baa65c04, type: 2}
-  OnStartAttack: {fileID: 11400000, guid: 240c8b363e7a90b4c953ed05022726ea, type: 2}
 --- !u!114 &684161066911973323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,7 +435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 0.10349083, a: 1}
+  m_Color: {r: 1, g: 0, b: 0.45844078, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -493,7 +492,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -488.4806, y: -198}
-  m_SizeDelta: {x: 105, y: 23}
+  m_SizeDelta: {x: 105, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2874419145741944794
 CanvasRenderer:

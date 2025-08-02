@@ -27,31 +27,30 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (!context.performed) return;
 
-        _playerContext.Combat.TryClickToAttack();
+        TryClickToAttack();
 
         Vector3Int? cell = AimBehaviour.Instance._lastGridCellPosition;
+        
         if (!cell.HasValue) return;
 
-        Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
+        Vector3Int targetPosition = cell.Value;
 
-        // if (!GridOccupancyManager.Instance.TryGetOccupant(cell.Value, out GameObject occupant)
-            // || !occupant.CompareTag("Enemy"))
-                // _playerCombat.StopCombat();
-        
-        if (!AimBehaviour.Instance.IsWalkable(cell.Value)) return;
+        if (!AimBehaviour.Instance.IsWalkable(targetPosition)) return;
 
-        List<Node> path = NodeManager.Instance.FindPath(playerPos, cell.Value);
+        _playerContext.Movement.WalkToEmptyTile(targetPosition);
+    }
 
-        if (path != null && path.Count > 0)
-            _playerContext.Movement.MoveAlongPath(path);
+    public void TryClickToAttack()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        
-
-        // if (GridOccupancyManager.Instance.TryGetOccupant(cell.Value, out occupant)
-            // && occupant.CompareTag("Enemy"))
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            // _playerCombat.StartCombat(occupant);
-            // return;
+            EnemyCombat enemy = hit.collider.GetComponent<EnemyCombat>();
+            if (enemy != null)
+                _playerContext.Combat.StartCombat(enemy.gameObject);
+            else
+                _playerContext.Combat.StopCombat();
         }
     }
 

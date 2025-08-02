@@ -47,7 +47,7 @@ public class EnemyStatsManager : MonoBehaviour
         _healthBar.fillAmount = (float)_currentHP / _enemyContext.Stats.MaxHP;
         hasBeenDamaged = true;
         var data = new EnemyDamageEventData(gameObject, amount);
-        _enemyContext.EventBus.OnDamaged.Raise(data);
+        _enemyContext.EventBus.RaiseOnDamaged(data);
     }
 
     private void SetHealthBarPosition()

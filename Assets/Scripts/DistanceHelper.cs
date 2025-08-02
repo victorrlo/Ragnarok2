@@ -11,22 +11,8 @@ public static class DistanceHelper
         return Mathf.Max(dx, dy);
     }
 
-    public static bool IsPlayerInSight(Transform player, EnemyAI enemy)
-    {
-        var playerPosition = GridManager.Instance.WorldToCell(player.transform.position);
-        var enemyPosition = GridManager.Instance.WorldToCell(enemy.transform.position);
-        var distance = GetCellDistance(playerPosition, enemyPosition);
-        
-        enemy.TryGetComponent<EnemyContext>(out var enemyContext);
-        var sightRange = enemyContext.Stats.SightRange;
-
-        if (distance <= sightRange) 
-            return true;
-
-        return false;
-    }
-
-    public static bool IsPlayerOutOfReach(Transform player, EnemyAI enemy)
+    // sight range used to determine if enemy should start aggresive behavior
+    public static bool IsPlayerInAggressiveReach(Transform player, EnemyAI enemy)
     {
         var playerPosition = GridManager.Instance.WorldToCell(player.transform.position);
         var enemyPosition = GridManager.Instance.WorldToCell(enemy.transform.position);
@@ -34,6 +20,22 @@ public static class DistanceHelper
         
         enemy.TryGetComponent<EnemyContext>(out var enemyContext);
         var sightRange = enemyContext.Stats.AggressiveStateSightRange;
+
+        if (distance <= sightRange) 
+            return true;
+
+        return false;
+    }
+
+    // sight range used to determine if enemy should keep chasing the player or not
+    public static bool IsPlayerOutOfReach(Transform player, EnemyAI enemy)
+    {
+        var playerPosition = GridManager.Instance.WorldToCell(player.transform.position);
+        var enemyPosition = GridManager.Instance.WorldToCell(enemy.transform.position);
+        var distance = GetCellDistance(playerPosition, enemyPosition);
+        
+        enemy.TryGetComponent<EnemyContext>(out var enemyContext);
+        var sightRange = enemyContext.Stats.SightRange;
 
         if (distance <= sightRange) 
             return false;

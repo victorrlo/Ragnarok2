@@ -10,6 +10,7 @@ public class PassiveState : IEnemyState
 
     public void Enter(EnemyAI enemy)
     {
+        Debug.Log("Enter Passive State");
         _enemy = enemy;
         _enemy.TryGetComponent<EnemyContext>(out _enemyContext);
 
@@ -24,7 +25,7 @@ public class PassiveState : IEnemyState
             return;
             
         if (_enemyContext.Stats.Nature == MonsterStatsData.MonsterNature.Aggressive)
-            if (DistanceHelper.IsPlayerInSight(_player.transform, _enemy))
+            if (DistanceHelper.IsPlayerInAggressiveReach(_player.transform, _enemy))
                 _enemy.ChangeState(new AggressiveState());
     }
 
@@ -39,9 +40,13 @@ public class PassiveState : IEnemyState
 
     private IEnumerator WanderRoutine()
     {
-        yield return new WaitForSeconds(_enemyContext.Stats.MaximumRestTime);
+        int randomRestingTime = UnityEngine.Random.Range(1, _enemyContext.Stats.MaximumRestTime);
+        yield return new WaitForSeconds(randomRestingTime);
+
         _enemyContext.Movement.StartWandering();
-        yield return new WaitForSeconds(_enemyContext.Stats.MaximumRestTime);
+
+        randomRestingTime = UnityEngine.Random.Range(1, _enemyContext.Stats.MaximumRestTime);
+        yield return new WaitForSeconds(randomRestingTime);
 
         _enemy.ChangeState(new PassiveState());
     }

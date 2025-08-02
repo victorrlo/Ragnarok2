@@ -24,13 +24,12 @@ public class EnemyAI : MonoBehaviour
 
     private void OnEnable()
     {
-        _enemyEventBus.OnDamaged.OnRaised += OnDamageTaken;
+        _enemyEventBus.OnDamaged += OnDamageTaken;
     }
 
     private void Start()
     {
-        ChangeState(_enemyContext.Stats.Nature == MonsterStatsData.MonsterNature.Passive ?
-                                    new PassiveState() : new AggressiveState());
+        ChangeState(new PassiveState());
     }
 
     private void Update()
@@ -40,7 +39,7 @@ public class EnemyAI : MonoBehaviour
 
     private void OnDisable()
     {
-        _enemyEventBus.OnDamaged.OnRaised -= OnDamageTaken;
+        _enemyEventBus.OnDamaged -= OnDamageTaken;
     }
 
     public void ChangeState(IEnemyState newState)

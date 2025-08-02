@@ -14,7 +14,6 @@ public class EnemyMovement : GridMovement
     private Transform _player;
     private List<Node> _currentPath;
     private float _chaseStartTime;
-    private float _lastAttackSignalTime;
 
     protected override void Awake()
     {
@@ -27,6 +26,13 @@ public class EnemyMovement : GridMovement
     private void Start()
     {
         _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
+    }
+
+    private void OnDestroy()
+    {
+        if (_player == null) return; 
+
+        _player.GetComponent<PlayerMovement>().OnPlayerMoved -= UpdateTargetPosition;
     }
 
     public void StartWandering()
@@ -45,10 +51,10 @@ public class EnemyMovement : GridMovement
         
         Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
         
-        Vector3Int randomOffset = GetRandomDirection();
+        Vector3Int randomDirection = GetRandomDirection();
         int randomDistance = GetRandomDistance();
         
-        Vector3Int targetPos = startPos + randomOffset * randomDistance;
+        Vector3Int targetPos = startPos + randomDirection * randomDistance;
 
         if (!NodeManager.Instance.IsWalkable(targetPos))
             yield return null;
@@ -60,6 +66,9 @@ public class EnemyMovement : GridMovement
 
     private Vector3Int GetRandomDirection()
     {
+        // should change it to be omnidirectional, 
+        // more akin to a player clicking in a random grid
+
         Vector3Int randomOffset = Vector3Int.zero;
         int rand = UnityEngine.Random.Range(0,4);
 
@@ -73,7 +82,7 @@ public class EnemyMovement : GridMovement
 
     private int GetRandomDistance()
     {
-        int rand = UnityEngine.Random.Range(1,4);
+        int rand = UnityEngine.Random.Range(1,10);
         return rand;
     }
 
@@ -94,25 +103,31 @@ public class EnemyMovement : GridMovement
         
         _chaseStartTime = Time.time;
 
+        if (_player == null) yield break;
+        _player.GetComponent<PlayerMovement>().OnPlayerMoved += UpdateTargetPosition;
+
         while(true)
         {
             _currentGridPos = GridManager.Instance.WorldToCell(transform.position);
-            var playerTargetPos = GridManager.Instance.WorldToCell(_player.position);
+            var playerPosition = GridManager.Instance.WorldToCell(_player.position);
 
-            if (DistanceHelper.IsAdjacent(_currentGridPos, playerTargetPos, _enemyContext.Stats.AttackRange))
+            if (DistanceHelper.IsAdjacent(_currentGridPos, playerPosition, _enemyContext.Stats.AttackRange))
             {
                 _chaseStartTime = Time.time;
                 SwitchToBehavior(IsNearPlayer());
                 yield break;
             } 
 
+            // this part has to be a different script that inherits this function
+            // so that it is possible to customize enemy behavior
+            // for now I'll keep it, but it needs to be for distance and random time
             if (Time.time - _chaseStartTime > _enemyContext.Stats.StaminaToChaseInSeconds)
             {
                 SwitchToBehavior(RestAndReturnToPassive());
                 yield break;
             }
 
-            _currentPath = NodeManager.Instance.FindPath(_currentGridPos, playerTargetPos);
+            _currentPath = NodeManager.Instance.FindPath(_currentGridPos, playerPosition);
 
             if (_currentPath == null || _currentPath.Count < 2)
             {
@@ -170,12 +185,19 @@ public class EnemyMovement : GridMovement
 
     private void Attack()
     {
+        if (_player == null)
+        {
+            _player.GetComponent<PlayerMovement>().OnPlayerMoved -= UpdateTargetPosition;
+            return;
+        }
         var data = new EnemyStartAttackData(_player.gameObject);
-        _enemyContext.EventBus.OnStartAttack?.Raise(data);
+        _enemyContext.EventBus.RaiseStartAttack(data);
     }
 
     private IEnumerator RestAndReturnToPassive()
     {
+        _player.GetComponent<PlayerMovement>().OnPlayerMoved -= UpdateTargetPosition;
+
         // animation for tired emote to show enemy is tired of chasing the player and gave up
         Debug.Log("Show emote for tired");
 
@@ -192,6 +214,14 @@ public class EnemyMovement : GridMovement
         }
 
         _currentBehaviorCoroutine = StartCoroutine(newBehavior);
+    }
+
+    private void UpdateTargetPosition(Vector3Int newPos)
+    {
+        if (this == null) return;
+
+        Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
+        _enemyContext.Movement.UpdatePath(startPos, newPos);
     }
 
     public List<Node> UpdatePath(Vector3Int from, Vector3Int to)

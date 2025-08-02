@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AggressiveState : IEnemyState
@@ -21,13 +22,16 @@ public class AggressiveState : IEnemyState
             return;
         }
 
-        _playerMovement.OnPlayerMoved += MoveEnemy;
-        StartChase();
+        if (DistanceHelper.IsPlayerInAggressiveReach(_player.transform, _enemy))
+        {
+            StartChase();
+        }
     }
     public void Execute()
     {
         if ( _player == null || DistanceHelper.IsPlayerOutOfReach(_player.transform, _enemy)) 
         {
+            Debug.Log($"{_enemy.name} Show emote for tired because out of reach");
             _enemy.ChangeState(new PassiveState());
             return;
         }
@@ -35,13 +39,7 @@ public class AggressiveState : IEnemyState
 
     public void Exit()
     {
-        _playerMovement.OnPlayerMoved -= MoveEnemy;
-    }
-
-    private void MoveEnemy(Vector3Int newPos)
-    {
-        Vector3Int startPos = GridManager.Instance.WorldToCell(_enemy.transform.position);
-        _enemyContext.Movement.UpdatePath(startPos, newPos);
+        
     }
 
     private void StartChase()

@@ -53,16 +53,16 @@ public class NodeManager : MonoBehaviour
         return _walkableTilemap.HasTile(pos);
     }
 
-    public List<Node> FindPath(Vector3Int startPos, Vector3Int targetPos)
+    public List<Node> FindPath(Vector3Int startPosition, Vector3Int targetPosition)
     {
-        if (!_nodes.ContainsKey(startPos) || !_nodes.ContainsKey(targetPos))
+        if (!_nodes.ContainsKey(startPosition) || !_nodes.ContainsKey(targetPosition))
             return null;
 
         BinaryNodeHeap openSet = new BinaryNodeHeap();
         HashSet<Vector3Int> closedSet = new();
 
-        Node startNode = _nodes[startPos];
-        Node targetNode = _nodes[targetPos];
+        Node startNode = _nodes[startPosition];
+        Node targetNode = _nodes[targetPosition];
 
         ResetNodes();
 
@@ -78,7 +78,7 @@ public class NodeManager : MonoBehaviour
 
             closedSet.Add(currentNode._gridPosition);
 
-            if (currentNode._gridPosition == targetPos)
+            if (currentNode._gridPosition == targetPosition)
             {
                 return RetracePath(startNode, currentNode);
             }

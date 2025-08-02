@@ -15,12 +15,12 @@ public class EnemyCombat : MonoBehaviour
 
     private void OnEnable()
     {
-        _enemyContext.EventBus.OnStartAttack.OnRaised += Attack;
+        _enemyContext.EventBus.OnStartAttack += Attack;
     }
 
     private void OnDisable()
     {
-        _enemyContext.EventBus.OnStartAttack.OnRaised -= Attack;
+        _enemyContext.EventBus.OnStartAttack -= Attack;
     }
 
     public void TakeDamage(int amount)
@@ -36,8 +36,7 @@ public class EnemyCombat : MonoBehaviour
 
     private void Attack(EnemyStartAttackData data)
     {
-        PlayerCombat player;
-        data._target.TryGetComponent<PlayerCombat>(out player);
+        data._target.TryGetComponent<PlayerCombat>(out PlayerCombat player);
 
         if (player != null)
             if (_enemyContext != null)

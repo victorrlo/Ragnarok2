@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerCombat : MonoBehaviour
 {
     private PlayerContext _playerContext;
+    private EnemyCombat _enemy;
     [SerializeField] private GameObject _targetMarkerPrefab;
     private GameObject _currentTarget;
     private Vector3Int _currentEnemyCell;
@@ -20,6 +21,8 @@ public class PlayerCombat : MonoBehaviour
 
     public void StartCombat(GameObject enemy)
     {
+        if (_currentTarget == enemy) return;
+
         if (_combatCoroutine != null)
             StopCoroutine(_combatCoroutine);
 
@@ -28,20 +31,6 @@ public class PlayerCombat : MonoBehaviour
         _currentEnemyCell = GridManager.Instance.WorldToCell(enemy.transform.position);
         
         _combatCoroutine = StartCoroutine(ChaseAndAttack(_currentTarget));
-    }
-
-    public void TryClickToAttack()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            EnemyCombat enemy = hit.collider.GetComponent<EnemyCombat>();
-            if (enemy != null)
-                StartCombat(enemy.gameObject);
-            else
-                StopCombat();
-        }
     }
 
     public void StopCombat()
@@ -79,20 +68,28 @@ public class PlayerCombat : MonoBehaviour
             Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
             Vector3Int enemyPos = GridManager.Instance.WorldToCell(target.transform.position);
 
-            var enemy = target.GetComponent<EnemyCombat>();
+            _enemy = target.GetComponent<EnemyCombat>();
 
-            if (enemy != null)
-                if (IsAdjacent(playerPos, enemyPos))
+            if (_enemy != null)
+            {
+                if (DistanceHelper.IsAdjacent(playerPos, enemyPos, _playerContext.Stats.AttackRange))
                 {
-                    enemy.TakeDamage(_playerContext.Stats.Attack);
+                    Attack();
+                    yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed);
                 }
                 else
-                    WalkToEnemy(playerPos, enemyPos);
+                    StartCoroutine(_playerContext.Movement.ChaseEnemy(target));
+            }
 
-            yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed);
+            yield return null;
         }
 
         StopCombat();
+    }
+
+    private void Attack()
+    {
+        _enemy.TakeDamage(_playerContext.Stats.Attack);
     }
 
     public void TakeDamage(int amount)
@@ -107,27 +104,14 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void Die()
-    {
-        Destroy(gameObject);
-    }
-
-    private bool IsAdjacent(Vector3Int a, Vector3Int b)
-    {
-        int dx = Mathf.Abs(a.x - b.x);
-        int dy = Mathf.Abs(a.y - b.y);
-
-        return dx <= 1 && dy <= 1 && (dx + dy > 0);
-    }
-
-    private void WalkToEnemy(Vector3Int playerPos, Vector3Int enemyPos)
-    {
-        Vector3Int tile = FindAdjacentTile(playerPos, enemyPos);
+    // private void WalkToEnemy(Vector3Int playerPos, Vector3Int enemyPos)
+    // {
+        // Vector3Int tile = FindAdjacentTile(playerPos, enemyPos);
         
-        List<Node> path = NodeManager.Instance.FindPath(playerPos, tile);
-        if (path != null && path.Count > 0)
-            _playerContext.Movement.MoveAlongPath(path);
-    }
+    //     List<Node> path = NodeManager.Instance.FindPath(playerPos, enemyPos);
+    //     if (path != null && path.Count > 0)
+    //         StartCoroutine(_playerContext.Movement.MoveAlongPath(path));
+    // }
 
     private Vector3Int FindAdjacentTile(Vector3Int from, Vector3Int target)
     {
@@ -148,5 +132,10 @@ public class PlayerCombat : MonoBehaviour
         }
 
         return best;
+    }
+    
+    private void Die()
+    {
+        Destroy(gameObject);
     }
 }

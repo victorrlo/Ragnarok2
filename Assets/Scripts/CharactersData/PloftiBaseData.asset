@@ -20,7 +20,7 @@ MonoBehaviour:
   <AttackRange>k__BackingField: 2
   <Agility>k__BackingField: 1
   _monsterNature: 1
-  _maxRestTime: 5
-  _sightRange: 3
-  AggressiveStateSightRange: 10
+  _sightRange: 10
+  <MaximumRestTime>k__BackingField: 10
+  AggressiveStateSightRange: 3
   StaminaToChaseInSeconds: 10
