@@ -51,6 +51,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -98,11 +101,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ab7513f772f2d2438cf4797089b154c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _aimLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
   _grid: {fileID: 0}
-  _raycastDistance: 2
+  _walkableTilemap: {fileID: 0}
+  _obstacleTilemap: {fileID: 0}
 --- !u!114 &8435101041183311669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,7 +133,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 2b8d244d-9d7a-47c4-9be1-7a76fc3f4acc
-    m_ActionName: Mouse/MouseClick[/Mouse/leftButton]
+    m_ActionName: 'Mouse/MouseClick[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 551020394459901863}
@@ -148,7 +149,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: 241d467d-e750-452c-8b66-944f0ac44d21
-    m_ActionName: Mouse/MousePosition[/Mouse/position]
+    m_ActionName: 'Mouse/MousePosition[/Mouse/position]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Mouse
