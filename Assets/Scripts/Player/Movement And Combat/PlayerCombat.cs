@@ -59,6 +59,20 @@ public class PlayerCombat : MonoBehaviour
         _activeTargetMarker.GetComponent<TargetMarker>().AttachTo(target.transform);
     }
 
+    private void Attack()
+    {
+        if (_enemy == null) 
+        {
+            return;
+        }
+
+        // var data = new StartAttackData(_enemy.gameObject);
+        // _playerContext.EventBus.RaiseStartAttack(data);
+
+
+        _enemy.TakeDamage(_playerContext.Stats.Attack);
+    }
+
     private IEnumerator ChaseAndAttack(GameObject target)
     {
         _isChasing = true;
@@ -72,24 +86,19 @@ public class PlayerCombat : MonoBehaviour
 
             if (_enemy != null)
             {
-                if (DistanceHelper.IsAdjacent(playerPos, enemyPos, _playerContext.Stats.AttackRange))
+                if (DistanceHelper.IsInAttackRange(playerPos, enemyPos, _playerContext.Stats.AttackRange))
                 {
                     Attack();
                     yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed);
                 }
                 else
-                    StartCoroutine(_playerContext.Movement.ChaseEnemy(target));
+                    _playerContext.Movement.StartChasingEnemy(target);
             }
 
             yield return null;
         }
 
         StopCombat();
-    }
-
-    private void Attack()
-    {
-        _enemy.TakeDamage(_playerContext.Stats.Attack);
     }
 
     public void TakeDamage(int amount)
@@ -102,36 +111,6 @@ public class PlayerCombat : MonoBehaviour
         {
             Die();
         }
-    }
-
-    // private void WalkToEnemy(Vector3Int playerPos, Vector3Int enemyPos)
-    // {
-        // Vector3Int tile = FindAdjacentTile(playerPos, enemyPos);
-        
-    //     List<Node> path = NodeManager.Instance.FindPath(playerPos, enemyPos);
-    //     if (path != null && path.Count > 0)
-    //         StartCoroutine(_playerContext.Movement.MoveAlongPath(path));
-    // }
-
-    private Vector3Int FindAdjacentTile(Vector3Int from, Vector3Int target)
-    {
-        Vector3Int best = Vector3Int.zero;
-        float bestDist = float.MaxValue;
-
-        foreach (var dir in DirectionHelper._directions)
-        {
-            Vector3Int pos = target + dir;
-            if (!NodeManager.Instance.IsWalkable(pos)) continue;
-
-            float dist = Vector3Int.Distance(from, pos);
-            if (dist < bestDist)
-            {
-                best = pos;
-                bestDist = dist;
-            }
-        }
-
-        return best;
     }
     
     private void Die()

@@ -46,7 +46,7 @@ public class EnemyStatsManager : MonoBehaviour
         _currentHP -= amount;
         _healthBar.fillAmount = (float)_currentHP / _enemyContext.Stats.MaxHP;
         hasBeenDamaged = true;
-        var data = new EnemyDamageEventData(gameObject, amount);
+        var data = new DamageEventData(gameObject, amount);
         _enemyContext.EventBus.RaiseOnDamaged(data);
     }
 

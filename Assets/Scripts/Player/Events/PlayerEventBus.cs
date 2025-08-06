@@ -1,11 +1,8 @@
 using System;
 using UnityEngine;
 
-public class EnemyEventBus : MonoBehaviour
+public class PlayerEventBus : MonoBehaviour
 {
-    // public EnemyDamageEvent OnDamaged;
-    // public EnemyStartAttackEvent OnStartAttack;
-    
     public event Action<DamageEventData> OnDamaged;
     public event Action<StartAttackData> OnStartAttack;
     public event Action<StartAttackData> OnTargetMovedAway;

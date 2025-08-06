@@ -15,9 +15,9 @@ MonoBehaviour:
   <CharacterName>k__BackingField: Player
   <MaxHP>k__BackingField: 100
   <MaxSP>k__BackingField: 50
-  <Attack>k__BackingField: 50
+  <Attack>k__BackingField: 10
   <MoveSpeed>k__BackingField: 3
-  <AttackRange>k__BackingField: 2
+  <AttackRange>k__BackingField: 1
   <Agility>k__BackingField: 1
-  _currentHP: 0
+  _currentHP: 50
   _currentSP: 50

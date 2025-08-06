@@ -1,12 +1,12 @@
 using UnityEngine;
 
 [System.Serializable]
-public struct EnemyDamageEventData
+public struct DamageEventData
 {
     public GameObject _target;
     public int _damageAmount;
 
-    public EnemyDamageEventData(GameObject target, int amount)
+    public DamageEventData(GameObject target, int amount)
     {
         _target = target;
         _damageAmount = amount;

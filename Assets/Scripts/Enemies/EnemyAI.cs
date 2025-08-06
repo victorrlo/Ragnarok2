@@ -49,7 +49,7 @@ public class EnemyAI : MonoBehaviour
         _currentState.Enter(this);
     }
 
-    private void OnDamageTaken(EnemyDamageEventData data)
+    private void OnDamageTaken(DamageEventData data)
     {
         if (data._target != gameObject) return;
 

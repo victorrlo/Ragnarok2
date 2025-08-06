@@ -44,6 +44,7 @@ public class AggressiveState : IEnemyState
 
     private void StartChase()
     {
-        _enemyContext.Movement.StartChasing();
+        var data = new StartAttackData(_enemy.gameObject, _player);
+        _enemyContext.Movement.StartChasing(data);
     }
 }

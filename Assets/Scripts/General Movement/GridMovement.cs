@@ -9,15 +9,22 @@ public class GridMovement : MonoBehaviour
 
     protected virtual void Awake()
     {
-        
     }
-    public virtual IEnumerator FollowPath(Func<List<Node>> getPath, float moveSpeed = 2f)
+
+    protected virtual void Start()
+    {
+        Vector3Int cell = GridManager.Instance.WorldToCell(transform.position);
+        Vector3 center = GridManager.Instance.GetCellCenterWorld(cell);
+
+        transform.position = new Vector3(center.x, transform.position.y, center.z);
+    }
+    public virtual IEnumerator FollowPath(List<Node> path, float moveSpeed = 2f)
     {
         Vector3Int previousCell = GridManager.Instance.WorldToCell(transform.position);
 
-        if (getPath() == null) yield return null;
+        if (path == null) yield return null;
         
-        foreach (Node node in getPath())
+        foreach (Node node in path)
         {
             if (node == null) continue;
             
