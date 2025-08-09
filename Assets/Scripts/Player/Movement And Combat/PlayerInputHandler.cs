@@ -40,7 +40,7 @@ public class PlayerInputHandler : MonoBehaviour
         _playerContext.Movement.WalkToEmptyTile(targetPosition);
     }
 
-    public void TryClickToAttack()
+    private void TryClickToAttack()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -48,9 +48,9 @@ public class PlayerInputHandler : MonoBehaviour
         {
             EnemyCombat enemy = hit.collider.GetComponent<EnemyCombat>();
             if (enemy != null)
-                _playerContext.Combat.StartCombat(enemy.gameObject);
+                _playerContext.Control.StartCombat(enemy.gameObject);
             else
-                _playerContext.Combat.StopCombat();
+                _playerContext.Control.StopCombat();
         }
     }
 

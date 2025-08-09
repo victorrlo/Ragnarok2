@@ -41,7 +41,6 @@ public class PlayerMovement : GridMovement
 
     public void StartChasingEnemy(GameObject target)
     {
-        Debug.Log("Started chasing enemy");
         if (_chaseCoroutine != null)
             StopCoroutine(_chaseCoroutine);
 
@@ -105,7 +104,7 @@ public class PlayerMovement : GridMovement
         }
     }
 
-    private void StopAllMovementCoroutines()
+    public void StopAllMovementCoroutines()
     {
         StopCoroutine(_chaseCoroutine);
         _chaseCoroutine = null;

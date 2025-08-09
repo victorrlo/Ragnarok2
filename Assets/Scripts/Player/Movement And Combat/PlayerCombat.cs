@@ -1,14 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
     private PlayerContext _playerContext;
-    private EnemyCombat _enemy;
+    private PlayerEventBus _eventBus;
     [SerializeField] private GameObject _targetMarkerPrefab;
     private GameObject _currentTarget;
-    private Vector3Int _currentEnemyCell;
     private GameObject _activeTargetMarker;
     private Coroutine _combatCoroutine;
     private bool _isChasing;
@@ -17,20 +15,33 @@ public class PlayerCombat : MonoBehaviour
     {
         if (_playerContext == null)
             TryGetComponent<PlayerContext>(out _playerContext);
+
+        if (_eventBus == null)
+            _playerContext.TryGetComponent<PlayerEventBus>(out _eventBus);
     }
 
-    public void StartCombat(GameObject enemy)
+    private void OnEnable()
     {
-        if (_currentTarget == enemy) return;
+        _eventBus.OnStartAttack += StartCombat;
+        _eventBus.OnStopAttack += StopCombat;
+    }
 
-        if (_combatCoroutine != null)
-            StopCoroutine(_combatCoroutine);
+    private void OnDisable()
+    {
+        _eventBus.OnStartAttack -= StartCombat;
+        _eventBus.OnStopAttack -= StopCombat;
+    }
+
+    public void StartCombat(StartAttackData data)
+    {
+        var enemy = data.target;
+
+        // if (_combatCoroutine != null)
+        //     StopCoroutine(_combatCoroutine);
 
         MarkTarget(enemy);
         _currentTarget = enemy;
-        _currentEnemyCell = GridManager.Instance.WorldToCell(enemy.transform.position);
-        
-        _combatCoroutine = StartCoroutine(ChaseAndAttack(_currentTarget));
+        // _combatCoroutine = StartCoroutine(TargetEnemy(_currentTarget)); COROUTINES GO TO PLAYER CONTROL
     }
 
     public void StopCombat()
@@ -41,8 +52,38 @@ public class PlayerCombat : MonoBehaviour
             StopCoroutine(_combatCoroutine);
         
         _combatCoroutine = null;
+
         _currentTarget = null;
 
+        ClearMarker();
+    }
+
+    public void MarkTarget(GameObject target)
+    {
+        if (_targetMarkerPrefab == null)
+        {
+            Debug.LogError("Target marker prefab not assigned");
+            return;
+        }
+
+        if (target == null) { ClearMarker(); return;}
+
+        ClearMarker();
+
+        _activeTargetMarker = Instantiate(_targetMarkerPrefab);
+        var marker = _activeTargetMarker.GetComponent<TargetMarker>();
+
+        if (marker == null)
+        {
+            Debug.LogError("TargetMarker component missing on prefab");
+            return;
+        }
+
+        marker.AttachTo(target.transform);
+    }
+
+    private void ClearMarker()
+    {
         if (_activeTargetMarker != null)
         {
             Destroy(_activeTargetMarker);
@@ -50,18 +91,9 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void MarkTarget(GameObject target)
+    private void Attack(EnemyCombat enemy)
     {
-        if (_activeTargetMarker != null)
-            Destroy(_activeTargetMarker);
-
-        _activeTargetMarker = Instantiate(_targetMarkerPrefab);
-        _activeTargetMarker.GetComponent<TargetMarker>().AttachTo(target.transform);
-    }
-
-    private void Attack()
-    {
-        if (_enemy == null) 
+        if (enemy == null) 
         {
             return;
         }
@@ -70,31 +102,37 @@ public class PlayerCombat : MonoBehaviour
         // _playerContext.EventBus.RaiseStartAttack(data);
 
 
-        _enemy.TakeDamage(_playerContext.Stats.Attack);
+        enemy.TakeDamage(_playerContext.Stats.Attack);
     }
 
-    private IEnumerator ChaseAndAttack(GameObject target)
+    private IEnumerator TargetEnemy(GameObject target)
     {
         _isChasing = true;
 
-        while (target != null && _isChasing)
+        if (target == null) yield return null;
+
+        while (_isChasing)
         {
             Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
             Vector3Int enemyPos = GridManager.Instance.WorldToCell(target.transform.position);
 
-            _enemy = target.GetComponent<EnemyCombat>();
+            var enemy = target.GetComponent<EnemyCombat>();
 
-            if (_enemy != null)
+            if (enemy == null)
             {
-                if (DistanceHelper.IsInAttackRange(playerPos, enemyPos, _playerContext.Stats.AttackRange))
-                {
-                    Attack();
-                    yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed);
-                }
-                else
-                    _playerContext.Movement.StartChasingEnemy(target);
+                yield break;
             }
-
+            
+            if (DistanceHelper.IsInAttackRange(playerPos, enemyPos, _playerContext.Stats.AttackRange))
+            {   
+                _playerContext.Movement.StopAllMovementCoroutines();
+                Attack(enemy);
+                yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed);
+            }
+            else
+            {
+                _playerContext.Movement.StartChasingEnemy(target);
+            }
             yield return null;
         }
 
