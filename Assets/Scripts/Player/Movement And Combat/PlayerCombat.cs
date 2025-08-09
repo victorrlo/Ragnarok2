@@ -5,7 +5,9 @@ public class PlayerCombat : MonoBehaviour
 {
     private PlayerContext _playerContext;
     private PlayerEventBus _eventBus;
+
     [SerializeField] private GameObject _targetMarkerPrefab;
+
     private GameObject _currentTarget;
     private GameObject _activeTargetMarker;
     private Coroutine _combatCoroutine;
@@ -36,12 +38,12 @@ public class PlayerCombat : MonoBehaviour
     {
         var enemy = data.target;
 
-        // if (_combatCoroutine != null)
-        //     StopCoroutine(_combatCoroutine);
+        if (_combatCoroutine != null)
+            StopCoroutine(_combatCoroutine);
 
         MarkTarget(enemy);
         _currentTarget = enemy;
-        // _combatCoroutine = StartCoroutine(TargetEnemy(_currentTarget)); COROUTINES GO TO PLAYER CONTROL
+        _combatCoroutine = StartCoroutine(TargetEnemy(_currentTarget));
     }
 
     public void StopCombat()
@@ -108,6 +110,7 @@ public class PlayerCombat : MonoBehaviour
     private IEnumerator TargetEnemy(GameObject target)
     {
         _isChasing = true;
+        var isFirstAttack = true;
 
         if (target == null) yield return null;
 
@@ -125,6 +128,12 @@ public class PlayerCombat : MonoBehaviour
             
             if (DistanceHelper.IsInAttackRange(playerPos, enemyPos, _playerContext.Stats.AttackRange))
             {   
+                if (isFirstAttack)
+                {
+                    yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed/2);
+                    isFirstAttack = false;    
+                }
+                
                 _playerContext.Movement.StopAllMovementCoroutines();
                 Attack(enemy);
                 yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed);

@@ -43,6 +43,8 @@ public class EnemyCombat : MonoBehaviour
 
     private IEnumerator IsAttacking(GameObject target)
     {
+        var isFirstAttack = true;
+
         while (true)
         {
             if (target == null) 
@@ -55,6 +57,12 @@ public class EnemyCombat : MonoBehaviour
             {
                 Chase(target);
                 yield break;
+            }
+
+            if (isFirstAttack) 
+            { 
+                yield return new WaitForSeconds(_enemyContext.Stats.AttackSpeed/2); 
+                isFirstAttack = false; 
             }
 
             Attack(target);
@@ -70,13 +78,12 @@ public class EnemyCombat : MonoBehaviour
 
     private void Attack(GameObject target)
     {
-        target.TryGetComponent<PlayerCombat>(out var combat);
+        target.TryGetComponent<PlayerCombat>(out var player);
 
         if (target != null)
             if (_enemyContext != null)
             {
-                Debug.Log("Causing damage to player");
-                combat.TakeDamage(_enemyContext.Stats.Attack);
+                player.TakeDamage(_enemyContext.Stats.Attack);
             }
                 
     }

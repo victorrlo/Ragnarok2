@@ -106,9 +106,12 @@ public class PlayerMovement : GridMovement
 
     public void StopAllMovementCoroutines()
     {
-        StopCoroutine(_chaseCoroutine);
+        if (_chaseCoroutine != null)
+            StopCoroutine(_chaseCoroutine);
         _chaseCoroutine = null;
-        StopCoroutine(_movementCoroutine);
+
+        if (_movementCoroutine != null)
+            StopCoroutine(_movementCoroutine);
         _movementCoroutine = null;
     }
 
