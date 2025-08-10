@@ -27,7 +27,12 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (!context.performed) return;
 
-        TryClickToAttack();
+        var isEnemy = TryClickToAttack();
+
+        if (isEnemy)
+        {
+            return;
+        }
 
         Vector3Int? cell = AimBehaviour.Instance._lastGridCellPosition;
         
@@ -37,21 +42,28 @@ public class PlayerInputHandler : MonoBehaviour
 
         if (!AimBehaviour.Instance.IsWalkable(targetPosition)) return;
 
-        _playerContext.Movement.WalkToEmptyTile(targetPosition);
+        _playerContext.Control.WalkTo(targetPosition);
+        // _playerContext.Movement.WalkToEmptyTile(targetPosition);
     }
 
-    private void TryClickToAttack()
+    private bool TryClickToAttack()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             EnemyCombat enemy = hit.collider.GetComponent<EnemyCombat>();
-            if (enemy != null)
-                _playerContext.Control.StartCombat(enemy.gameObject);
-            else
+            if (enemy == null)
+            {
                 _playerContext.Control.StopCombat();
+                return false;
+            }
+                
+            _playerContext.Control.StartCombat(enemy.gameObject);
+            return true;
         }
+
+        return false;
     }
 
 }

@@ -1,16 +1,12 @@
 using UnityEngine;
 
-public class GridHelper : MonoBehaviour
+public static class GridHelper
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public static void SnapToNearestCellCenter(GameObject gameObject)
     {
-        
-    }
+        Vector3Int cell = GridManager.Instance.WorldToCell(gameObject.transform.position);
+        Vector3 center = GridManager.Instance.GetCellCenterWorld(cell);
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        gameObject.transform.position = new Vector3(center.x, gameObject.transform.position.y, center.z);
     }
 }

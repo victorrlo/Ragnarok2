@@ -11,7 +11,6 @@ public class PlayerCombat : MonoBehaviour
     private GameObject _currentTarget;
     private GameObject _activeTargetMarker;
     private Coroutine _combatCoroutine;
-    private bool _isChasing;
 
     private void Awake()
     {
@@ -41,15 +40,12 @@ public class PlayerCombat : MonoBehaviour
         if (_combatCoroutine != null)
             StopCoroutine(_combatCoroutine);
 
-        MarkTarget(enemy);
         _currentTarget = enemy;
         _combatCoroutine = StartCoroutine(TargetEnemy(_currentTarget));
     }
 
     public void StopCombat()
     {
-        _isChasing = false;
-
         if (_combatCoroutine != null)
             StopCoroutine(_combatCoroutine);
         
@@ -109,12 +105,11 @@ public class PlayerCombat : MonoBehaviour
 
     private IEnumerator TargetEnemy(GameObject target)
     {
-        _isChasing = true;
-        var isFirstAttack = true;
+        MarkTarget(target);
 
         if (target == null) yield return null;
 
-        while (_isChasing)
+        while (true)
         {
             Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
             Vector3Int enemyPos = GridManager.Instance.WorldToCell(target.transform.position);
@@ -128,24 +123,16 @@ public class PlayerCombat : MonoBehaviour
             
             if (DistanceHelper.IsInAttackRange(playerPos, enemyPos, _playerContext.Stats.AttackRange))
             {   
-                if (isFirstAttack)
-                {
-                    yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed/2);
-                    isFirstAttack = false;    
-                }
-                
-                _playerContext.Movement.StopAllMovementCoroutines();
-                Attack(enemy);
+                // _playerContext.Movement.StopAllMovementCoroutines(); movement routines shouldnt be in player combat
                 yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed);
+                Attack(enemy);
             }
-            else
-            {
-                _playerContext.Movement.StartChasingEnemy(target);
-            }
+            // else
+            // {
+            //     _playerContext.Movement.StartChasingEnemy(target);
+            // }
             yield return null;
         }
-
-        StopCombat();
     }
 
     public void TakeDamage(int amount)

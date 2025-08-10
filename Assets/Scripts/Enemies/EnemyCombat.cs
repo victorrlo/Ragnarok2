@@ -43,8 +43,6 @@ public class EnemyCombat : MonoBehaviour
 
     private IEnumerator IsAttacking(GameObject target)
     {
-        var isFirstAttack = true;
-
         while (true)
         {
             if (target == null) 
@@ -58,15 +56,9 @@ public class EnemyCombat : MonoBehaviour
                 Chase(target);
                 yield break;
             }
-
-            if (isFirstAttack) 
-            { 
-                yield return new WaitForSeconds(_enemyContext.Stats.AttackSpeed/2); 
-                isFirstAttack = false; 
-            }
-
-            Attack(target);
+            
             yield return new WaitForSeconds(_enemyContext.Stats.AttackSpeed);
+            Attack(target);
         }
     }
 

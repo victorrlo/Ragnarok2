@@ -13,10 +13,7 @@ public class GridMovement : MonoBehaviour
 
     protected virtual void Start()
     {
-        Vector3Int cell = GridManager.Instance.WorldToCell(transform.position);
-        Vector3 center = GridManager.Instance.GetCellCenterWorld(cell);
-
-        transform.position = new Vector3(center.x, transform.position.y, center.z);
+        GridHelper.SnapToNearestCellCenter(this.gameObject);
     }
     public virtual IEnumerator FollowPath(List<Node> path, float moveSpeed = 2f)
     {

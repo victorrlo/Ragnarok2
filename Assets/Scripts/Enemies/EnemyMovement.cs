@@ -34,6 +34,11 @@ public class EnemyMovement : GridMovement
         _enemyContext.EventBus.OnTargetMovedAway += StartChasing;
     }
 
+    private void OnDisable()
+    {
+        _enemyContext.EventBus.OnTargetMovedAway -= StartChasing;
+    }
+
     private void OnDestroy()
     {
         if (_player == null) return; 
@@ -117,6 +122,7 @@ public class EnemyMovement : GridMovement
             { 
                 Attack(target);
                 target.GetComponent<PlayerMovement>().OnPlayerMoved -= UpdateTargetPosition;
+                GridHelper.SnapToNearestCellCenter(this.gameObject);
                 yield break;
             } 
 
@@ -137,7 +143,7 @@ public class EnemyMovement : GridMovement
                 continue;
             }
 
-            _currentPath.RemoveAt(_currentPath.Count-1);
+            _currentPath.RemoveAt(_currentPath.Count - _enemyContext.Stats.AttackRange);
             yield return FollowPath(_currentPath, _enemyContext.Stats.MoveSpeed);
         }
     }
@@ -153,7 +159,7 @@ public class EnemyMovement : GridMovement
         _player.GetComponent<PlayerMovement>().OnPlayerMoved -= UpdateTargetPosition;
 
         // animation for tired emote to show enemy is tired of chasing the player and gave up
-        Debug.Log("Show emote for tired");
+        Debug.Log("Show emote for tired"); // should probably have a different script to handle emotes and only fire an event here
 
         yield return new WaitForSeconds(_enemyContext.Stats.MaximumRestTime);
 

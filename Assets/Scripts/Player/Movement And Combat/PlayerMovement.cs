@@ -18,9 +18,21 @@ public class PlayerMovement : GridMovement
             TryGetComponent<PlayerContext>(out _playerContext);
     }
 
+    private void OnEnable()
+    {
+        _playerContext.EventBus.OnWalk += WalkToEmptyTile;
+        _playerContext.EventBus.OnStartAttack += StartChasing;
+    }
+
     protected override void Start()
     {
         base.Start();
+    }
+
+    private void OnDisable()
+    {
+        _playerContext.EventBus.OnWalk -= WalkToEmptyTile;
+        _playerContext.EventBus.OnStartAttack -= StartChasing;
     }
 
 
@@ -39,33 +51,15 @@ public class PlayerMovement : GridMovement
         _movementCoroutine = StartCoroutine(FollowPath(_currentPath, _playerContext.Stats.MoveSpeed));
     }
 
-    public void StartChasingEnemy(GameObject target)
+    public void StartChasing(StartAttackData data)
     {
         if (_chaseCoroutine != null)
             StopCoroutine(_chaseCoroutine);
 
-        _enemy = target;
+        _enemy = data.target;
         _enemy.GetComponent<EnemyMovement>().OnEnemyMoved += UpdateTargetPosition;
 
-        _chaseCoroutine = StartCoroutine(ChaseEnemy(target));
-    }
-
-    private void UpdateTargetPosition(Vector3Int newPos)
-    {
-        if (this == null) return;
-
-        Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
-        UpdatePath(startPos, newPos);
-    }
-
-    private List<Node> UpdatePath(Vector3Int from, Vector3Int to)
-    {
-        _currentPath = NodeManager.Instance.FindPath(from, to);
-
-        if (_currentPath == null || _currentPath.Count == 0)
-            return null;
-
-        return _currentPath;
+        _chaseCoroutine = StartCoroutine(ChaseEnemy(data.target));
     }
 
     private IEnumerator ChaseEnemy(GameObject target)
@@ -80,8 +74,8 @@ public class PlayerMovement : GridMovement
 
             if (DistanceHelper.IsInAttackRange(playerPosition, enemyPosition, _playerContext.Stats.AttackRange))
             {
-                Debug.Log("Stopped movement");
                 StopAllMovementCoroutines();
+                GridHelper.SnapToNearestCellCenter(this.gameObject);
                 _enemy.GetComponent<EnemyMovement>().OnEnemyMoved -= UpdateTargetPosition;
                 yield break;
             }
@@ -102,6 +96,24 @@ public class PlayerMovement : GridMovement
 
             yield return null;
         }
+    }
+
+    private void UpdateTargetPosition(Vector3Int newPos)
+    {
+        if (this == null) return;
+
+        Vector3Int startPos = GridManager.Instance.WorldToCell(transform.position);
+        UpdatePath(startPos, newPos);
+    }
+
+    private List<Node> UpdatePath(Vector3Int from, Vector3Int to)
+    {
+        _currentPath = NodeManager.Instance.FindPath(from, to);
+
+        if (_currentPath == null || _currentPath.Count == 0)
+            return null;
+
+        return _currentPath;
     }
 
     public void StopAllMovementCoroutines()

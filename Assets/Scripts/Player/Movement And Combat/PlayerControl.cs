@@ -17,6 +17,12 @@ public class PlayerControl : MonoBehaviour
             _context.TryGetComponent<PlayerEventBus>(out _eventBus);
     }   
 
+    public void WalkTo(Vector3Int position)
+    {
+        _eventBus.RaiseOnWalk(position);
+    }
+
+    // combat control
     public void StartCombat(GameObject enemy)
     {
         if (_currentTarget == enemy) return;
