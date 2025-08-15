@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.UI;
 
@@ -8,6 +9,9 @@ public class PlayerMovement : GridMovement
 {   
     private PlayerContext _playerContext;
     private Coroutine _movementCoroutine;
+    private Coroutine _decisionCoroutine;
+    private bool _isWaitingDecision;
+    private bool _isSnapping;
     private Vector3Int _currentPosition;
     private Vector3Int _targetPosition;
     public event Action<Vector3Int> OnPlayerMoved;
@@ -36,10 +40,12 @@ public class PlayerMovement : GridMovement
     {
         if (_enemy == null) return;
 
+        _currentPosition = GridManager.Instance.WorldToCell(transform.position);
         _targetPosition = GridManager.Instance.WorldToCell(_enemy.transform.position);
 
         if (DistanceHelper.IsInAttackRange(_currentPosition, _targetPosition, _playerContext.Stats.AttackRange))
         {
+            EnterDecisionWindow();
             StopMovement();
             StartCoroutine(GridHelper.SnapToNearestCellCenter(this.gameObject, 0.15f));
             _movementCoroutine = StartCoroutine(WaitForEnemyMovement());
@@ -50,6 +56,67 @@ public class PlayerMovement : GridMovement
     {
         _playerContext.EventBus.OnWalk -= WalkToEmptyTile;
         _playerContext.EventBus.OnStartAttack -= StartChasing;
+    }
+
+    private void EnterDecisionWindow()
+    {
+        if (_isWaitingDecision) return;
+        _isWaitingDecision = true;
+
+        StopMovement();
+
+        if(!_isSnapping)
+            StartCoroutine(SmoothSnapOnce());
+
+        if(_decisionCoroutine != null)
+            StopCoroutine(_decisionCoroutine);
+        _decisionCoroutine = StartCoroutine(DecisionWindow());
+    }
+
+    private IEnumerator SmoothSnapOnce()
+    {
+        _isSnapping = true;
+        yield return GridHelper.SnapToNearestCellCenter(gameObject, 0.15f);
+        _isSnapping = false;
+    }
+
+    private IEnumerator DecisionWindow()
+    {
+        float bias = (GetInstanceID() & 1) == 0 ? -0.05f : 0.05f;
+        yield return new WaitForSeconds(1f + bias);
+
+        _currentPosition = GridManager.Instance.WorldToCell(transform.position);
+        _targetPosition = GridManager.Instance.WorldToCell(_enemy.transform.position);
+
+        _isWaitingDecision = false;
+        _decisionCoroutine = null;
+
+        if (!DistanceHelper.IsInAttackRange(_currentPosition, _targetPosition, _playerContext.Stats.AttackRange))
+        {
+            StartChasing(new StartAttackData(gameObject, _enemy));
+        }
+    }
+
+    private bool PlayerHasPriorityOver(EnemyMovement enemy)
+    {
+        if (enemy == null) return true;
+        return GetInstanceID() > enemy.GetInstanceID();
+    }
+
+    private bool CanPlayerStepInto(Vector3Int nextCell, EnemyMovement enemy)
+    {
+        if (enemy == null) return true;
+
+        var enemyCurrentCell = enemy.CurrentCell;
+        var enemyIntent = enemy.IntendedNextCell;
+        var playerCurrentCell = _currentPosition;
+
+        if (nextCell == enemyCurrentCell) return false;
+
+        if (enemyIntent.HasValue && enemyIntent.Value == playerCurrentCell && nextCell == enemyCurrentCell)
+            return PlayerHasPriorityOver(enemy);
+
+        return true;
     }
 
     private IEnumerator WaitForEnemyMovement()
@@ -87,20 +154,23 @@ public class PlayerMovement : GridMovement
     {
         StopMovement();
         
+        if (_enemy != null)
+            _enemy.GetComponent<EnemyMovement>().OnEnemyMoved -= UpdateTargetPosition;
+
         _enemy = data.target;
         _enemy.GetComponent<EnemyMovement>().OnEnemyMoved += UpdateTargetPosition;
+
         _movementCoroutine = StartCoroutine(ChaseEnemy(_enemy));
     }
 
     private IEnumerator ChaseEnemy(GameObject target)
     {
         int attackRange = _playerContext.Stats.AttackRange;
-
         WaitForSeconds delay = new WaitForSeconds(0.2f);
+
         yield return delay;
 
         if (target == null) yield break;
-        target.GetComponent<EnemyMovement>().OnEnemyMoved += UpdateTargetPosition;
 
         while(true)
         {
@@ -109,13 +179,11 @@ public class PlayerMovement : GridMovement
 
             if (DistanceHelper.IsInAttackRange(_currentPosition, _targetPosition, attackRange))
             { 
-                // target.GetComponent<PlayerMovement>().OnPlayerMoved -= UpdateTargetPosition;
-                StartCoroutine(GridHelper.SnapToNearestCellCenter(this.gameObject, 0.15f));
+                EnterDecisionWindow();
                 yield break;
             } 
 
             _currentPath = NodeManager.Instance.FindPath(_currentPosition, _targetPosition);
-
             if (_currentPath == null || _currentPath.Count < 2)
             {
                 yield return delay;
@@ -141,7 +209,19 @@ public class PlayerMovement : GridMovement
                 _currentPath.RemoveAt(_currentPath.Count - 1); // pop one more step
             }
 
-            yield return FollowPath(_currentPath, _playerContext.Stats.MoveSpeed);
+            var enemy = _enemy.GetComponent<EnemyMovement>();
+
+            bool shouldCancel() =>
+                DistanceHelper.IsInAttackRange(
+                    GridManager.Instance.WorldToCell(transform.position),
+                    GridManager.Instance.WorldToCell(enemy.transform.position),
+                    _playerContext.Stats.AttackRange);
+
+            yield return FollowPath(
+                _currentPath, 
+                _playerContext.Stats.MoveSpeed, 
+                nextCell => CanPlayerStepInto(nextCell, enemy), 
+                shouldCancel);
         }
     }
 

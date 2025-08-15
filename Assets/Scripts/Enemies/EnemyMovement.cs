@@ -10,6 +10,7 @@ public class EnemyMovement : GridMovement
     private Coroutine _currentBehaviorCoroutine;
     private Vector3Int _currentPosition;
     private Transform _player;
+    private bool _isAttacking;
     private Vector3Int _playerPosition;
     private List<Node> _currentPath;
     private float _chaseStartTime;
@@ -40,20 +41,30 @@ public class EnemyMovement : GridMovement
         if (_player == null) return;
         
         _playerPosition = GridManager.Instance.WorldToCell(_player.position);
-
-        if (DistanceHelper.IsInAttackRange(_currentPosition, _playerPosition, _enemyContext.Stats.AttackRange))
-        {
-            StopBehavior();
-            StartCoroutine(GridHelper.SnapToNearestCellCenter(this.gameObject, 0.15f));
-            _currentBehaviorCoroutine = StartCoroutine(WaitForEnemyMovement());
-        }
     }
 
-    private IEnumerator WaitForEnemyMovement()
+    private bool EnemyHasPriorityOver(PlayerMovement player)
     {
-        yield return new WaitForSeconds(1f);
-        
-        StartChasing(new StartAttackData(this.gameObject, _player.gameObject));
+        return GetInstanceID() > player.GetInstanceID();
+    }
+
+    private bool CanEnemyStepInto(Vector3Int nextCell, PlayerMovement player)
+    {
+        if (player == null) return true;
+
+        var playerCurrentCell = player.CurrentCell;
+        var playerIntent = player.IntendedNextCell;
+        var currentEnemyCell = _currentPosition;
+
+        if (nextCell == playerCurrentCell) return false;
+
+        if (playerIntent.HasValue && playerIntent.Value == currentEnemyCell && nextCell == playerCurrentCell)
+            return EnemyHasPriorityOver(player);
+
+        if (playerIntent.HasValue && playerIntent.Value == nextCell)
+            return EnemyHasPriorityOver(player);
+
+        return true;
     }
 
     private void OnDisable()
@@ -127,6 +138,7 @@ public class EnemyMovement : GridMovement
 
     private IEnumerator IsChasing(GameObject target)
     {
+        _isAttacking = false;
         int attackRange = _enemyContext.Stats.AttackRange;
 
         WaitForSeconds delay = new WaitForSeconds(0.2f);
@@ -144,29 +156,21 @@ public class EnemyMovement : GridMovement
 
             if (DistanceHelper.IsInAttackRange(_currentPosition, playerPosition, attackRange))
             { 
-                Attack(target);
+                StartAttack(target);
                 // target.GetComponent<PlayerMovement>().OnPlayerMoved -= UpdateTargetPosition;
                 StartCoroutine(GridHelper.SnapToNearestCellCenter(this.gameObject, 0.15f));
                 yield break;
-            } 
-
-            // this part has to be a different script that inherits this function
-            // so that it is possible to customize enemy behavior
-            // for now I'll keep it, but it needs to be for distance and random time
-
-            bool isOutOfStamina = Time.time - _chaseStartTime > _enemyContext.Stats.StaminaToChaseInSeconds;
-
-            if (isOutOfStamina)
+            }
+            else
             {
-                SwitchToBehavior(RestAndReturnToPassive());
-                yield break;
+                _isAttacking = false;
             }
 
             _currentPath = NodeManager.Instance.FindPath(_currentPosition, playerPosition);
 
             if (_currentPath == null || _currentPath.Count < 2)
             {
-                yield return delay;
+                yield return null;
                 continue;
             }
 
@@ -189,12 +193,28 @@ public class EnemyMovement : GridMovement
                 _currentPath.RemoveAt(_currentPath.Count - 1); // pop one more step
             }
 
-            yield return FollowPath(_currentPath, _enemyContext.Stats.MoveSpeed);
+            var player = _player.GetComponent<PlayerMovement>();
+
+            bool shouldCancelEnemy() =>
+                DistanceHelper.IsInAttackRange(
+                    GridManager.Instance.WorldToCell(transform.position),
+                    GridManager.Instance.WorldToCell(player.transform.position),
+                    _enemyContext.Stats.AttackRange
+                );
+
+            yield return FollowPath(
+                _currentPath, 
+                _enemyContext.Stats.MoveSpeed,
+                nextCell => CanEnemyStepInto(nextCell, player),
+                shouldCancelEnemy);
         }
     }
 
-    private void Attack(GameObject target)
+    private void StartAttack(GameObject target)
     {
+        if (_isAttacking) return;
+
+        _isAttacking = true;
         var data = new StartAttackData(this.gameObject, _player.gameObject);
         _enemyContext.EventBus.RaiseStartAttack(data);
     }

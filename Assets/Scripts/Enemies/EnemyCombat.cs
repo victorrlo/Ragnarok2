@@ -38,6 +38,12 @@ public class EnemyCombat : MonoBehaviour
     {
         var target = data.target;
 
+        if (_attackCoroutine != null)
+        {
+            StopCoroutine(_attackCoroutine);
+            _attackCoroutine = null;
+        }
+
         _attackCoroutine = StartCoroutine(IsAttacking(target));
     }
 
@@ -57,8 +63,9 @@ public class EnemyCombat : MonoBehaviour
                 yield break;
             }
             
-            yield return new WaitForSeconds(_enemyContext.Stats.AttackSpeed);
+            yield return null;
             Attack(target);
+            yield return new WaitForSeconds(_enemyContext.Stats.AttackSpeed);
         }
     }
 
