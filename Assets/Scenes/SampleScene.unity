@@ -35549,8 +35549,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 2063597567
+  m_fontColor: {r: 1, g: 1, b: 1, a: 0.47843137}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -35640,8 +35640,8 @@ CanvasGroup:
   m_GameObject: {fileID: 2141869338}
   m_Enabled: 1
   m_Alpha: 0
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1001 &713138550038421353
 PrefabInstance:
@@ -35684,8 +35684,29 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2093044675397311487, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
         type: 3}
+      propertyPath: m_Size.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2093044675397311487, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 2093044675397311487, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 8443295402631579329, guid: 1762e94fd839a2046bccd9116f8a23fa,
+        type: 3}
+    - target: {fileID: 2093044675397311487, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
+        type: 3}
       propertyPath: m_SortingOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2093044675397311487, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2127302122649991433, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
         type: 3}
@@ -35752,6 +35773,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5596455247965270502, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
+        type: 3}
+      propertyPath: m_Name
+      value: input
       objectReference: {fileID: 0}
     - target: {fileID: 6478579692468602800, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
         type: 3}

@@ -27,7 +27,7 @@ public static class DistanceHelper
         return false;
     }
 
-    // sight range used to determine if enemy should keep chasing the player or not
+    // sight range is used to decide if enemy should keep chasing the player or not
     public static bool IsPlayerOutOfReach(Transform player, EnemyAI enemy)
     {
         var playerPosition = GridManager.Instance.WorldToCell(player.transform.position);
@@ -42,13 +42,6 @@ public static class DistanceHelper
 
         return true;
     }
-
-    // public static bool IsInMovementRange(Vector3Int a, Vector3Int b, int range)
-    // {
-    //     int dx = Mathf.Abs(a.x - b.x);
-    //     int dy = Mathf.Abs(a.y - b.y);
-    //     return dx <= range && dy <= range && (dx + dy > 0);
-    // }
 
     public static bool IsInAttackRange(Vector3Int a, Vector3Int b, int range)
     {

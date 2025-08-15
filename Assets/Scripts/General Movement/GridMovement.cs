@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,7 +12,7 @@ public class GridMovement : MonoBehaviour
 
     protected virtual void Start()
     {
-        GridHelper.SnapToNearestCellCenter(this.gameObject);
+        StartCoroutine(GridHelper.SnapToNearestCellCenter(this.gameObject, 0.15f));
     }
     public virtual IEnumerator FollowPath(List<Node> path, float moveSpeed = 2f)
     {
