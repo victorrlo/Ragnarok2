@@ -44,6 +44,8 @@ public class EnemyAI : MonoBehaviour
 
     public void ChangeState(IEnemyState newState)
     {
+        if (_currentState != null &&  _currentState.GetType() == newState.GetType()) return;
+
         _currentState?.Exit();
         _currentState = newState;
         _currentState.Enter(this);

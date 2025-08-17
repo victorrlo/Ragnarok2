@@ -157,6 +157,7 @@ public class EnemyMovement : GridMovement
             if (DistanceHelper.IsInAttackRange(_currentPosition, playerPosition, attackRange))
             { 
                 StartAttack(target);
+                StopBehavior();
                 // target.GetComponent<PlayerMovement>().OnPlayerMoved -= UpdateTargetPosition;
                 StartCoroutine(GridHelper.SnapToNearestCellCenter(this.gameObject, 0.15f));
                 yield break;

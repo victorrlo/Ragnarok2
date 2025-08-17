@@ -10,7 +10,6 @@ public class PassiveState : IEnemyState
 
     public void Enter(EnemyAI enemy)
     {
-        Debug.Log("Enter Passive State");
         _enemy = enemy;
         _enemy.TryGetComponent<EnemyContext>(out _enemyContext);
 
