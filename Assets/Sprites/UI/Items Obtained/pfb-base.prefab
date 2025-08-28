@@ -93,7 +93,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _numbersSprites:
   - {fileID: -9218562881200172661, guid: 6f3adc5eed36255438803a93295f1d1b, type: 3}
-  - {fileID: 7180032030923316869, guid: 7fd24cc8351a7ff47aec54921be47545, type: 3}
 --- !u!1 &5238403670587011695
 GameObject:
   m_ObjectHideFlags: 0
