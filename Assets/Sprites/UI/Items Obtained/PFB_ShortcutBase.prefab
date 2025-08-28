@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2484275461309919829}
   - component: {fileID: 1323646873176797759}
   m_Layer: 5
-  m_Name: pfb-base
+  m_Name: PFB_ShortcutBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

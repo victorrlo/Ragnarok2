@@ -3,7 +3,7 @@ using UnityEngine;
 public class ItemsShortcutManager : MonoBehaviour
 {
     private int _itemsObtained = 0;
-    [SerializeField] private GameObject _baseShortcut;
+    [SerializeField] private GameObject _baseShortcutPrefab;
     [SerializeField] private Sprite _numberOne;
     [SerializeField] private Sprite _numberTwo;
     [SerializeField] private Sprite _appleItem;
@@ -29,5 +29,8 @@ public class ItemsShortcutManager : MonoBehaviour
         {
             numberOfShortcuts = 1;
         }
+
+        var parentObject = this.transform;
+        GameObject newObject = Instantiate(_baseShortcutPrefab, parentObject);
     }
 }
