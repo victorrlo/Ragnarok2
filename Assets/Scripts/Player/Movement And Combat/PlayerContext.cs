@@ -1,10 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerMovement))]
-[RequireComponent(typeof(PlayerCombat))]
-[RequireComponent(typeof(PlayerStatsManager))]
-[RequireComponent(typeof(PlayerStatsData))]
-[RequireComponent(typeof(PlayerEventBus))]
 public class PlayerContext : MonoBehaviour
 {
     [field: SerializeField] public PlayerMovement Movement {get; private set;}

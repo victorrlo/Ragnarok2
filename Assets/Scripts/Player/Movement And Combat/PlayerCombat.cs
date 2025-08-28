@@ -112,6 +112,9 @@ public class PlayerCombat : MonoBehaviour
         while (true)
         {
             Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
+
+            if (target == null) yield break;
+            
             Vector3Int enemyPos = GridManager.Instance.WorldToCell(target.transform.position);
 
             var enemy = target.GetComponent<EnemyCombat>();

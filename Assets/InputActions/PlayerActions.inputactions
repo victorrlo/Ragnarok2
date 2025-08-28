@@ -6,7 +6,7 @@
             "id": "2aec13e2-8e01-4e59-b05c-d9ac9db9a7d4",
             "actions": [
                 {
-                    "name": "MouseClick",
+                    "name": "MouseLeftClick",
                     "type": "Button",
                     "id": "2b8d244d-9d7a-47c4-9be1-7a76fc3f4acc",
                     "expectedControlType": "",
@@ -31,6 +31,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "MouseRightClick",
+                    "type": "Button",
+                    "id": "553b6fb9-fdab-445b-8d53-a99a8bd6cfb0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Hold",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -41,7 +50,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MouseClick",
+                    "action": "MouseLeftClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -64,6 +73,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Skill: AGI UP",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8e0b3a71-6e80-40d6-a535-a75701e226f1",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseRightClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

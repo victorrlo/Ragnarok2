@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4900ea4f3dfd6c84c824369f66cd3507, type: 3}
+  m_Name: TrofaBaseData
+  m_EditorClassIdentifier: 
+  <CharacterName>k__BackingField: "Trof\xE1"
+  <MaxHP>k__BackingField: 100
+  <MaxSP>k__BackingField: 50
+  <Attack>k__BackingField: 0
+  <MoveSpeed>k__BackingField: 0
+  <AttackRange>k__BackingField: 0
+  <Agility>k__BackingField: 0
+  _monsterNature: 0
+  _sightRange: 0
+  <MaximumRestTime>k__BackingField: 0
+  AggressiveStateSightRange: 0
+  StaminaToChaseInSeconds: 0

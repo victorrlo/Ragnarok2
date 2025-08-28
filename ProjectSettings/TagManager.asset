@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Enemy
+  - Sprite
+  - Pivot
+  - Marker
   layers:
   - Default
   - TransparentFX

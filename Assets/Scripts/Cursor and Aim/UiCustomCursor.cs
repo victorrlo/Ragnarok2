@@ -6,6 +6,8 @@ public class UiCustomCursor : MonoBehaviour
 {
     [SerializeField] private Texture2D _normalCursorSprite;
     [SerializeField] private Texture2D _attackCursorSprite;
+    [SerializeField] private Texture2D _rotateCursorSprite;
+    private Texture2D _currentCursorTexture;
     private Vector2 _cursorHotSpot;
     [SerializeField] private LayerMask _enemyLayerMask;
     [SerializeField] private Camera _mainCamera;
@@ -23,16 +25,13 @@ public class UiCustomCursor : MonoBehaviour
 
     private void Update()
     {
-        // Vector3Int? gridCell = GetMouseGridCell();
+        if (Mouse.current != null && Mouse.current.rightButton.isPressed)
+        {
+            SetCursorIfChanged(_rotateCursorSprite);
+            return;
+        }
 
-        if (IsMouseOverEnemy())
-        {
-            Cursor.SetCursor(_attackCursorSprite, _cursorHotSpot, CursorMode.Auto);
-        }
-        else
-        {
-            Cursor.SetCursor(_normalCursorSprite, _cursorHotSpot, CursorMode.Auto);
-        }
+        SetCursorIfChanged(IsMouseOverEnemy() ? _attackCursorSprite : _normalCursorSprite);
     }
 
     private bool IsMouseOverEnemy()
@@ -47,17 +46,10 @@ public class UiCustomCursor : MonoBehaviour
         return false;
     }
 
-    // private Vector3Int? GetMouseGridCell()
-    // {
-    //     Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-    //     Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-
-    //     if (groundPlane.Raycast(ray, out float enter))
-    //     {
-    //         Vector3 hitPoint = ray.GetPoint(enter);
-    //         return GridManager.Instance.WorldToCell(hitPoint);
-    //     }
-
-    //     return null;
-    // }
+    private void SetCursorIfChanged(Texture2D texture)
+    {
+        if (texture == _currentCursorTexture) return;
+        _currentCursorTexture = texture;
+        Cursor.SetCursor(texture, _cursorHotSpot, CursorMode.Auto);
+    }
 }
