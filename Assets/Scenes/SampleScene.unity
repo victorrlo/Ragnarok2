@@ -1678,7 +1678,7 @@ Camera:
   far clip plane: 100000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.625
+  orthographic size: 13.96875
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -16131,10 +16131,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1010256425}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -162, y: 322.23}
-  m_SizeDelta: {x: 984.5, y: 75.541}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 457.2057, y: -37.77133}
+  m_SizeDelta: {x: 984.5, y: 75.541016}
   m_Pivot: {x: -0.000000016763806, y: 0.49999988}
 --- !u!114 &1934726128
 MonoBehaviour:
@@ -17526,8 +17526,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b1453c24a58adcb459eac1f9f996e599, type: 2}
-  m_sharedMaterial: {fileID: 5744127224872236213, guid: b1453c24a58adcb459eac1f9f996e599,
+  m_fontAsset: {fileID: 11400000, guid: 4b775fd2e279fd04a962470b83154b52, type: 2}
+  m_sharedMaterial: {fileID: -7489765113027175155, guid: 4b775fd2e279fd04a962470b83154b52,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -17552,8 +17552,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

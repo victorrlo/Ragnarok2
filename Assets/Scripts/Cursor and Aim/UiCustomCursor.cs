@@ -50,6 +50,6 @@ public class UiCustomCursor : MonoBehaviour
     {
         if (texture == _currentCursorTexture) return;
         _currentCursorTexture = texture;
-        Cursor.SetCursor(texture, _cursorHotSpot, CursorMode.Auto);
+        Cursor.SetCursor(texture, _cursorHotSpot, CursorMode.ForceSoftware);
     }
 }
