@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Consumable
+  m_EditorClassIdentifier: Assembly-CSharp::Consumable
+  _sprite: {fileID: -8515358143813566477, guid: f4a0ca9e619be8d41a34750cb6038b68,
+    type: 3}
+  _name: Apple
+  _description: "A small apple fallen from a Trof\xE1."
+  healPercent: 0.25
+  _effectDescription: Restores 25% of HP.

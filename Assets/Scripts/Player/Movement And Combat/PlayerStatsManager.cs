@@ -102,6 +102,11 @@ public class PlayerStatsManager : MonoBehaviour
         Debug.Log("Player morreu");
     }
 
+    public void Heal(int amount)
+    {
+        CurrentHP += amount;
+    }
+
     private void SetStatsBarBellowPlayer()
     {
         _statsBar.SetActive(true);

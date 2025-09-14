@@ -6,10 +6,9 @@ public class UiCustomCursor : MonoBehaviour
 {
     [SerializeField] private Texture2D _normalCursorSprite;
     [SerializeField] private Texture2D _attackCursorSprite;
-    [SerializeField] private Texture2D _rotateCursorSprite;
+    [SerializeField] private Texture2D _itemCursorSprite;
     private Texture2D _currentCursorTexture;
     private Vector2 _cursorHotSpot;
-    [SerializeField] private LayerMask _enemyLayerMask;
     [SerializeField] private Camera _mainCamera;
 
     private void Awake()
@@ -20,18 +19,27 @@ public class UiCustomCursor : MonoBehaviour
 
     private void Start()
     {
-        _cursorHotSpot = new Vector2(0,0);
+        _cursorHotSpot = new Vector2(0,1);
     }
 
     private void Update()
     {
-        if (Mouse.current != null && Mouse.current.rightButton.isPressed)
+
+        if (IsMouseOverEnemy())
         {
-            SetCursorIfChanged(_rotateCursorSprite);
+            SetCursorState(_attackCursorSprite);
             return;
         }
 
-        SetCursorIfChanged(IsMouseOverEnemy() ? _attackCursorSprite : _normalCursorSprite);
+        if (IsMouseOverItem())
+        {
+            SetCursorState(_itemCursorSprite);
+            return;
+        }
+
+        if (GetCursorState() == _normalCursorSprite) return;
+
+        SetCursorState(_normalCursorSprite);
     }
 
     private bool IsMouseOverEnemy()
@@ -46,10 +54,27 @@ public class UiCustomCursor : MonoBehaviour
         return false;
     }
 
-    private void SetCursorIfChanged(Texture2D texture)
+    private bool IsMouseOverItem()
+    {
+        Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            return hit.collider.GetComponent<ItemDataLoader>() != null;
+        }
+
+        return false;
+    }
+
+    private void SetCursorState(Texture2D texture)
     {
         if (texture == _currentCursorTexture) return;
         _currentCursorTexture = texture;
         Cursor.SetCursor(texture, _cursorHotSpot, CursorMode.ForceSoftware);
+    }
+
+    private Texture2D GetCursorState()
+    {
+        return _currentCursorTexture;
     }
 }

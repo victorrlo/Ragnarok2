@@ -125,7 +125,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: Frame_0
     originalName: 
-    pivot: {x: 0.5555556, y: 0}
+    pivot: {x: 0.5, y: 0}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -133,7 +133,7 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 46
-      width: 9
+      width: 10
       height: 7
     spriteID: efb416986e8e2b1488e0e711303ce4b3
     spriteBone: []
@@ -146,7 +146,7 @@ ScriptedImporter:
     uvTransform: {x: 4, y: 46}
   - name: Frame_1
     originalName: 
-    pivot: {x: 0.54545456, y: 0}
+    pivot: {x: 0.5, y: 0}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -154,7 +154,7 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 11
+      width: 12
       height: 6
     spriteID: dd120633dd7b46f4ca457a8de1a2f961
     spriteBone: []
@@ -167,7 +167,7 @@ ScriptedImporter:
     uvTransform: {x: 4, y: 4}
   - name: Frame_2
     originalName: 
-    pivot: {x: 0.54545456, y: 0}
+    pivot: {x: 0.5, y: 0}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -175,7 +175,7 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 18
-      width: 11
+      width: 12
       height: 6
     spriteID: 63a242fb4dbd0424386c9394d872d28b
     spriteBone: []
@@ -188,7 +188,7 @@ ScriptedImporter:
     uvTransform: {x: 4, y: 18}
   - name: Frame_3
     originalName: 
-    pivot: {x: 0.54545456, y: 0}
+    pivot: {x: 0.5, y: 0}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -196,7 +196,7 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 32
-      width: 11
+      width: 12
       height: 6
     spriteID: 5c2be412b5ba7514a8c57594406b6dcb
     spriteBone: []
@@ -222,7 +222,7 @@ ScriptedImporter:
       cellRect:
         x: 3
         y: 0
-        width: 9
+        width: 10
         height: 7
       spriteId: efb416986e8e2b1488e0e711303ce4b3
     - name: Frame_1
@@ -231,7 +231,7 @@ ScriptedImporter:
       cellRect:
         x: 2
         y: 0
-        width: 11
+        width: 12
         height: 6
       spriteId: dd120633dd7b46f4ca457a8de1a2f961
     - name: Frame_2
@@ -240,7 +240,7 @@ ScriptedImporter:
       cellRect:
         x: 2
         y: 0
-        width: 11
+        width: 12
         height: 6
       spriteId: 63a242fb4dbd0424386c9394d872d28b
     - name: Frame_3
@@ -249,7 +249,7 @@ ScriptedImporter:
       cellRect:
         x: 2
         y: 0
-        width: 11
+        width: 12
         height: 6
       spriteId: 5c2be412b5ba7514a8c57594406b6dcb
     linkedCells: []
