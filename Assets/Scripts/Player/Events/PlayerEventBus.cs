@@ -3,11 +3,17 @@ using UnityEngine;
 
 public class PlayerEventBus : MonoBehaviour
 {
+    public event Action<GameObject> OnGetItem;
     public event Action<Vector3Int> OnWalk;
     public event Action<DamageEventData> OnDamaged;
     public event Action<StartAttackData> OnStartAttack;
     public event Action OnStopAttack;
     public event Action<StartAttackData> OnTargetMovedAway;
+
+    public void RaiseGetItem(GameObject item)
+    {
+        OnGetItem?.Invoke(item);
+    }
 
     public void RaiseOnWalk(Vector3Int position)
     {

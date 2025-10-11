@@ -38,4 +38,13 @@ public class PlayerControl : MonoBehaviour
         _currentTarget = null;
         _eventBus.RaiseStopAttack();
     }
+
+    public void GetItem(GameObject item)
+    {
+        if (_currentTarget == item) return;
+
+        _currentTarget = item;
+
+        _eventBus.RaiseGetItem(item);
+    }
 }

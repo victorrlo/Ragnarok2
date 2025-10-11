@@ -127,8 +127,9 @@ public class PlayerCombat : MonoBehaviour
             if (DistanceHelper.IsInAttackRange(playerPos, enemyPos, _playerContext.Stats.AttackRange))
             {   
                 // _playerContext.Movement.StopAllMovementCoroutines(); movement routines shouldnt be in player combat
-                yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed);
+                yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed/2);
                 Attack(enemy);
+                yield return new WaitForSeconds(_playerContext.Stats.AttackSpeed/2);
             }
             // else
             // {

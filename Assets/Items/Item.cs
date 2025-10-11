@@ -7,12 +7,14 @@ public enum ItemType
     Card
 }
 
+public enum ItemName { Apple };
+
 public abstract class Item : ScriptableObject
 {
     [SerializeField] private Sprite _sprite;
-    [SerializeField] private string _name;
+    [SerializeField] private ItemName _name;
     [SerializeField] private string _description;
-    public string Name => _name;
+    public ItemName Name => _name;
     public Sprite Sprite => _sprite;
     public string Description => _description;
     public abstract ItemType Type {get;}

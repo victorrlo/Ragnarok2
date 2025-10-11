@@ -5,7 +5,7 @@ public class ItemDataLoader : MonoBehaviour
 {
     [SerializeField] private Item _itemData;
     private SpriteRenderer _spriteRenderer;
-    public string Name => _itemData.name;
+    public ItemName Name => _itemData.Name;
     
     private void Awake()
     {
@@ -19,8 +19,6 @@ public class ItemDataLoader : MonoBehaviour
         if (_itemData.Type == ItemType.Consumable)
         {
             Consumable consumable = _itemData as Consumable;
-
-            Debug.Log(consumable.EffectDescription);
         }
     }
     

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: Consumable
+  m_Name: Apple
   m_EditorClassIdentifier: Assembly-CSharp::Consumable
   _sprite: {fileID: -8515358143813566477, guid: f4a0ca9e619be8d41a34750cb6038b68,
     type: 3}
-  _name: Apple
-  _description: "A small apple fallen from a Trof\xE1."
+  _name: 0
+  _description: A small apple. Still consumable and not living.
   healPercent: 0.25
-  _effectDescription: Restores 25% of HP.
+  _effectDescription: Recovers 25% of HP.

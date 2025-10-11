@@ -33,6 +33,8 @@ public class PlayerInputHandler : MonoBehaviour
             return;
         }
 
+        var isItem = TryClickToGetItem();
+
         Vector3Int? cell = AimBehaviour.Instance._lastGridCellPosition;
         
         if (!cell.HasValue) return;
@@ -43,6 +45,25 @@ public class PlayerInputHandler : MonoBehaviour
 
         _playerContext.Control.WalkTo(targetPosition);
         // _playerContext.Movement.WalkToEmptyTile(targetPosition);
+    }
+
+    private bool TryClickToGetItem()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            ItemDataLoader item = hit.collider.GetComponent<ItemDataLoader>();
+            if (item == null)
+            {
+                return false;
+            }
+                
+            _playerContext.Control.GetItem(item.gameObject);
+            return true;
+        }
+
+        return false;
     }
 
     private bool TryClickToAttack()

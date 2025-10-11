@@ -24,7 +24,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Skill: AGI UP",
+                    "name": "ConsumeApple",
                     "type": "Button",
                     "id": "70e2073e-ac5c-46f1-8d5d-4c54ae2c9f31",
                     "expectedControlType": "",
@@ -72,7 +72,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Skill: AGI UP",
+                    "action": "ConsumeApple",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
