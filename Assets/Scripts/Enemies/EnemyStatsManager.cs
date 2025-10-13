@@ -5,8 +5,8 @@ using UnityEngine.UI;
 public class EnemyStatsManager : MonoBehaviour
 {
     private EnemyContext _enemyContext;
-    private int _currentHP;
-    public int CurrentHP => _currentHP;
+    private float _currentHP;
+    public float CurrentHP => _currentHP;
     [SerializeField] private GameObject _statsBar;
     [SerializeField] private Image _healthBar;
     private bool hasBeenDamaged = false;

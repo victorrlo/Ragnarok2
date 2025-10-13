@@ -5,6 +5,10 @@ using UnityEngine.InputSystem;
 
 public class ShortcutManager : MonoBehaviour
 {
+    [SerializeField] private InputActionReference _hotkeyNumber1;
+    [SerializeField] private InputActionReference _hotkeyNumber2;
+    [SerializeField] private InputActionReference _hotkeyNumber3;
+    [SerializeField] private InputActionReference _hotkeyNumber4;
     public static ShortcutManager Instance {get; private set;}
     [SerializeField] private GameObject _itemShortcut1;
     [SerializeField] private GameObject _skillShortcut2;
@@ -23,6 +27,47 @@ public class ShortcutManager : MonoBehaviour
 
     private void Start()
     {
+        _hotkeyNumber1.action.performed += ItemHotkeyClicked;
+        _hotkeyNumber2.action.performed += SkillHotkey2Clicked;
+        _hotkeyNumber3.action.performed += SkillHotkey3Clicked;
+        _hotkeyNumber4.action.performed += SkillHotkey4Clicked;
+    }
+
+    private void OnDestroy()
+    {
+        _hotkeyNumber1.action.performed -= ItemHotkeyClicked;
+    }
+
+    private void ItemHotkeyClicked(InputAction.CallbackContext callbackContext)
+    {
+        // I need to prevent these actions if the conditions needed are not met.
+        // player has any apple?
+        // Debug.Log("Trying to consume apple...");
+        GameController.Instance.TryUseApple?.Invoke(true);
+    }
+
+    private void SkillHotkey2Clicked(InputAction.CallbackContext callbackContext)
+    {
+        // I need to prevent these actions if the conditions needed are not met.
+        // player has skill 2 already?
+        // player has SP?
+        Debug.Log("use skill 2");
+    }
+
+    private void SkillHotkey3Clicked(InputAction.CallbackContext callbackContext)
+    {
+         // I need to prevent these actions if the conditions needed are not met.
+        // player has skill 3 already?
+        // player has SP?
+        Debug.Log("use skill 3");
+    }
+
+    private void SkillHotkey4Clicked(InputAction.CallbackContext callbackContext)
+    {
+         // I need to prevent these actions if the conditions needed are not met.
+        // player has skill 4 already?
+        // player has SP?
+        Debug.Log("use skill 4");
     }
 
     private void Update()

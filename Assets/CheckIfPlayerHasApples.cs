@@ -12,10 +12,10 @@ public class CheckIfPlayerHasApples : MonoBehaviour, IPointerEnterHandler, IPoin
 
     private void FixedUpdate()
     {
-        if (ItemManager.Instance.applesObtained > 0)
+        if (GameController.Instance.MaxApplesObtained > 0)
         {
             _appleSprite.gameObject.SetActive(true);
-            var quantity = ItemManager.Instance.applesObtained > APPLEMAXXING ? APPLEMAXXING : ItemManager.Instance.applesObtained;
+            var quantity = GameController.Instance.MaxApplesObtained > GameController.Instance.MaxApples ? GameController.Instance.MaxApples : GameController.Instance.Apples;
             _quantity.text = quantity.ToString() + "x";
         }
         else
@@ -32,13 +32,13 @@ public class CheckIfPlayerHasApples : MonoBehaviour, IPointerEnterHandler, IPoin
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (ItemManager.Instance.applesObtained > 0)
+        if (GameController.Instance.MaxApplesObtained > 0)
             _skillDescription.gameObject.SetActive(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (ItemManager.Instance.applesObtained > 0)
+        if (GameController.Instance.MaxApplesObtained > 0)
             _skillDescription.gameObject.SetActive(false);
     }
 }

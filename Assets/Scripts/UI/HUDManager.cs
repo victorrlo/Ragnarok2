@@ -28,12 +28,12 @@ public class HUDManager : MonoBehaviour
         PlayerStatsManager.Instance.OnSPChanged -= UpdateSP;
     }
 
-    public void UpdateHP(int current, int max)
+    public void UpdateHP(float current, float max)
     {
         _hpText.text = $"HP: {current}/{max}";
     }
 
-    public void UpdateSP(int current, int max)
+    public void UpdateSP(float current, float max)
     {
         _spText.text = $"SP: {current}/{max}";
     }

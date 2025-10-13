@@ -24,7 +24,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "ConsumeApple",
+                    "name": "ConsumeAppleShortcut1",
                     "type": "Button",
                     "id": "70e2073e-ac5c-46f1-8d5d-4c54ae2c9f31",
                     "expectedControlType": "",
@@ -39,6 +39,33 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "Hold",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SkillShortcut2",
+                    "type": "Button",
+                    "id": "938d6df3-5f21-4461-b8e9-3732b30d749f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SkillShortcut3",
+                    "type": "Button",
+                    "id": "3811dbc1-2022-47a7-b3dc-312058adcd5c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SkillShortcut4",
+                    "type": "Button",
+                    "id": "05523d5b-c28c-4fcf-a9e1-4432b2d162ee",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
                     "initialStateCheck": false
                 }
             ],
@@ -72,7 +99,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ConsumeApple",
+                    "action": "ConsumeAppleShortcut1",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -84,6 +111,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "MouseRightClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "22e0f498-2403-41a8-9415-629ebb05cb85",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillShortcut2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "474a4cf2-96c3-4f69-b86a-20a483d74a96",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillShortcut3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "375a0e7d-3576-49fb-af9b-a34edfdf124e",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillShortcut4",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

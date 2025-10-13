@@ -10,7 +10,6 @@ public class ItemManager : MonoBehaviour
     private GameObject _player;
 
     public static ItemManager Instance {get; private set;}
-    public int applesObtained = 0;
 
     private bool _canGetItem = false;
 
@@ -75,7 +74,15 @@ public class ItemManager : MonoBehaviour
         
         if (itemName == ItemName.Apple)
         {
-            applesObtained++;
+            if (GameController.Instance.MaxApplesObtained < GameController.Instance.MaxApples) 
+            {
+                GameController.Instance.MaxApplesObtained++;
+            }
+
+            if (GameController.Instance.Apples < GameController.Instance.MaxApples)
+            {
+                GameController.Instance.Apples++;
+            }
         }
 
         Destroy(item);

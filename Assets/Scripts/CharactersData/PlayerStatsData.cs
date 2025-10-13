@@ -4,8 +4,8 @@ using UnityEngine;
 public class PlayerStatsData : CharacterStatsData
 {
     [Header("Current Stats")]
-    public int _currentHP;
-    public int _currentSP;
+    public float _currentHP;
+    public float _currentSP;
 
     public void ResetStats()
     {
@@ -13,26 +13,26 @@ public class PlayerStatsData : CharacterStatsData
         _currentSP = MaxSP;
     }
 
-    public int GetCurrentHP()
+    public float GetCurrentHP()
     {
         return _currentHP;
     }
 
-    public int GetCurrentSP()
+    public float GetCurrentSP()
     {
         return _currentSP;
     }
 
     public void LoadFromPrefs()
     {
-        _currentHP = PlayerPrefs.GetInt("PlayerHP", _currentHP);
-        _currentSP = PlayerPrefs.GetInt("PlayerSP", _currentSP);
+        _currentHP = PlayerPrefs.GetFloat("PlayerHP", _currentHP);
+        _currentSP = PlayerPrefs.GetFloat("PlayerSP", _currentSP);
     }
 
     public void SaveToPrefs()
     {
-        PlayerPrefs.SetInt("PlayerHP", _currentHP);
-        PlayerPrefs.SetInt("PlayerSP", _currentSP);
+        PlayerPrefs.SetFloat("PlayerHP", _currentHP);
+        PlayerPrefs.SetFloat("PlayerSP", _currentSP);
         PlayerPrefs.Save();
     }
 }

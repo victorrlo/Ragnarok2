@@ -31,7 +31,7 @@ public class Consumable : Item
     public override void Use(PlayerContext context)
     {
         int amount = Mathf.CeilToInt(context.Stats.MaxHP * healPercent);
-        context.StatsManager.Heal(amount);
+        context.StatsManager.Heal();
     }
 }
 

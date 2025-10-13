@@ -6,7 +6,7 @@ public class PlayerStatsManager : MonoBehaviour
 {
     public static PlayerStatsManager Instance {get; private set;}
     private PlayerContext _playerContext;
-    public int CurrentHP {
+    public float CurrentHP {
         get => _playerContext.Stats.GetCurrentHP(); 
         private set
         {
@@ -16,7 +16,7 @@ public class PlayerStatsManager : MonoBehaviour
                 Die();
         }
     }
-    public int CurrentSP
+    public float CurrentSP
     {
         get => _playerContext.Stats.GetCurrentSP();
         private set
@@ -25,8 +25,8 @@ public class PlayerStatsManager : MonoBehaviour
             OnSPChanged?.Invoke(_playerContext.Stats._currentSP, _playerContext.Stats.MaxSP);
         }
     }
-    public event Action<int, int> OnHPChanged;
-    public event Action<int, int> OnSPChanged;
+    public event Action<float, float> OnHPChanged;
+    public event Action<float, float> OnSPChanged;
     [SerializeField] private Image _healthBar;
     [SerializeField] private Image _spiritBar;
     [SerializeField] private GameObject _statsBar;
@@ -68,7 +68,7 @@ public class PlayerStatsManager : MonoBehaviour
     {
         if (_player == null || _mainCamera == null) return;
 
-        SetStatsBarBellowPlayer();
+        // SetStatsBarBellowPlayer();
     }
 
     private void OnDestroy()
@@ -77,12 +77,12 @@ public class PlayerStatsManager : MonoBehaviour
         OnSPChanged -= UpdateSpiritBar;
     }
 
-    private void UpdateHealthBar(int currentHP, int maxHP)
+    private void UpdateHealthBar(float currentHP, float maxHP)
     {
         _healthBar.fillAmount = Mathf.Clamp01((float) currentHP / maxHP);
     }
 
-    private void UpdateSpiritBar(int currentSP, int maxSP)
+    private void UpdateSpiritBar(float currentSP, float maxSP)
     {
         _spiritBar.fillAmount = Mathf.Clamp01((float) currentSP / maxSP);
     }
@@ -102,9 +102,9 @@ public class PlayerStatsManager : MonoBehaviour
         Debug.Log("Player morreu");
     }
 
-    public void Heal(int amount)
+    public void Heal()
     {
-        CurrentHP += amount;
+        CurrentHP += _playerContext.Stats.MaxHP*0.25f;
     }
 
     private void SetStatsBarBellowPlayer()
