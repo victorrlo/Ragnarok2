@@ -104,7 +104,9 @@ public class PlayerStatsManager : MonoBehaviour
 
     public void Heal()
     {
-        CurrentHP += _playerContext.Stats.MaxHP*0.25f;
+        float amount = _playerContext.Stats.MaxHP*0.25f;
+        FloatingTextPool.Instance.ShowHeal(transform.position, amount);
+        CurrentHP += amount;
     }
 
     private void SetStatsBarBellowPlayer()

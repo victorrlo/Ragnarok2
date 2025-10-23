@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class CheckIfPlayerHasApples : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    private const int APPLEMAXXING = 7;
     [SerializeField] Image _appleSprite;
     [SerializeField] TextMeshProUGUI _quantity;
     [SerializeField] private Image _skillDescription;

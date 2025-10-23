@@ -16,9 +16,9 @@ public class GameController : MonoBehaviour
 #endregion
 
 #region PlayerItems
-    public int MaxApples = 7;
-    public int MaxApplesObtained = 0;
-    public int Apples = 0;
+    public int MaxApples = 99;
+    public int MaxApplesObtained = 99;
+    public int Apples = 99;
 #endregion
 
 #region Events
@@ -55,7 +55,6 @@ public class GameController : MonoBehaviour
             if (Apples > 0)
             {
                 PlayerStatsManager.Instance.Heal();
-                Debug.Log("Heals " + _playerStatsData.MaxHP*0.25);
                 Apples--;
                 // Debug.Log("Consumed apple!");
             }
