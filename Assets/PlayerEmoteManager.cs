@@ -22,7 +22,7 @@ public class PlayerEmoteManager : MonoBehaviour
 
     private void Start()
     {
-        GameController.Instance.FailedUsingApple += ShowFailEmote;
+        ItemController.Instance.FailedUsingApple += ShowFailEmote;
     }
 
     private void LateUpdate()
@@ -32,7 +32,7 @@ public class PlayerEmoteManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameController.Instance.FailedUsingApple -= ShowFailEmote;
+        ItemController.Instance.FailedUsingApple -= ShowFailEmote;
     }
 
     private void ShowFailEmote(bool failed)

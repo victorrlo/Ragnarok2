@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8c9540172627a94e8b46f9ba9aa3324, type: 3}
+  m_Name: StompPuddle
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Stomp Puddle
+  <SkillType>k__BackingField: 2
+  <Description>k__BackingField: Stomps a puddle of water and causes damage around
+    the user.
+  <Icon>k__BackingField: {fileID: -4996203822924275574, guid: 2fdade691ae9b3742b6c850e43f54582,
+    type: 3}
+  <SpCost>k__BackingField: 10
+  <Multiplier>k__BackingField: 1.5
+  <TimeOfEffect>k__BackingField: 0
+  <Range>k__BackingField: 1

@@ -1,19 +1,10 @@
 using System;
 using UnityEngine;
 
-public class GameController : MonoBehaviour
+public class ItemController : MonoBehaviour
 {
-    public static GameController Instance {get; private set;}
+    public static ItemController Instance {get; private set;}
     [SerializeField] private PlayerStatsData _playerStatsData;
-
-#region PlayerSkills
-    private bool _hasWaterBodySkill = false;
-    public bool HasWaterBodySkill => _hasWaterBodySkill;
-    private bool _hasStompPuddleSkill = false;
-    public bool HasStompPuddleSkill => _hasStompPuddleSkill;
-    private bool _hasWaterBombSkill = false;
-    public bool HasWaterBombSkill => _hasWaterBombSkill;
-#endregion
 
 #region PlayerItems
     public int MaxApples = 99;

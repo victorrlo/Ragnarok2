@@ -40,26 +40,24 @@ public class ShortcutManager : MonoBehaviour
 
     private void ItemHotkeyClicked(InputAction.CallbackContext callbackContext)
     {
-        // I need to prevent these actions if the conditions needed are not met.
-        // player has any apple?
-        // Debug.Log("Trying to consume apple...");
-        GameController.Instance.TryUseApple?.Invoke(true);
+        ItemController.Instance.TryUseApple?.Invoke(true);
     }
 
     private void SkillHotkey2Clicked(InputAction.CallbackContext callbackContext)
     {
-        // I need to prevent these actions if the conditions needed are not met.
-        // player has skill 2 already?
-        // player has SP?
-        Debug.Log("use skill 2");
+        if (SkillController.Instance.HasWaterBodySkill)
+        {
+            Debug.Log("use skill 2");
+        }
     }
 
     private void SkillHotkey3Clicked(InputAction.CallbackContext callbackContext)
     {
-         // I need to prevent these actions if the conditions needed are not met.
-        // player has skill 3 already?
-        // player has SP?
-        Debug.Log("use skill 3");
+        if (SkillController.Instance.HasWaterBodySkill)
+        {
+            var player = GameObject.FindWithTag("Player");
+            SkillController.Instance.TryUsingStompPuddle?.Invoke(player, true);
+        }
     }
 
     private void SkillHotkey4Clicked(InputAction.CallbackContext callbackContext)
@@ -79,7 +77,7 @@ public class ShortcutManager : MonoBehaviour
     { 
         _itemShortcut1.SetActive(true);
         _skillShortcut2.SetActive(true);
-        _skillShortcut3.SetActive(GameController.Instance.HasStompPuddleSkill);
-        _skillShortcut4.SetActive(GameController.Instance.HasWaterBombSkill);
+        _skillShortcut3.SetActive(SkillController.Instance.HasStompPuddleSkill);
+        _skillShortcut4.SetActive(SkillController.Instance.HasWaterBombSkill);
     }
 }

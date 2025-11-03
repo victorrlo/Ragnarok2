@@ -74,14 +74,14 @@ public class ItemManager : MonoBehaviour
         
         if (itemName == ItemName.Apple)
         {
-            if (GameController.Instance.MaxApplesObtained < GameController.Instance.MaxApples) 
+            if (ItemController.Instance.MaxApplesObtained < ItemController.Instance.MaxApples) 
             {
-                GameController.Instance.MaxApplesObtained++;
+                ItemController.Instance.MaxApplesObtained++;
             }
 
-            if (GameController.Instance.Apples < GameController.Instance.MaxApples)
+            if (ItemController.Instance.Apples < ItemController.Instance.MaxApples)
             {
-                GameController.Instance.Apples++;
+                ItemController.Instance.Apples++;
             }
         }
 

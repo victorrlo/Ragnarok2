@@ -13,9 +13,9 @@ public class CheckIfPlayerHasWaterBody : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameController.Instance.HasWaterBodySkill && !_hasActivatedSkillImage)
+        if (SkillController.Instance.HasWaterBodySkill && !_hasActivatedSkillImage)
         {
-            _skillImage.gameObject.SetActive(GameController.Instance.HasWaterBodySkill);
+            _skillImage.gameObject.SetActive(SkillController.Instance.HasWaterBodySkill);
             _hasActivatedSkillImage = true;
         }
     }
