@@ -27,6 +27,7 @@ public class PlayerMovement : GridMovement
     private void OnEnable()
     {
         _playerContext.EventBus.OnWalk += WalkToEmptyTile;
+        
         _playerContext.EventBus.OnStartAttack += StartChasing;
     }
 
@@ -129,6 +130,8 @@ public class PlayerMovement : GridMovement
 
     public void WalkToEmptyTile(Vector3Int targetPosition)
     {
+        if (this.GetComponent<PlayerControl>().GetCurrentState() is CastingState) return;
+        
         StopMovement();
 
         if (_enemy != null)
@@ -152,6 +155,8 @@ public class PlayerMovement : GridMovement
 
     public void StartChasing(StartAttackData data)
     {
+        if (this.GetComponent<PlayerControl>().GetCurrentState() is CastingState) return;
+        
         StopMovement();
         
         if (_enemy != null)
@@ -248,6 +253,16 @@ public class PlayerMovement : GridMovement
         if (_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
         _movementCoroutine = null;
+    }
+
+    public void StartCasting()
+    {
+        var coroutine = StartCoroutine(SmoothSnapOnce());
+        if (_movementCoroutine != null)
+            StopCoroutine(_movementCoroutine);
+        _movementCoroutine = null;
+        
+        coroutine = null;
     }
 
     protected override void OnStep(Vector3Int newPos) 

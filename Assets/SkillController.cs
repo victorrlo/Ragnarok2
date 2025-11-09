@@ -36,6 +36,11 @@ public class SkillController : MonoBehaviour
     {   
         DamageCellController.Instance.InvokeDamageCells?.Invoke(caster, _stompPuddleSkill);
         CastingBarPool.Instance.ShowCastingBar(caster, _stompPuddleSkill);
+
+        if (caster.CompareTag("Player"))
+        {
+            caster.GetComponent<PlayerMovement>().StopMovement();
+        }
     }
 
     private void OnDestroy()

@@ -15,6 +15,9 @@ public class ShortcutManager : MonoBehaviour
     [SerializeField] private GameObject _skillShortcut3;
     [SerializeField] private GameObject _skillShortcut4;
 
+    public System.Action<bool> OnStartCastingSkill;
+    public System.Action<bool> OnStopCastingSkill;
+
 
     private void Awake()
     {
@@ -53,10 +56,15 @@ public class ShortcutManager : MonoBehaviour
 
     private void SkillHotkey3Clicked(InputAction.CallbackContext callbackContext)
     {
-        if (SkillController.Instance.HasWaterBodySkill)
+        var player = GameObject.FindWithTag("Player");
+
+        if (player.GetComponent<PlayerControl>().GetCurrentState() is CastingState) return; 
+        
+        if (SkillController.Instance.HasStompPuddleSkill)
         {
-            var player = GameObject.FindWithTag("Player");
+            // Debug.Log("[ShortcutManager] player has stomp puddle skill and will try using it!");
             SkillController.Instance.TryUsingStompPuddle?.Invoke(player, true);
+            OnStartCastingSkill?.Invoke(true);
         }
     }
 
