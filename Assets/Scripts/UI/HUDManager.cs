@@ -17,7 +17,10 @@ public class HUDManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
 
+    private void Start()
+    {
         PlayerStatsManager.Instance.OnHPChanged += UpdateHP;
         PlayerStatsManager.Instance.OnSPChanged += UpdateSP;
     }
