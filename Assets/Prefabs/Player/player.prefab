@@ -541,6 +541,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7576e2f42eaf53449841cc2026e499fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _targetMarkerPrefab: {fileID: 1418945324112944785, guid: 8b4e3806c2cd2b04dad84e72187bffb1,
+    type: 3}
 --- !u!114 &3098075210951500468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -596,6 +598,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 313a3a5b85437bf428a9bb113b013824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentTarget: {fileID: 0}
+  _blockStateChange: 0
 --- !u!222 &5623296222279320671
 CanvasRenderer:
   m_ObjectHideFlags: 0

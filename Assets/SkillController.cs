@@ -34,13 +34,19 @@ public class SkillController : MonoBehaviour
 
     private void CastStompPuddle(GameObject caster, bool shouldCast)
     {   
+        if (caster.CompareTag("Player"))
+        {
+            caster.GetComponent<PlayerControl>().ChangeState(new CastingState());
+        }
+        
         DamageCellController.Instance.InvokeDamageCells?.Invoke(caster, _stompPuddleSkill);
         CastingBarPool.Instance.ShowCastingBar(caster, _stompPuddleSkill);
 
-        if (caster.CompareTag("Player"))
-        {
-            caster.GetComponent<PlayerMovement>().StopMovement();
-        }
+        // if (caster.CompareTag("Player"))
+        // {
+        //     caster.GetComponent<PlayerMovement>().StopMovement();
+        //     caster.GetComponent<PlayerControl>().ChangeState(new CastingState());
+        // }
     }
 
     private void OnDestroy()

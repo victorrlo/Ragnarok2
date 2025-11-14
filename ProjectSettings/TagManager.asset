@@ -9,6 +9,7 @@ TagManager:
   - Pivot
   - Marker
   - Skill
+  - Item
   layers:
   - Default
   - TransparentFX

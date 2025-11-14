@@ -27,8 +27,6 @@ public class PlayerMovement : GridMovement
     private void OnEnable()
     {
         _playerContext.EventBus.OnWalk += WalkToEmptyTile;
-        
-        _playerContext.EventBus.OnStartAttack += StartChasing;
     }
 
     protected override void Start()
@@ -56,7 +54,6 @@ public class PlayerMovement : GridMovement
     private void OnDisable()
     {
         _playerContext.EventBus.OnWalk -= WalkToEmptyTile;
-        _playerContext.EventBus.OnStartAttack -= StartChasing;
     }
 
     private void EnterDecisionWindow()
@@ -87,6 +84,12 @@ public class PlayerMovement : GridMovement
         yield return new WaitForSeconds(1f + bias);
 
         _currentPosition = GridManager.Instance.WorldToCell(transform.position);
+        if (_enemy == null)
+        {
+            StopCoroutine(_decisionCoroutine);
+            _decisionCoroutine = null;
+            yield break;
+        }
         _targetPosition = GridManager.Instance.WorldToCell(_enemy.transform.position);
 
         _isWaitingDecision = false;

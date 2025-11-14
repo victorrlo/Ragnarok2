@@ -6,8 +6,8 @@ public class PlayerEventBus : MonoBehaviour
     public event Action<GameObject> OnGetItem;
     public event Action<Vector3Int> OnWalk;
     public event Action<DamageEventData> OnDamaged;
-    public event Action<StartAttackData> OnStartAttack;
-    public event Action OnStopAttack;
+    // public event Action<StartAttackData> OnStartAttack;
+    // public event Action OnStopAttack;
     public event Action<StartAttackData> OnTargetMovedAway;
 
     public void RaiseGetItem(GameObject item)
@@ -19,15 +19,15 @@ public class PlayerEventBus : MonoBehaviour
     {
         OnWalk?.Invoke(position);
     }
-    public void RaiseStartAttack(StartAttackData data)
-    {
-        OnStartAttack?.Invoke(data);
-    }
+    // public void RaiseStartAttack(StartAttackData data)
+    // {
+    //     OnStartAttack?.Invoke(data);
+    // }
 
-    public void RaiseStopAttack()
-    {
-        OnStopAttack?.Invoke();
-    }
+    // public void RaiseStopAttack()
+    // {
+    //     OnStopAttack?.Invoke();
+    // }
 
     public void RaiseOnDamaged(DamageEventData data)
     {

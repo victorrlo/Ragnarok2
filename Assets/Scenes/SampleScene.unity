@@ -17188,18 +17188,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe2b8281549a924da71d5262d7ddfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2068902511 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4251633496518138753, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
-    type: 3}
-  m_PrefabInstance: {fileID: 713138550038421353}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7482744201cc834f9d58c9c47d0b5c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2069576335 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 606757252076218065, guid: ddfc5633e99af1e4490cfe802331edfa,
@@ -18263,11 +18251,6 @@ PrefabInstance:
       propertyPath: m_PixelPerfect
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3146769271444083718, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
-        type: 3}
-      propertyPath: <StatsManager>k__BackingField
-      value: 
-      objectReference: {fileID: 2068902511}
     - target: {fileID: 3398113918957258507, guid: 828a0316dbb4b8c47aeed58ef38e6b02,
         type: 3}
       propertyPath: m_IsActive
@@ -18935,6 +18918,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: apple
+      objectReference: {fileID: 0}
+    - target: {fileID: 4141884331512479388, guid: 92f4bd74f423ccf4da89216d57fdbdf3,
+        type: 3}
+      propertyPath: m_TagString
+      value: Item
       objectReference: {fileID: 0}
     - target: {fileID: 6975989697917021886, guid: 92f4bd74f423ccf4da89216d57fdbdf3,
         type: 3}
