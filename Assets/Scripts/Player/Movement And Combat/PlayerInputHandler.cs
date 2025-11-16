@@ -56,7 +56,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void ClickOnItem()
     {
-        Debug.Log("ClickOnItem");
+        // Debug.Log("ClickOnItem");
         _context.Control.SetCurrentTarget(_target);
 
         Vector3Int player = GridManager.Instance.WorldToCell(this.transform.position);
@@ -74,7 +74,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void ClickOnEnemy()
     {
-        Debug.Log("ClickOnEnemy");
+        // Debug.Log("ClickOnEnemy");
         _context.Control.SetCurrentTarget(_target);
 
         Vector3Int player = GridManager.Instance.WorldToCell(this.transform.position);
@@ -133,7 +133,7 @@ public class PlayerInputHandler : MonoBehaviour
         }
 
         marker.AttachTo(_target.transform);
-        Debug.Log("marked target!");
+        // Debug.Log("marked target!");
     }
 
     private void ClearMarker()

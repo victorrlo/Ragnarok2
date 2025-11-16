@@ -60,7 +60,7 @@ public class UiCustomCursor : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            return hit.collider.GetComponent<ItemDataLoader>() != null;
+            return hit.collider.tag.Equals("Item");
         }
 
         return false;

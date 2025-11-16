@@ -39,7 +39,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (_blockStateChange) return;
         
-        Debug.Log($"[Player Control] change player state to {newState}!");
+        // Debug.Log($"[Player Control] change player state to {newState}!");
 
         _currentState?.Exit();
         _currentState = newState;
@@ -229,8 +229,8 @@ public class WalkingState : IPlayerState
 
     private void OnStep(Vector3Int newCell)
     {
-        //add step-related logic
-        //play footstep sound, play animation etc
+        // add step-related logic
+        // play footstep sound, play animation etc
     }
 }
 

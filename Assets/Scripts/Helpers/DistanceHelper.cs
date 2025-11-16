@@ -12,7 +12,7 @@ public static class DistanceHelper
     }
 
     // sight range used to determine if enemy should start aggresive behavior
-    public static bool IsPlayerInAggressiveReach(Transform player, EnemyAI enemy)
+    public static bool IsPlayerInAggressiveReach(GameObject player, GameObject enemy)
     {
         var playerPosition = GridManager.Instance.WorldToCell(player.transform.position);
         var enemyPosition = GridManager.Instance.WorldToCell(enemy.transform.position);
