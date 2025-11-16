@@ -461,7 +461,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8508421962512573198}
   - component: {fileID: 3146769271444083718}
-  - component: {fileID: 8445063274832367670}
   - component: {fileID: 4557089295165036349}
   - component: {fileID: 3098075210951500468}
   - component: {fileID: 4251633496518138753}
@@ -510,25 +509,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cf6836885dd244499d6503e1d4aa0a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Movement>k__BackingField: {fileID: 8445063274832367670}
   <Combat>k__BackingField: {fileID: 3098075210951500468}
   <StatsManager>k__BackingField: {fileID: 4251633496518138753}
   <Stats>k__BackingField: {fileID: 11400000, guid: d9462697a55816a4c99443bf28ccb686,
     type: 2}
   <EventBus>k__BackingField: {fileID: 6221343438277386392}
   <Control>k__BackingField: {fileID: 2127211974903218562}
---- !u!114 &8445063274832367670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3535711169321813307}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce9b60a6a8a13194793540f3eb56320c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4557089295165036349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -555,8 +541,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58c377260d23fa941bf87b3648718fb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetMarkerPrefab: {fileID: 1418945324112944785, guid: 8b4e3806c2cd2b04dad84e72187bffb1,
-    type: 3}
 --- !u!114 &4251633496518138753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -598,7 +582,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 313a3a5b85437bf428a9bb113b013824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentTarget: {fileID: 0}
   _blockStateChange: 0
 --- !u!222 &5623296222279320671
 CanvasRenderer:

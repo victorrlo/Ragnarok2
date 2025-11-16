@@ -8,7 +8,6 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] private GameObject _targetMarkerPrefab;
     private GameObject _activeTargetMarker;
     private GameObject _target;
-    private GameObject _previousTarget;
 
     public void Awake()
     {
@@ -30,43 +29,70 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (!context.performed) return;
 
-        // var isEnemy = CheckIfIsEnemy();
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        // if (isEnemy)
-        // {
-        //     if (_previousTarget == _target) return;
+        ClickOnEmptyCell();
 
-        //     var enemyPosition = GridManager.Instance.WorldToCell(_target.transform.position);
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            EnemyCombat enemy = hit.collider.GetComponent<EnemyCombat>();
             
-        //     // _playerContext.Control.ChangeState(new WalkingState(enemyPosition, _target));
-            
-        //     _previousTarget = _target;
+            if (enemy != null)
+            {
+                _target = enemy.gameObject;
+                ClickOnEnemy();
+                return;
+            }
 
-        //     _playerContext.Control.CurrentTarget = _target;
-            
-        //     MarkTarget(_target);
-            
-        //     return;
-        // }
+            ItemDataLoader item = hit.collider.GetComponent<ItemDataLoader>();
+            if (item != null)
+            {
+                _target = item.gameObject;
+                ClickOnItem();
+                return;
+            }
+        }
+    }
 
-        // var isItem = CheckIfIsItem();
+    private void ClickOnItem()
+    {
+        Debug.Log("ClickOnItem");
+        _context.Control.SetCurrentTarget(_target);
 
-        // if (isItem)
-        // {
-        //     if (_previousTarget == _target) return;
+        Vector3Int player = GridManager.Instance.WorldToCell(this.transform.position);
+        Vector3Int item = GridManager.Instance.WorldToCell(_target.transform.position);
 
-        //     var itemPosition = GridManager.Instance.WorldToCell(_target.transform.position);
-            
-        //     // _playerContext.Control.ChangeState(new WalkingState(itemPosition, _target));
-            
-        //     _previousTarget = _target;
+        MarkTarget(Color.yellow);
 
-        //     _playerContext.Control.CurrentTarget = _target;
+        _context.Control.ChangeState(new WalkingState());
 
-        //     ClearMarker();
-        //     return;
-        // }
+        if (!DistanceHelper.IsInAttackRange(player, item, 1))
+            return;
 
+        _context.Control.ChangeState(new PickingItemState());
+    }
+
+    private void ClickOnEnemy()
+    {
+        Debug.Log("ClickOnEnemy");
+        _context.Control.SetCurrentTarget(_target);
+
+        Vector3Int player = GridManager.Instance.WorldToCell(this.transform.position);
+        Vector3Int enemy = GridManager.Instance.WorldToCell(_target.transform.position);
+        int playerAttackRange = _context.Stats.AttackRange;
+
+        MarkTarget(Color.white);
+
+        _context.Control.ChangeState(new WalkingState());
+        
+        if (!DistanceHelper.IsInAttackRange(player, enemy, playerAttackRange))
+            return;
+
+        _context.Control.ChangeState(new AttackingState());
+    }
+
+    private void ClickOnEmptyCell()
+    {
         Vector3Int? cell = AimBehaviour.Instance._lastGridCellPosition;
         
         if (!cell.HasValue) return;
@@ -76,60 +102,15 @@ public class PlayerInputHandler : MonoBehaviour
         if (!AimBehaviour.Instance.IsWalkable(targetPosition)) return;
         
         _target = null;
-        _previousTarget = null;
-        _context.Control.CurrentTarget = null;
 
-        // _playerContext.Control.ChangeState(new WalkingState(targetPosition, null));
         _context.Control.SetDestination(targetPosition);
+        _context.Control.ClearCurrentTarget();
         _context.Control.ChangeState(new WalkingState());
 
         ClearMarker();
     }
 
-    private bool CheckIfIsItem()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            ItemDataLoader item = hit.collider.GetComponent<ItemDataLoader>();
-            if (item == null)
-            {
-                return false;
-            }
-
-            // Vector3Int itemPosition = GridManager.Instance.WorldToCell(item.gameObject.transform.position);
-            // _playerContext.Control.ChangeState(new WalkingState(itemPosition));
-            // _playerContext.Control.GetItem(item.gameObject);
-            // ClearMarker();
-            _target = item.gameObject;
-            return true;
-        }
-
-        // ClearMarker();
-        return false;
-    }
-
-    private bool CheckIfIsEnemy()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            EnemyCombat enemy = hit.collider.GetComponent<EnemyCombat>();
-            if (enemy == null)
-            {
-                return false;
-            }
-
-            _target = enemy.gameObject;
-            return true;
-        }
-
-        return false;
-    }
-
-    public void MarkTarget(GameObject target)
+    public void MarkTarget(Color color)
     {
         if (_targetMarkerPrefab == null)
         {
@@ -137,10 +118,11 @@ public class PlayerInputHandler : MonoBehaviour
             return;
         }
 
-        if (target == null) { ClearMarker(); return;}
+        if (_target == null) { ClearMarker(); return;}
 
         ClearMarker();
 
+        _targetMarkerPrefab.GetComponent<SpriteRenderer>().color = color;
         _activeTargetMarker = Instantiate(_targetMarkerPrefab);
         var marker = _activeTargetMarker.GetComponent<TargetMarker>();
 
@@ -150,7 +132,8 @@ public class PlayerInputHandler : MonoBehaviour
             return;
         }
 
-        marker.AttachTo(target.transform);
+        marker.AttachTo(_target.transform);
+        Debug.Log("marked target!");
     }
 
     private void ClearMarker()

@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 8751621337286725652}
   - component: {fileID: 8623372001872091405}
   - component: {fileID: 8108186753449970192}
-  - component: {fileID: 4515418548499018006}
   - component: {fileID: 4881691633518881664}
   m_Layer: 8
   m_Name: "trof\xE1"
@@ -75,7 +74,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Stats>k__BackingField: {fileID: 11400000, guid: e0f01d1c82be8bb41956596665c7c05a,
     type: 2}
-  <Movement>k__BackingField: {fileID: 4515418548499018006}
   <AI>k__BackingField: {fileID: 8108186753449970192}
   <EventBus>k__BackingField: {fileID: 8751621337286725652}
   <StatsManager>k__BackingField: {fileID: 4881691633518881664}
@@ -113,18 +111,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f63b949580cc154fb856b866868fbee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4515418548499018006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3409103192249029183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 164fe57cba5484547b2cadf78deb60fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &4881691633518881664

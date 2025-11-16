@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 2356809419150044404}
   - component: {fileID: 684161066911973323}
   - component: {fileID: 7116505063230905466}
-  - component: {fileID: 2309635511653084639}
   - component: {fileID: 5208352337176137190}
   m_Layer: 8
   m_Name: plofti
@@ -75,7 +74,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Stats>k__BackingField: {fileID: 11400000, guid: b6609764237b74748afdb9c06efc908a,
     type: 2}
-  <Movement>k__BackingField: {fileID: 2309635511653084639}
   <AI>k__BackingField: {fileID: 7116505063230905466}
   <EventBus>k__BackingField: {fileID: 2356809419150044404}
   <StatsManager>k__BackingField: {fileID: 5208352337176137190}
@@ -113,18 +111,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f63b949580cc154fb856b866868fbee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2309635511653084639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 850954093980881960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 164fe57cba5484547b2cadf78deb60fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &5208352337176137190

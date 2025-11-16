@@ -48,7 +48,7 @@ public class UiCustomCursor : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            return hit.collider.GetComponent<EnemyMovement>() != null;
+            return hit.collider.tag.Equals("Enemy");
         }
 
         return false;

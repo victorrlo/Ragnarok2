@@ -11,8 +11,6 @@ public class ItemManager : MonoBehaviour
 
     public static ItemManager Instance {get; private set;}
 
-    private bool _canGetItem = false;
-
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -28,47 +26,8 @@ public class ItemManager : MonoBehaviour
             _context.TryGetComponent<PlayerEventBus>(out _eventBus);
     }
 
-    private void OnEnable()
+    public void PickItem(GameObject item)
     {
-        _eventBus.OnGetItem += IsPlayerNearIt;
-    }
-
-    private void OnDisable()
-    {
-        _eventBus.OnGetItem -= IsPlayerNearIt;
-        StopGettingItem();
-    }
-
-    private void IsPlayerNearIt(GameObject item)
-    {
-        // Debug.Log($"IsPlayerNearIt? {item.GetComponent<ItemDataLoader>().Name}");
-        StopGettingItem();
-        _getItemCoroutine = StartCoroutine(TryGetItem(item.transform));
-    }
-
-    private IEnumerator TryGetItem(Transform target)
-    {
-        while(true)
-        {
-            // Debug.Log("Try get item");
-            Vector3Int playerPos = GridManager.Instance.WorldToCell(transform.position);
-            Vector3Int itemPos = GridManager.Instance.WorldToCell(target.position);
-
-            if (DistanceHelper.IsInAttackRange(playerPos, itemPos, _context.Stats.AttackRange))
-            {
-                // Debug.Log("Can get item!");
-                _canGetItem = true;
-                PickItem(target.gameObject);
-                yield break;
-            }
-
-            yield return new WaitForEndOfFrame();
-        }
-    }
-
-    private void PickItem(GameObject item)
-    {
-        if (!_canGetItem) return;
         
         var itemName = item.GetComponent<ItemDataLoader>().Name;
         
@@ -86,16 +45,6 @@ public class ItemManager : MonoBehaviour
         }
 
         Destroy(item);
-    }
-
-    private void StopGettingItem()
-    {
-        if (_getItemCoroutine != null)
-        {
-            StopCoroutine(_getItemCoroutine);
-            _getItemCoroutine = null;
-        }
-
-        _canGetItem = false;
+        _context.Control.ChangeState(new IdleState());
     }
 }
