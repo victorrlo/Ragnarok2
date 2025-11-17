@@ -13,8 +13,8 @@ public class PlayerCombat : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        _playerContext.StatsManager.TakeDamage(amount);
         FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.red);
+        _playerContext.StatsManager.TakeDamage(amount);
         // = stagger player =
         // maybe send an event for each playerState
         // that triggers the HurtingState and that HurtingState receives

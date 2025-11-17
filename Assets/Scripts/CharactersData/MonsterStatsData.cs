@@ -11,13 +11,10 @@ public class MonsterStatsData : CharacterStatsData
 
     [Header("Monster Nature")]
     [SerializeField] private MonsterNature _monsterNature;
-    [SerializeField] private int _sightRange = 1;
-
     public MonsterNature Nature => _monsterNature;
-
-    [field: SerializeField] public int  RestTime {get; private set;} // time between new movements when wandering
+    [SerializeField] private int _sightRange = 1;
     public int SightRange => _sightRange;
-    [field: SerializeField] public int AggressiveStateSightRange; 
-
+    [field: SerializeField] public int SightRangeToTurnAgressive; 
+    [field: SerializeField] public int  RestTime {get; private set;} // time between new movements when wandering
     [field: SerializeField] public float StaminaToChaseInSeconds; 
 }

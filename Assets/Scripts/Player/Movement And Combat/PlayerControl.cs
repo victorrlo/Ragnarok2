@@ -348,7 +348,6 @@ public class CastingState : IPlayerState
 {
     private GameObject _player;
     private PlayerControl _control;
-    private bool _isSnapping;
     private Coroutine _castingRoutine;
 
     public void Enter(GameObject player)
@@ -388,11 +387,9 @@ public class CastingState : IPlayerState
         }
     }
 
-        private IEnumerator SmoothSnapOnce()
+    private IEnumerator SmoothSnapOnce()
     {
-        _isSnapping = true;
         yield return GridHelper.SnapToNearestCellCenter(_player, 0.15f);
-        _isSnapping = false;
     }
 
     public void StartCasting()

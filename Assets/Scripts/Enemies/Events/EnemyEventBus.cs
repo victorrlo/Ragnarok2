@@ -4,13 +4,7 @@ using UnityEngine;
 public class EnemyEventBus : MonoBehaviour
 {   
     public event Action<DamageEventData> OnDamaged;
-    public event Action<StartAttackData> OnStartAttack;
     public event Action<StartAttackData> OnTargetMovedAway;
-
-    public void RaiseStartAttack(StartAttackData data)
-    {
-        OnStartAttack?.Invoke(data);
-    }
 
     public void RaiseOnDamaged(DamageEventData data)
     {

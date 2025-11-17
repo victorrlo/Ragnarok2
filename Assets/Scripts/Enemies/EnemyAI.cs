@@ -7,7 +7,6 @@ public class EnemyAI : MonoBehaviour
     public IEnemyState CurrentState => _currentState;
     private EnemyContext _enemyContext;
     private EnemyEventBus _enemyEventBus;
-    // private EnemyMovement _enemyMovement;
     public GameObject CurrentTarget { get; private set; }
     public Vector3Int? CurrentDestination { get; private set; }
 
@@ -18,9 +17,6 @@ public class EnemyAI : MonoBehaviour
 
         if (_enemyEventBus == null)
             _enemyContext.TryGetComponent<EnemyEventBus>(out _enemyEventBus);
-
-        // if (_enemyMovement == null)
-        //     _enemyContext.TryGetComponent<EnemyMovement>(out _enemyMovement);
 
         _currentState = null;
     }
@@ -47,7 +43,8 @@ public class EnemyAI : MonoBehaviour
 
     public void ChangeState(IEnemyState newState)
     {
-        if (_currentState != null &&  _currentState.GetType() == newState.GetType()) return;
+        if (_currentState != null && _currentState.GetType() == newState.GetType()) 
+            return;
 
         _currentState?.Exit();
         _currentState = newState;
@@ -58,7 +55,10 @@ public class EnemyAI : MonoBehaviour
     {
         if (data._target != gameObject) return;
 
-        // ChangeState(new AggressiveState());
+        var player = GameObject.FindGameObjectWithTag("Player");
+
+        SetTarget(player);
+        ChangeState(new AggressiveState());
     }
 
     public void SetTarget(GameObject target) => CurrentTarget = target;
@@ -79,12 +79,11 @@ public class PassiveState : IEnemyState
     // the passive state is the same as the walking state for the player
     // the enemy wanders randomly and if it's aggressive, it changes to aggressive state, for example,
     // which is basically the same as attacking state for the player.
-    private GameObject _enemy;
+    private GameObject _self;
     private EnemyContext _context;
     private EnemyAI _ai;
     private float _timer;
     private Vector3Int? _destination;
-    // private Coroutine _routine;
     private GameObject _player;
     private List<Node> _path;
     private int _index;
@@ -98,9 +97,9 @@ public class PassiveState : IEnemyState
     {
         Debug.Log($"{enemy.name} enter passive state");
 
-        _enemy = enemy;
-        _enemy.TryGetComponent<EnemyContext>(out _context);
-        _enemy.TryGetComponent<EnemyAI>(out _ai);
+        _self = enemy;
+        _self.TryGetComponent<EnemyContext>(out _context);
+        _self.TryGetComponent<EnemyAI>(out _ai);
 
         _player = GameObject.FindWithTag("Player");
 
@@ -111,19 +110,27 @@ public class PassiveState : IEnemyState
         _wanderRange = 2;
 
         Wander();
-        // _routine = _ai.StartCoroutine(WanderRoutine());
     }
 
     public void Execute()
     {            
-        // if (_context.Stats.Nature == MonsterStatsData.MonsterNature.Aggressive)
-            // if (_player != null && DistanceHelper.IsPlayerInAggressiveReach(_player, _enemy))
-            // {
-                // _ai.ChangeState(new AggressiveState());
-            //     return;
-            // }
 
-        // if is move, handle movement
+        // if monster is aggressive, check if player is in range
+        if (_context.Stats.Nature == MonsterStatsData.MonsterNature.Aggressive)
+            if (_player != null)
+            {
+                Vector3Int monsterPosition = GridManager.Instance.WorldToCell(_self.transform.position);
+                Vector3Int playerPosition = GridManager.Instance.WorldToCell(_player.transform.position);
+
+                if (DistanceHelper.IsInAttackRange(monsterPosition, playerPosition, _context.Stats.SightRangeToTurnAgressive))
+                {
+                    _ai.SetTarget(_player);
+                    _ai.ChangeState(new AggressiveState());
+                    return;
+                }
+            }
+
+        // if is moving, handle movement
         if (_isMoving && _destination.HasValue)
         {
             Move();
@@ -143,11 +150,6 @@ public class PassiveState : IEnemyState
 
     public void Exit()
     {
-        // if (_routine != null)
-        // {
-        //     _ai.StopCoroutine(_routine);
-        //     _routine = null;
-        // }
         _isMoving = false;
         _destination = null;
     }
@@ -157,17 +159,17 @@ public class PassiveState : IEnemyState
         if (!_isMoving || _path == null || _index >= _path.Count) return;
 
         // move towards next node
-        _enemy.transform.position = Vector3.MoveTowards
+        _self.transform.position = Vector3.MoveTowards
         (
-            _enemy.transform.position,
+            _self.transform.position,
             _nextNodePosition,
             _moveSpeed * Time.deltaTime
         );
 
-        if (Vector3.Distance(_enemy.transform.position, _nextNodePosition) < 0.1f)
+        if (Vector3.Distance(_self.transform.position, _nextNodePosition) < 0.1f)
         {
             // snap to grid
-            _enemy.transform.position = _nextNodePosition;
+            _self.transform.position = _nextNodePosition;
 
             // move index to next cell
             _index++;
@@ -186,7 +188,7 @@ public class PassiveState : IEnemyState
 
     private void Wander()
     {
-        Vector3Int monster = GridManager.Instance.WorldToCell(_enemy.transform.position);
+        Vector3Int monster = GridManager.Instance.WorldToCell(_self.transform.position);
         
         Vector3Int cell = GetRandomBorderCell(monster);
 
@@ -241,7 +243,7 @@ public class PassiveState : IEnemyState
 
     private void GoTo(Vector3Int cell)
     {
-        Vector3Int monster = GridManager.Instance.WorldToCell(_enemy.transform.position);
+        Vector3Int monster = GridManager.Instance.WorldToCell(_self.transform.position);
 
         _path = NodeManager.Instance.FindPath(monster, cell);
 
@@ -307,19 +309,141 @@ public class PassiveState : IEnemyState
 
         return new Vector3Int(x, y, 0);
     }
+}
 
-    // private IEnumerator WanderRoutine()
-    // {
-    //     int randomRestingTime = UnityEngine.Random.Range(1, _context.Stats.MaximumRestTime);
-    //     yield return new WaitForSeconds(randomRestingTime);
+public class AggressiveState : IEnemyState
+{
+    private GameObject _target;
+    private GameObject _self;
+    private EnemyContext _context;
+    private EnemyAI _ai;
+    private bool _isAttacking;
+    private float _lastAttackTime;
+    private float _chaseTimer;
+    private float _maxChaseTime;
+    private float _sightRange;
+    public void Enter(GameObject enemy)
+    {
+        Debug.Log($"{enemy.name} entered aggressive state!");
 
-    //     // _enemyContext.Movement.StartWandering();
+        _self = enemy;
+        _context = _self.GetComponent<EnemyContext>();
+        _ai = _self.GetComponent<EnemyAI>();
 
-    //     randomRestingTime = UnityEngine.Random.Range(1, _context.Stats.MaximumRestTime);
-    //     yield return new WaitForSeconds(randomRestingTime);
+        _target = _ai.CurrentTarget;        
 
-    //     _ai.ChangeState(new PassiveState());
-    // }
+        _sightRange = _context.Stats.SightRangeToTurnAgressive;
+        _maxChaseTime = _context.Stats.StaminaToChaseInSeconds;
+        _isAttacking = false;
+        _lastAttackTime = Time.time;
+        _chaseTimer = 0f;
+    }
+
+    public void Execute()
+    {
+        if (_target == null)
+        {
+            _ai.ChangeState(new PassiveState());
+            return;
+        }
+
+        Vector3Int self = GridManager.Instance.WorldToCell(_self.transform.position);
+        Vector3Int target = GridManager.Instance.WorldToCell(_target.transform.position);
+
+        float distance = Vector3Int.Distance(self, target);
+
+        // if target is too far away, lose target
+        if (distance > _sightRange)
+        {
+            Debug.Log($"{_self.name} lost sight of player");
+            _ai.ClearTarget();
+            _ai.ChangeState(new PassiveState());
+            return;
+        }
+
+        if (DistanceHelper.IsInAttackRange(self, target, _context.Stats.AttackRange))
+        {
+            _chaseTimer = 0f; // reset timer
+            Attack();
+        }
+        // target is out of attack range
+        else
+        {
+            _chaseTimer += Time.deltaTime;
+
+            if (_chaseTimer >= _maxChaseTime)
+            {
+                Debug.Log($"{_self.name} gave up chasing after {_maxChaseTime} seconds");
+                _ai.ClearTarget();
+                _ai.ChangeState(new PassiveState());
+                return;
+            }
+
+            Chase();
+        }
+    }
+
+    public void Exit()
+    {
+        _isAttacking = false;
+        _ai.ClearTarget();
+    }
+
+    private void Attack()
+    {
+        _isAttacking = true;
+
+        if (Time.time - _lastAttackTime >= _context.Stats.AttackSpeed)
+        {
+            var player = _target.GetComponent<PlayerCombat>();
+
+            if (player != null)
+            {
+                player.TakeDamage(_context.Stats.Attack);
+                _lastAttackTime = Time.time;
+
+                // maybe add casting skill logic here?
+                // the idea is that it's cast randomly
+                // for example, certain skill has 50% to be cast by the enemy, so every attack, it rolls a dice
+                TryCastingSkill();
+            }
+        }
+    }
+
+    private void Chase()
+    {
+        Vector3Int self = GridManager.Instance.WorldToCell(_self.transform.position);
+        Vector3Int player = GridManager.Instance.WorldToCell(_target.transform.position);
+
+        var path = NodeManager.Instance.FindPath(self, player);
+
+        // check if path has at least 1 step
+        if (path != null && path.Count > 1)
+        {
+            Node nextNode = path[1]; // 0 is current position, so target next step
+            Vector3 nextPosition = GridManager.Instance.GetCellCenterWorld(nextNode._gridPosition);
+
+            _self.transform.position = Vector3.MoveTowards
+            (
+                _self.transform.position,
+                nextPosition,
+                _context.Stats.MoveSpeed * Time.deltaTime
+            );
+        }
+        else
+        {
+            // no path found, the enemy might be stuck
+            Debug.Log($"{_self.name} cannot find path to player");
+        }
+    }
+
+    private void TryCastingSkill()
+    {
+        if (Random.Range(0f, 1f) < 0.5f) // 50% chance to cast
+        {
+            Debug.Log($"{_self.name} is casting a skill!");
+        }
+    }
 }
 
 // public class AggressiveState : IEnemyState

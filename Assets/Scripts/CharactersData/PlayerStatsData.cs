@@ -22,17 +22,4 @@ public class PlayerStatsData : CharacterStatsData
     {
         return _currentSP;
     }
-
-    public void LoadFromPrefs()
-    {
-        _currentHP = PlayerPrefs.GetFloat("PlayerHP", _currentHP);
-        _currentSP = PlayerPrefs.GetFloat("PlayerSP", _currentSP);
-    }
-
-    public void SaveToPrefs()
-    {
-        PlayerPrefs.SetFloat("PlayerHP", _currentHP);
-        PlayerPrefs.SetFloat("PlayerSP", _currentSP);
-        PlayerPrefs.Save();
-    }
 }
