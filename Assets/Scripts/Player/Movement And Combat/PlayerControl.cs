@@ -133,6 +133,13 @@ public class WalkingState : IPlayerState
 
         if (_destination == null)
         {
+            _player.transform.position = Vector3.MoveTowards
+            (
+                _player.transform.position,
+                _nextNodePosition,
+                _moveSpeed * Time.deltaTime
+            );
+
             _control.ChangeState(new IdleState());
             return;
         }
@@ -141,6 +148,13 @@ public class WalkingState : IPlayerState
 
         if (_path == null || _path.Count == 0)
         {
+            _player.transform.position = Vector3.MoveTowards
+            (
+                _player.transform.position,
+                _nextNodePosition,
+                _moveSpeed * Time.deltaTime
+            );
+
             _control.ChangeState(new IdleState());
             return;
         }
@@ -179,6 +193,14 @@ public class WalkingState : IPlayerState
                 if (DistanceHelper.IsInAttackRange(player, enemy, _context.Stats.AttackRange))
                 {
                     _isMoving = false;
+
+                    _player.transform.position = Vector3.MoveTowards
+                    (
+                        _player.transform.position,
+                        _nextNodePosition,
+                        _moveSpeed * Time.deltaTime
+                    );
+
                     _control.ChangeState(new AttackingState());
                     return;
                 }
@@ -198,11 +220,27 @@ public class WalkingState : IPlayerState
                 if (_target != null && _target.tag.Equals("Item"))
                 {
                     _isMoving = false;
+
+                    _player.transform.position = Vector3.MoveTowards
+                    (
+                        _player.transform.position,
+                        _nextNodePosition,
+                        _moveSpeed * Time.deltaTime
+                    );
+
                     _control.ChangeState(new PickingItemState());
                     return;
                 }
                 
                 _isMoving = false;
+
+                _player.transform.position = Vector3.MoveTowards
+                (
+                    _player.transform.position,
+                    _nextNodePosition,
+                    _moveSpeed * Time.deltaTime
+                );
+
                 _control.ChangeState(new IdleState());
                 return;
             }

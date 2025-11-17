@@ -322,6 +322,11 @@ public class AggressiveState : IEnemyState
     private float _chaseTimer;
     private float _maxChaseTime;
     private float _sightRange;
+    private List<Node> _path;
+    private int _index;
+    private Vector3 _nextNodePosition;
+    private bool _isChasing = false;
+    private float _moveSpeed;
     public void Enter(GameObject enemy)
     {
         Debug.Log($"{enemy.name} entered aggressive state!");
@@ -332,11 +337,18 @@ public class AggressiveState : IEnemyState
 
         _target = _ai.CurrentTarget;        
 
-        _sightRange = _context.Stats.SightRangeToTurnAgressive;
+        _moveSpeed = _context.Stats.MoveSpeed;
+        _sightRange = _context.Stats.SightRange;
         _maxChaseTime = _context.Stats.StaminaToChaseInSeconds;
         _isAttacking = false;
         _lastAttackTime = Time.time;
         _chaseTimer = 0f;
+
+        _isChasing = false;
+        _path = null;
+        _index = 0;
+
+        RecalculatePath();
     }
 
     public void Execute()
@@ -379,19 +391,35 @@ public class AggressiveState : IEnemyState
                 return;
             }
 
-            Chase();
+            if (_isChasing)
+            {
+                Chase();
+            }
+            else
+            {
+                RecalculatePath();
+            }
+
         }
     }
 
     public void Exit()
     {
         _isAttacking = false;
-        _ai.ClearTarget();
+        _isChasing = false;
     }
 
     private void Attack()
     {
         _isAttacking = true;
+
+        // whenever attacking, snap to grid
+        _self.transform.position = Vector3.MoveTowards
+        (
+            _self.transform.position,
+            _nextNodePosition,
+            _moveSpeed * Time.deltaTime
+        );
 
         if (Time.time - _lastAttackTime >= _context.Stats.AttackSpeed)
         {
@@ -412,29 +440,119 @@ public class AggressiveState : IEnemyState
 
     private void Chase()
     {
+        if (!_isChasing || _path == null || _index >= _path.Count) return;
+
+        _self.transform.position = Vector3.MoveTowards
+        (
+            _self.transform.position,
+            _nextNodePosition,
+            _moveSpeed * Time.deltaTime
+        );
+
+        if (Vector3.Distance(_self.transform.position, _nextNodePosition) < 0.1f)
+        {
+            _self.transform.position = _nextNodePosition;
+
+            _index++;
+
+            Vector3Int currentPosition = GridManager.Instance.WorldToCell(_self.transform.position);
+            Vector3Int positionTarget = GridManager.Instance.WorldToCell(_target.transform.position);
+
+            if (DistanceHelper.IsInAttackRange(currentPosition, positionTarget, _context.Stats.AttackRange))
+            {
+                _isChasing = false;
+                return;
+            }
+
+            if (_index >= _path.Count)
+            {
+                RecalculatePath();
+                return;
+            }
+
+            SetNextTargetCell();
+        }
+    }
+
+    private void RecalculatePath()
+    {
+        if (_target == null) return;
+
         Vector3Int self = GridManager.Instance.WorldToCell(_self.transform.position);
-        Vector3Int player = GridManager.Instance.WorldToCell(_target.transform.position);
+        Vector3Int target = GridManager.Instance.WorldToCell(_target.transform.position);
 
-        var path = NodeManager.Instance.FindPath(self, player);
+        // find a adjacent cell to player cell
+        Vector3Int attackPosition = FindAttackPosition(self, target, _context.Stats.AttackRange);
 
-        // check if path has at least 1 step
-        if (path != null && path.Count > 1)
+        _path = NodeManager.Instance.FindPath(self, attackPosition);
+
+        if (_path == null || _path.Count == 0)
         {
-            Node nextNode = path[1]; // 0 is current position, so target next step
-            Vector3 nextPosition = GridManager.Instance.GetCellCenterWorld(nextNode._gridPosition);
+            _isChasing = false;
+            return;
+        }
 
-            _self.transform.position = Vector3.MoveTowards
-            (
-                _self.transform.position,
-                nextPosition,
-                _context.Stats.MoveSpeed * Time.deltaTime
-            );
-        }
-        else
+        _index = 0;
+        _isChasing = true;
+        SetNextTargetCell();
+    }
+
+    private Vector3Int FindAttackPosition(Vector3Int positionSelf, Vector3Int positionTarget, int attackRange) 
+    {
+        // if already in attack range, do not move
+        if (DistanceHelper.IsInAttackRange(positionSelf, positionTarget, attackRange))
         {
-            // no path found, the enemy might be stuck
-            Debug.Log($"{_self.name} cannot find path to player");
+            return positionSelf;
         }
+
+        List<Vector3Int> validPositions = new List<Vector3Int>();
+
+        for (int x = -attackRange; x <= attackRange; x++)
+        {
+            for (int y = -attackRange; y <= attackRange; y++)
+            {
+                Vector3Int potentialPosition = positionTarget + new Vector3Int(x, y, 0);
+
+                if (DistanceHelper.IsInAttackRange(potentialPosition, positionTarget, attackRange) &&
+                    potentialPosition != positionTarget &&              // to prevent monster to step into player cell
+                    NodeManager.Instance.IsWalkable(potentialPosition))
+                {
+                    validPositions.Add(potentialPosition);
+                }
+            }
+        }
+
+        Vector3Int closestPosition = positionTarget;
+        float closestDistance = float.MaxValue;
+
+        foreach (Vector3Int position in validPositions)
+        {
+            float distance = Vector3Int.Distance(positionSelf, position);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestPosition = position;
+            }
+        }
+
+        return closestPosition;
+    }
+
+    private void SetNextTargetCell()
+    {
+        if (_index < _path.Count)
+        {
+            Node nextNode = _path[_index];
+            _nextNodePosition = GridManager.Instance.GetCellCenterWorld(nextNode._gridPosition);
+            OnStep(nextNode._gridPosition);
+        }
+    }
+
+    private void OnStep(Vector3Int newCell)
+    {
+        // add step-related logic
+        // play footstep sound, play animation etc
     }
 
     private void TryCastingSkill()
