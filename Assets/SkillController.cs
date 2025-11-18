@@ -13,9 +13,10 @@ public class SkillController : MonoBehaviour
     private bool _hasWaterBombSkill = false;
     public bool HasWaterBombSkill => _hasWaterBombSkill;
     #endregion
+
     #region Skills
     [SerializeField] private Skill _waterBody;
-    [SerializeField] private Skill _stompPuddleSkill;
+    [SerializeField] private Skill _stompPuddle;
     #endregion
     public Action<GameObject, bool> TryUsingStompPuddle;
 
@@ -36,11 +37,11 @@ public class SkillController : MonoBehaviour
     {   
         if (caster.CompareTag("Player"))
         {
-            caster.GetComponent<PlayerControl>().ChangeState(new CastingState());
+            var control = caster.GetComponent<PlayerControl>();
+
+            control.Casting(_stompPuddle);
+            control.ChangeState(new CastingState());
         }
-        
-        DamageCellController.Instance.InvokeDamageCells?.Invoke(caster, _stompPuddleSkill);
-        CastingBarPool.Instance.ShowCastingBar(caster, _stompPuddleSkill);
 
         // if (caster.CompareTag("Player"))
         // {

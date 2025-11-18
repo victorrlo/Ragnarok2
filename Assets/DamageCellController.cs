@@ -63,16 +63,50 @@ public class DamageCellController : MonoBehaviour
         else
             _activeDamageCells[caster] = spawnedCells;
 
-        await RemoveDamageCells(caster, skill.CastingTime);
+        await RemoveDamageCells(caster, skill, cellsAffected);
     }
 
-    private async UniTask RemoveDamageCells(GameObject caster, float castingTime)
+    private async UniTask RemoveDamageCells(GameObject caster, Skill skill, List<Vector3Int> cellsAffected)
     {
+        var castingTime = skill.CastingTime;
         await UniTask.Delay(TimeSpan.FromSeconds(castingTime));
         
         foreach (var cell in _activeDamageCells[caster])
         {
             Destroy(cell);
+        }
+
+        ApplySkillEffect(caster, skill, cellsAffected);
+    }
+
+    private void ApplySkillEffect(GameObject caster, Skill skill, List<Vector3Int> cellsAffected)
+    {
+        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Enemy");
+
+        foreach (GameObject monster in monsters)
+        {
+            Vector3Int monsterCell = GridManager.Instance.WorldToCell(monster.transform.position);
+
+            if (cellsAffected.Contains(monsterCell))
+            {
+                var monsterCombat = monster.GetComponent<EnemyCombat>();
+                var playerContext = caster.GetComponent<PlayerContext>();
+
+                if (monsterCombat == null)
+                {
+                    Debug.LogError("Couldn't find [EnemyCombat] component in monster...");
+                    return;
+                }
+
+                if (playerContext == null)
+                {
+                    Debug.LogError("Couldn't find [PlayerContext] component in player...");
+                    return;
+                }
+
+                var damage = Mathf.RoundToInt(skill.Multiplier * playerContext.Stats.Attack);
+                monsterCombat.TakeDamage(damage);
+            }
         }
     }
 

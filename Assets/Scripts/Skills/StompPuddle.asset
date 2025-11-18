@@ -19,6 +19,6 @@ MonoBehaviour:
   <Icon>k__BackingField: {fileID: -4996203822924275574, guid: 2fdade691ae9b3742b6c850e43f54582,
     type: 3}
   <SpCost>k__BackingField: 10
-  <Multiplier>k__BackingField: 1.5
+  <Multiplier>k__BackingField: 3
   <TimeOfEffect>k__BackingField: 0
   <Range>k__BackingField: 1

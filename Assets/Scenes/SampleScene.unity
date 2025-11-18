@@ -1298,7 +1298,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _waterBody: {fileID: 11400000, guid: 46cfaecd62d45ba4e89aa4824ea91c5a, type: 2}
-  _stompPuddleSkill: {fileID: 11400000, guid: b0180e57d98ddbd4cb34c41d516ed596, type: 2}
+  _stompPuddle: {fileID: 11400000, guid: b0180e57d98ddbd4cb34c41d516ed596, type: 2}
 --- !u!1001 &266426128
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -13,6 +13,7 @@ public class PlayerControl : MonoBehaviour
 
     public GameObject CurrentTarget {get; set;}
     public Vector3Int? CurrentDestination {get; set;}
+    public Skill CurrentSkill {get; set;}
 
     private void Awake()
     {
@@ -44,6 +45,16 @@ public class PlayerControl : MonoBehaviour
         _currentState?.Exit();
         _currentState = newState;
         _currentState.Enter(gameObject);
+    }
+
+    public void Casting(Skill skill)
+    {
+        CurrentSkill = skill;
+    }
+
+    public void ClearSkill()
+    {
+        CurrentSkill = null;
     }
 
     public IPlayerState GetCurrentState()
@@ -386,12 +397,14 @@ public class CastingState : IPlayerState
 {
     private GameObject _player;
     private PlayerControl _control;
+    private Skill _skill;
     private Coroutine _castingRoutine;
 
     public void Enter(GameObject player)
     {
         _player = player;
         _control = player.GetComponent<PlayerControl>();
+        _skill = _control.CurrentSkill;
 
         if (player == null)
         {
@@ -420,22 +433,41 @@ public class CastingState : IPlayerState
     { 
         if (hasFinishedCasting) 
         {
+            ApplySkillEffect();
+
             _player.GetComponent<PlayerControl>()._blockStateChange = false;
             _player.GetComponent<PlayerControl>().ChangeState(new IdleState());
         }
     }
 
+    private void ApplySkillEffect()
+    {
+        if (_skill != null)
+        {
+            switch (_skill.Name)
+            {
+                case "Stomp Puddle":
+
+                    break;
+            }
+        }
+    }
+
     private IEnumerator SmoothSnapOnce()
     {
-        yield return GridHelper.SnapToNearestCellCenter(_player, 0.15f);
+        yield return GridHelper.SnapToNearestCellCenter(_player, 0.5f);
     }
 
     public void StartCasting()
     {
-        _control.StartCoroutine(SmoothSnapOnce());
         if (_castingRoutine != null)
             _control.StopCoroutine(_castingRoutine);
         _castingRoutine = null;
+        
+        _castingRoutine = _control.StartCoroutine(SmoothSnapOnce());
+
+        DamageCellController.Instance.InvokeDamageCells?.Invoke(_player, _skill);
+        CastingBarPool.Instance.ShowCastingBar(_player, _skill);
     }
 }
 
