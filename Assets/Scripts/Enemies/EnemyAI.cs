@@ -95,7 +95,7 @@ public class PassiveState : IEnemyState
 
     public void Enter(GameObject enemy)
     {
-        Debug.Log($"{enemy.name} enter passive state");
+        // Debug.Log($"{enemy.name} enter passive state");
 
         _self = enemy;
         _self.TryGetComponent<EnemyContext>(out _context);
@@ -329,7 +329,7 @@ public class AggressiveState : IEnemyState
     private float _moveSpeed;
     public void Enter(GameObject enemy)
     {
-        Debug.Log($"{enemy.name} entered aggressive state!");
+        // Debug.Log($"{enemy.name} entered aggressive state!");
 
         _self = enemy;
         _context = _self.GetComponent<EnemyContext>();
@@ -340,7 +340,7 @@ public class AggressiveState : IEnemyState
         _moveSpeed = _context.Stats.MoveSpeed;
         _sightRange = _context.Stats.SightRange;
         _maxChaseTime = _context.Stats.StaminaToChaseInSeconds;
-        _isAttacking = false;
+        _isAttacking = true;
         _lastAttackTime = Time.time;
         _chaseTimer = 0f;
 
@@ -353,6 +353,9 @@ public class AggressiveState : IEnemyState
 
     public void Execute()
     {
+
+        if (!_isAttacking) return;
+
         if (_target == null)
         {
             _ai.ChangeState(new PassiveState());
@@ -367,7 +370,8 @@ public class AggressiveState : IEnemyState
         // if target is too far away, lose target
         if (distance > _sightRange)
         {
-            Debug.Log($"{_self.name} lost sight of player");
+            // Debug.Log($"{_self.name} lost sight of player");
+            // show emote of drop of water
             _ai.ClearTarget();
             _ai.ChangeState(new PassiveState());
             return;
@@ -411,7 +415,6 @@ public class AggressiveState : IEnemyState
 
     private void Attack()
     {
-        _isAttacking = true;
 
         // whenever attacking, snap to grid
         _self.transform.position = Vector3.MoveTowards
@@ -563,89 +566,4 @@ public class AggressiveState : IEnemyState
         }
     }
 }
-
-// public class AggressiveState : IEnemyState
-// {
-//     private GameObject _enemy;
-//     private EnemyContext _enemyContext;
-//     private GameObject _player;
-//     // private PlayerMovement _playerMovement;
-
-//     public void Enter(GameObject enemy)
-//     {
-//         _enemy = enemy;
-//         _enemy.TryGetComponent<EnemyContext>(out _enemyContext);
-        
-//         _player = GameObject.FindWithTag("Player");
-//         // _player.TryGetComponent<PlayerMovement>(out _playerMovement);
-
-//         if (_player == null)
-//         {
-//             _enemy.ChangeState(new PassiveState());
-//             return;
-//         }
-
-//         if (DistanceHelper.IsPlayerInAggressiveReach(_player.transform, _enemy))
-//         {
-//             StartChase();
-//         }
-//     }
-//     public void Execute()
-//     {
-//         if ( _player == null || DistanceHelper.IsPlayerOutOfReach(_player.transform, _enemy)) 
-//         {
-//             Debug.Log($"{_enemy.name} Show emote for tired because out of reach");
-//             _enemy.ChangeState(new PassiveState());
-//             return;
-//         }
-//     }
-
-//     public void Exit()
-//     {
-        
-//     }
-
-//     private void StartChase()
-//     {
-//         var data = new StartAttackData(_enemy.gameObject, _player);
-//         // _enemyContext.Movement.StartChasing(data);
-//     }
-// }
-
-// public class TiredState : IEnemyState
-// {
-//     private EnemyAI _enemy;
-//     private EnemyContext _enemyContext;
-//     private Coroutine _restCoroutine;
-
-//     public void Enter(EnemyAI enemy)
-//     {
-//         _enemy = enemy;
-//         _enemy.TryGetComponent<EnemyContext>(out _enemyContext);
-
-//         Debug.Log("enemy is tired. stopping path updates.");
-//         _restCoroutine = _enemy.StartCoroutine(RestAndReturnToPassive());
-//     }
-
-//     public void Execute()
-//     {
-//         // enemy is tired and resting
-//     }
-
-//     public void Exit()
-//     {
-//         if (_restCoroutine != null)
-//         {
-//             _enemy.StopCoroutine(_restCoroutine);
-//             _restCoroutine = null;
-//         }
-//     }
-
-//     private IEnumerator RestAndReturnToPassive()
-//     {
-//         yield return new WaitForSeconds(_enemyContext.Stats.MaximumRestTime);
-
-//         _enemy.ChangeState(new PassiveState());
-//     }
-// }
 

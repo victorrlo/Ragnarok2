@@ -464,6 +464,7 @@ GameObject:
   - component: {fileID: 4557089295165036349}
   - component: {fileID: 3098075210951500468}
   - component: {fileID: 4251633496518138753}
+  - component: {fileID: 1028237861697108209}
   - component: {fileID: 6221343438277386392}
   - component: {fileID: 2127211974903218562}
   - component: {fileID: 5623296222279320671}
@@ -553,11 +554,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7482744201cc834f9d58c9c47d0b5c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _runtimeStats: {fileID: 1028237861697108209}
   _healthBar: {fileID: 1822832523940546630}
   _spiritBar: {fileID: 6045447232822973436}
   _statsBar: {fileID: 6599154806112595026}
   _offset: {x: 0, y: -30, z: 0}
   _player: {fileID: 3535711169321813307}
+--- !u!114 &1028237861697108209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3535711169321813307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3a259df0fd6a2b44ba1d080b2914e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHP: 0
+  MaxSP: 0
+  Attack: 0
+  AttackRange: 0
+  Agility: 0
+  MoveSpeed: 0
+  CurrentHP: 0
+  CurrentSP: 0
 --- !u!114 &6221343438277386392
 MonoBehaviour:
   m_ObjectHideFlags: 0

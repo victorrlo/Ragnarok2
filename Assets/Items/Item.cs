@@ -18,7 +18,7 @@ public abstract class Item : ScriptableObject
     public Sprite Sprite => _sprite;
     public string Description => _description;
     public abstract ItemType Type {get;}
-    public virtual void Use(PlayerContext context){}
+    public virtual void Use(){}
 }
 
 [CreateAssetMenu(fileName = "Consumable", menuName = "Scriptable Objects/Consumable")]
@@ -28,10 +28,10 @@ public class Consumable : Item
     public override ItemType Type => ItemType.Consumable;
     [SerializeField] private string _effectDescription;
     public string EffectDescription => _effectDescription;
-    public override void Use(PlayerContext context)
+    public override void Use()
     {
-        int amount = Mathf.CeilToInt(context.Stats.MaxHP * healPercent);
-        context.StatsManager.Heal();
+        int amount = Mathf.CeilToInt(PlayerStatsManager.Instance.RunTimeStats.MaxHP * healPercent);
+        PlayerStatsManager.Instance.Heal(healPercent);
     }
 }
 

@@ -20,15 +20,7 @@ public class PlayerCombat : MonoBehaviour
         // that triggers the HurtingState and that HurtingState receives
         // as parameter the previous playerState so that after the animation is played
         // the player goes back to the previous state.
-
-        if (_playerContext.StatsManager.CurrentHP <= 0)
-        {
-            Die();
-        }
     }
     
-    private void Die()
-    {
-        Destroy(gameObject);
-    }
+
 }

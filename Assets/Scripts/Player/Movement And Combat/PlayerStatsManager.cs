@@ -1,30 +1,14 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerStatsManager : MonoBehaviour
 {
     public static PlayerStatsManager Instance {get; private set;}
+    [SerializeField] private PlayerStats _runtimeStats;
+    public PlayerStats RunTimeStats => _runtimeStats;
     private PlayerContext _playerContext;
-    public float CurrentHP {
-        get => _playerContext.Stats.GetCurrentHP(); 
-        private set
-        {
-            _playerContext.Stats._currentHP = Mathf.Clamp(value, 0, _playerContext.Stats.MaxHP);
-            OnHPChanged?.Invoke(_playerContext.Stats._currentHP, _playerContext.Stats.MaxHP);
-            if (_playerContext.Stats._currentHP <= 0)
-                Die();
-        }
-    }
-    public float CurrentSP
-    {
-        get => _playerContext.Stats.GetCurrentSP();
-        private set
-        {
-            _playerContext.Stats._currentSP = Mathf.Clamp(value, 0, _playerContext.Stats.MaxSP);
-            OnSPChanged?.Invoke(_playerContext.Stats._currentSP, _playerContext.Stats.MaxSP);
-        }
-    }
     public event Action<float, float> OnHPChanged;
     public event Action<float, float> OnSPChanged;
     [SerializeField] private Image _healthBar;
@@ -43,38 +27,87 @@ public class PlayerStatsManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
 
-        // _stats.LoadFromPrefs();
+        DontDestroyOnLoad(gameObject);
 
         OnHPChanged += UpdateHealthBar;
         OnSPChanged += UpdateSpiritBar;
 
-        _playerContext.Stats.ResetStats();
+
     }
 
     private void Start()
     {
-        OnHPChanged?.Invoke(_playerContext.Stats._currentHP, _playerContext.Stats.MaxHP);
-        OnSPChanged?.Invoke(_playerContext.Stats._currentSP, _playerContext.Stats.MaxSP);
+        var baseStats = _playerContext.Stats;
+
+        _runtimeStats
+            .MaxHP = baseStats.MaxHP;
+        _runtimeStats
+            .MaxSP  = baseStats.MaxSP;
+        _runtimeStats
+            .Attack = baseStats.Attack;
+        _runtimeStats
+            .Agility = baseStats.Agility;
+        _runtimeStats
+            .MoveSpeed = baseStats.MoveSpeed;
+        _runtimeStats
+            .AttackRange = baseStats.AttackRange;
+
+        Reset();
     }
 
     private void LateUpdate()
     {
         if (_player == null || _mainCamera == null) return;
-
-        // SetStatsBarBellowPlayer();
     }
 
     private void OnDestroy()
     {
         OnHPChanged -= UpdateHealthBar;
         OnSPChanged -= UpdateSpiritBar;
+    }
+
+    public void Reset()
+    {
+        _runtimeStats.CurrentHP = Mathf.RoundToInt(_runtimeStats.MaxHP);
+        _runtimeStats.CurrentSP = Mathf.RoundToInt(_runtimeStats.MaxSP);
+
+        OnHPChanged?.Invoke(_runtimeStats.CurrentHP, _playerContext.Stats.MaxHP);
+        OnSPChanged?.Invoke(_runtimeStats.CurrentSP, _playerContext.Stats.MaxSP);
+    }
+
+    public void Heal(float multiplier)
+    {
+        int amount = Mathf.RoundToInt(_runtimeStats.MaxHP*multiplier);
+        int newHP = _runtimeStats.CurrentHP + amount;
+
+        // prevent over healing
+        _runtimeStats.CurrentHP = Mathf.Min(newHP, _runtimeStats.MaxHP);
+
+
+        FloatingTextPool.Instance.ShowHeal(transform.position, amount);
+        OnHPChanged?.Invoke(_runtimeStats.CurrentHP, _playerContext.Stats.MaxHP);
+    }
+
+    public void TakeDamage(int amount)
+    {
+        _runtimeStats.CurrentHP -= amount;
+
+        OnHPChanged?.Invoke(_runtimeStats.CurrentHP, _playerContext.Stats.MaxHP);
+
+        if (_runtimeStats.CurrentHP <= 0)
+            Die();
+    }
+
+    public void UseSP(int amount)
+    {
+        _runtimeStats.CurrentSP -= amount;
+        OnSPChanged?.Invoke(_runtimeStats.CurrentSP, _playerContext.Stats.MaxSP);
     }
 
     private void UpdateHealthBar(float currentHP, float maxHP)
@@ -87,37 +120,9 @@ public class PlayerStatsManager : MonoBehaviour
         _spiritBar.fillAmount = Mathf.Clamp01((float) currentSP / maxSP);
     }
 
-    public void TakeDamage(int amount)
-    {
-        CurrentHP -= amount;
-    }
-
-    public void UseSP(int amount)
-    {
-        CurrentSP -= amount;
-    }
-
     private void Die()
     {
-        Debug.Log("Player morreu");
-    }
-
-    public void Heal()
-    {
-        float amount = _playerContext.Stats.MaxHP*0.25f;
-        FloatingTextPool.Instance.ShowHeal(transform.position, amount);
-        CurrentHP += amount;
-    }
-
-    private void SetStatsBarBellowPlayer()
-    {
-        _statsBar.SetActive(true);
-        if (_mainCamera == null) _mainCamera = Camera.main;
-        
-        Vector3 screenPos = _mainCamera.WorldToScreenPoint(_player.transform.position);
-
-        Vector3 targetPos = screenPos + _offset;
-        
-        _statsBar.transform.position = targetPos;
+        // handle death logic
+        Destroy(gameObject);
     }
 }

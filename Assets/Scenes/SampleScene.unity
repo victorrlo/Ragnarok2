@@ -10075,7 +10075,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b36b8a8a730f9fc41b3de442f44b3c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerStatsData: {fileID: 11400000, guid: d9462697a55816a4c99443bf28ccb686, type: 2}
+  _apple: {fileID: 11400000, guid: a9be15b536d005c47b32c835495ff1df, type: 2}
   MaxApples: 99
   MaxApplesObtained: 99
   Apples: 99

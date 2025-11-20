@@ -6,8 +6,8 @@ public class CharacterStatsData : ScriptableObject
 {
     [Header("Constants for characters behaviour")]
     [field: SerializeField] public string CharacterName {get; private set;}
-    [field: SerializeField] public float MaxHP {get; private set;}
-    [field: SerializeField] public float MaxSP {get; private set;}
+    [field: SerializeField] public int MaxHP {get; private set;}
+    [field: SerializeField] public int MaxSP {get; private set;}
     [field: SerializeField] public int Attack {get; private set;}
     [field: SerializeField] public int MoveSpeed {get; private set;}
     [field: SerializeField] public int AttackRange {get; private set;}

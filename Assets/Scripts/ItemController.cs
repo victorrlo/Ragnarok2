@@ -4,7 +4,7 @@ using UnityEngine;
 public class ItemController : MonoBehaviour
 {
     public static ItemController Instance {get; private set;}
-    [SerializeField] private PlayerStatsData _playerStatsData;
+    [SerializeField] private Consumable _apple;
 
 #region PlayerItems
     public int MaxApples = 99;
@@ -25,8 +25,6 @@ public class ItemController : MonoBehaviour
         else Destroy(gameObject);
 
         DontDestroyOnLoad(gameObject);
-
-        // _playerStatsData.LoadFromPrefs();
     }
 
     private void Start()
@@ -45,9 +43,8 @@ public class ItemController : MonoBehaviour
         {
             if (Apples > 0)
             {
-                PlayerStatsManager.Instance.Heal();
+                _apple.Use();
                 Apples--;
-                // Debug.Log("Consumed apple!");
             }
             else
             {
