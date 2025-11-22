@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MonsterStatsData", menuName = "Scriptable Objects/MonsterStatsData")]
-public class MonsterStatsData : CharacterStatsData
+public class MonsterData : CharacterStatsData
 {
     public enum MonsterNature
     {
@@ -17,4 +18,6 @@ public class MonsterStatsData : CharacterStatsData
     [field: SerializeField] public int SightRangeToTurnAgressive; 
     [field: SerializeField] public int  RestTime {get; private set;} // time between new movements when wandering
     [field: SerializeField] public float StaminaToChaseInSeconds; 
+
+    [field: SerializeField] public List<Skill> Skills; 
 }

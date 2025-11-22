@@ -18,6 +18,13 @@ public class PlayerStatsManager : MonoBehaviour
     [SerializeField] private GameObject _player;
     private Camera _mainCamera;
 
+
+    // sp recovery
+    // doing that fixed for now, but will probably add as a stat calculation later
+    private float _spRecoveryTimer = 0f;
+    private float _spRecoveryInterval = 1f; // in seconds
+    private int _spRecoveryRate = 1;
+
     private void Awake()
     {
         if (_playerContext == null)
@@ -59,6 +66,17 @@ public class PlayerStatsManager : MonoBehaviour
             .AttackRange = baseStats.AttackRange;
 
         Reset();
+    }
+
+    private void Update()
+    {
+        _spRecoveryTimer += Time.deltaTime;
+
+        if (_spRecoveryTimer >= _spRecoveryInterval)
+        {
+            RecoverSP();
+            _spRecoveryTimer = 0f;
+        }
     }
 
     private void LateUpdate()
@@ -107,7 +125,28 @@ public class PlayerStatsManager : MonoBehaviour
     public void UseSP(int amount)
     {
         _runtimeStats.CurrentSP -= amount;
+
+        _spRecoveryTimer = 0f; // reset timer every time uses a skill
+
         OnSPChanged?.Invoke(_runtimeStats.CurrentSP, _playerContext.Stats.MaxSP);
+    }
+
+    public void RecoverSP()
+    {
+        if (_runtimeStats.CurrentSP < _runtimeStats.MaxSP)
+        {
+            int oldSP = _runtimeStats.CurrentSP;
+
+            _runtimeStats.CurrentSP = Mathf.Min(_runtimeStats.CurrentSP + _spRecoveryRate, _runtimeStats.MaxSP);
+
+            int recoveredSP = _runtimeStats.CurrentSP - oldSP;
+
+            if (recoveredSP > 0)
+            {
+                // FloatingTextPool.Instance.ShowSPRecovery(transform.position, recoveredSP);
+                OnSPChanged?.Invoke(_runtimeStats.CurrentSP, _playerContext.Stats.MaxSP);
+            }
+        }
     }
 
     private void UpdateHealthBar(float currentHP, float maxHP)

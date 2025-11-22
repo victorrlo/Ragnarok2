@@ -15,11 +15,11 @@ public class FloatingHealText : MonoBehaviour
     private System.Action<FloatingHealText> OnReturnToPool;
 
     public void Initialize(float amount, float lifeTime, float fadeTime, 
-        System.Action<FloatingHealText> returnToPool)
+        System.Action<FloatingHealText> returnToPool, Color color)
     {
         int roundedAmount = (int)Math.Round(amount);
         _text.text = roundedAmount.ToString();
-        _text.color = Color.green;
+        _text.color = color;
         _lifeTime = lifeTime;
         _startPos = transform.position + _offSet;
         _timer = 0f;

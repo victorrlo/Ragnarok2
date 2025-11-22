@@ -38,16 +38,14 @@ public class SkillController : MonoBehaviour
         if (caster.CompareTag("Player"))
         {
             var control = caster.GetComponent<PlayerControl>();
+            if (PlayerStatsManager.Instance.RunTimeStats.CurrentSP >= _stompPuddle.SpCost)
+            {
+                control.Casting(_stompPuddle);
+                control.ChangeState(new CastingState());
+                PlayerStatsManager.Instance.UseSP(_stompPuddle.SpCost);
+            }
 
-            control.Casting(_stompPuddle);
-            control.ChangeState(new CastingState());
         }
-
-        // if (caster.CompareTag("Player"))
-        // {
-        //     caster.GetComponent<PlayerMovement>().StopMovement();
-        //     caster.GetComponent<PlayerControl>().ChangeState(new CastingState());
-        // }
     }
 
     private void OnDestroy()

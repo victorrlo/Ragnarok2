@@ -455,7 +455,7 @@ public class CastingState : IPlayerState
 
     private IEnumerator SmoothSnapOnce()
     {
-        yield return GridHelper.SnapToNearestCellCenter(_player, 0.5f);
+        yield return GridHelper.SnapToNearestCellCenter(_player, 0.15f);
     }
 
     public void StartCasting()

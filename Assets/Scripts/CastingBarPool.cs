@@ -42,7 +42,6 @@ public class CastingBarPool : MonoBehaviour
 
     private void HandleSkillCompletion(GameObject gameObject, Skill skill)
     {
-        Debug.Log("[CastingbarPool] Applying skill effects!");
         ShortcutManager.Instance.OnStopCastingSkill?.Invoke(true);
     }
 

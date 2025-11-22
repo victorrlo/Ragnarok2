@@ -9,6 +9,7 @@ public class EnemyStatsManager : MonoBehaviour
     public float CurrentHP => _currentHP;
     [SerializeField] private GameObject _statsBar;
     [SerializeField] private Image _healthBar;
+    [SerializeField] private Image _spiritBar;
     private bool hasBeenDamaged = false;
     private Camera _mainCamera;
     [SerializeField] private Vector3 _offset = new Vector3(0, -30f, 0);
@@ -22,21 +23,23 @@ public class EnemyStatsManager : MonoBehaviour
         _currentHP = _enemyContext.Stats.MaxHP;
         _statsBar.SetActive(false);
         _healthBar.gameObject.SetActive(false);
+        _spiritBar.gameObject.SetActive(false);
     }
 
     private void LateUpdate()
     {
         if (this.gameObject == null || _mainCamera == null) return;
 
-        ShowHealthBar();
+        ShowStatsBar();
     }
 
-    private void ShowHealthBar()
+    private void ShowStatsBar()
     {
         if (!hasBeenDamaged) return;
         else
         {
             _healthBar.gameObject.SetActive(true);
+            // _spiritBar.gameObject.SetActive(true);
             SetHealthBarPosition();
         }
     }

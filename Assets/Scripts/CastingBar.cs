@@ -22,21 +22,35 @@ public class CastingBar : MonoBehaviour
     private async UniTask AnimateCastingBar(GameObject caster, Skill skill, System.Action<CastingBar> returnToPool)
     {
         float elapsedTime = 0f;
-        float duration = skill.SpCost / 10f; // 1 second per 10 SP
+        float duration = skill.CastingTime;
         gameObject.SetActive(true);
 
         while (elapsedTime < duration)
         {
+            if (caster == null || _cancellationTokenSource.Token.IsCancellationRequested)
+            {
+                CancelCast();
+                returnToPool?.Invoke(this);
+                return;
+            }
+
             _castingBarFill.fillAmount = elapsedTime / duration;
             transform.position = caster.transform.position + _offSet;
             await UniTask.Yield(_cancellationTokenSource.Token);
             elapsedTime += Time.deltaTime;
         }
 
+        if (caster == null || _cancellationTokenSource.Token.IsCancellationRequested)
+        {
+            CancelCast();
+            returnToPool?.Invoke(this);
+            return;
+        }
+
         _castingBarFill.fillAmount = 1f;
         OnCastingComplete?.Invoke(caster, skill);
 
-        await UniTask.Yield(_cancellationTokenSource.Token);
+        await UniTask.Yield(cancellationToken: _cancellationTokenSource.Token);
         returnToPool?.Invoke(this);
     }
 

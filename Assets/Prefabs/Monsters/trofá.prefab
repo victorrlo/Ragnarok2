@@ -127,6 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _statsBar: {fileID: 9214809789409760482}
   _healthBar: {fileID: 313484319468417292}
+  _spiritBar: {fileID: 8105771522714125628}
   _offset: {x: 0, y: -30, z: 0}
 --- !u!1 &4376493866181160923
 GameObject:

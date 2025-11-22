@@ -61,7 +61,17 @@ public class FloatingTextPool : MonoBehaviour
 
         var text = _healTextPool.Dequeue();
         text.transform.position = worldPos;
-        text.Initialize(amount, 1.2f, 0.5f, ReturnHealTextToPool);
+        text.Initialize(amount, 1.2f, 0.5f, ReturnHealTextToPool, Color.green);
+    }
+
+    public void ShowSPRecovery(Vector3 worldPos, float amount)
+    {
+        if (_damageTextPool.Count == 0)
+            CreateNewHealText();
+
+        var text = _healTextPool.Dequeue();
+        text.transform.position = worldPos;
+        text.Initialize(amount, 1.2f, 0.5f, ReturnHealTextToPool, Color.blue);
     }
 
     private void ReturnDamageTextToPool(FloatingDamageText text)

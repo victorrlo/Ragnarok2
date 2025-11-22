@@ -1,4 +1,8 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 [RequireComponent(typeof(EnemyContext))]
 public class EnemyAI : MonoBehaviour
@@ -9,6 +13,8 @@ public class EnemyAI : MonoBehaviour
     private EnemyEventBus _enemyEventBus;
     public GameObject CurrentTarget { get; private set; }
     public Vector3Int? CurrentDestination { get; private set; }
+
+    private bool _blockStateChange = false;
 
     private void Awake()
     {
@@ -43,6 +49,8 @@ public class EnemyAI : MonoBehaviour
 
     public void ChangeState(IEnemyState newState)
     {
+        if (_blockStateChange) return;
+
         if (_currentState != null && _currentState.GetType() == newState.GetType()) 
             return;
 
@@ -65,6 +73,7 @@ public class EnemyAI : MonoBehaviour
     public void ClearTarget() => CurrentTarget = null;
     public void SetDestination(Vector3Int position) => CurrentDestination = position;
     public void ClearDestination() => CurrentDestination = null;
+    public void SetStateChangeBlock(bool block) => _blockStateChange = block;
 }
 
 public interface IEnemyState
@@ -116,7 +125,7 @@ public class PassiveState : IEnemyState
     {            
 
         // if monster is aggressive, check if player is in range
-        if (_context.Stats.Nature == MonsterStatsData.MonsterNature.Aggressive)
+        if (_context.Stats.Nature == MonsterData.MonsterNature.Aggressive)
             if (_player != null)
             {
                 Vector3Int monsterPosition = GridManager.Instance.WorldToCell(_self.transform.position);
@@ -279,27 +288,27 @@ public class PassiveState : IEnemyState
     {
         var range = _wanderRange;
         // random border (1 = top, 2 = right, 3 = bottom, 4 = left)
-        int border = Random.Range(1,5);
+        int border = UnityEngine.Random.Range(1,5);
 
         int x, y;
 
         switch(border)
         {
             case 1: // top border
-                x = Random.Range(center.x - range, center.x + range + 1);
+                x = UnityEngine.Random.Range(center.x - range, center.x + range + 1);
                 y = center.y + range;
                 break;
             case 2: // right border
                 x = center.x + range;
-                y = Random.Range(center.y - range, center.y + range + 1);
+                y = UnityEngine.Random.Range(center.y - range, center.y + range + 1);
                 break;
             case 3: // bottom border
-                x = Random.Range(center.x - range, center.x + range + 1);
+                x = UnityEngine.Random.Range(center.x - range, center.x + range + 1);
                 y = center.y - range;
                 break;
             case 4: // left border
                 x = center.x - range;
-                y = Random.Range(center.y - range, center.y + range + 1);
+                y = UnityEngine.Random.Range(center.y - range, center.y + range + 1);
                 break;
             default:
                 x = center.x;
@@ -430,13 +439,17 @@ public class AggressiveState : IEnemyState
 
             if (player != null)
             {
+                if (TryCastingRandomSkill())
+                {
+                    return;
+                }
+
                 player.TakeDamage(_context.Stats.Attack);
                 _lastAttackTime = Time.time;
 
                 // maybe add casting skill logic here?
                 // the idea is that it's cast randomly
                 // for example, certain skill has 50% to be cast by the enemy, so every attack, it rolls a dice
-                TryCastingSkill();
             }
         }
     }
@@ -558,12 +571,119 @@ public class AggressiveState : IEnemyState
         // play footstep sound, play animation etc
     }
 
-    private void TryCastingSkill()
+    private bool TryCastingRandomSkill()
     {
-        if (Random.Range(0f, 1f) < 0.5f) // 50% chance to cast
+        var monsterSkills = _context.Stats.Skills;
+
+        if (monsterSkills == null || monsterSkills.Count == 0)
         {
-            Debug.Log($"{_self.name} is casting a skill!");
+            return false;
         }
+
+        foreach(var skill in monsterSkills)
+        {
+            if (UnityEngine.Random.Range(0f, 100f) >= skill.ChanceOfCasting)
+            {
+                _ai.ChangeState(new EnemyCastingState(skill));
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
+public class EnemyCastingState : IEnemyState
+{
+    private GameObject _monster;
+    private EnemyContext _context;
+    private EnemyAI _ai;
+    private Skill _skill;
+    
+    private CancellationTokenSource _cancellationTokenSource;
+    public EnemyCastingState(Skill skill)
+    {
+        _skill = skill;
+    }
+
+    public void Enter(GameObject monster)
+    {
+        _monster = monster;
+        _context = monster.GetComponent<EnemyContext>();
+        _ai = monster.GetComponent<EnemyAI>();
+
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        _ai.SetStateChangeBlock(true);
+
+        StartCasting(_cancellationTokenSource.Token).Forget();
+    }
+
+    public void Execute()
+    {
+    }
+
+    public void Exit()
+    {
+        _ai.SetStateChangeBlock(false);
+    }
+
+    private async UniTask StartCasting(CancellationToken cancellationToken)
+    {
+        try 
+        {
+            IsMonsterValid();
+
+            await SnapToGrid(cancellationToken);
+
+            if (!IsMonsterValid() || cancellationToken.IsCancellationRequested) return;
+
+            CastingBarPool.Instance.ShowCastingBar(_monster, _skill);
+            DamageCellController.Instance.InvokeDamageCells?.Invoke(_monster, _skill);
+
+            await UniTask.Delay(TimeSpan.FromSeconds(_skill.CastingTime), cancellationToken: cancellationToken);
+
+            if (!IsMonsterValid() || cancellationToken.IsCancellationRequested) return;
+            
+            if (IsMonsterValid())
+            {
+                _ai.SetStateChangeBlock(false); 
+                _ai.ChangeState(new AggressiveState());
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Casting failed: {e.Message}");
+            
+            _ai.SetStateChangeBlock(false);
+            _ai.ChangeState(new AggressiveState());
+        }
+    }
+
+    private async UniTask SnapToGrid(CancellationToken cancellationToken)
+    {
+        if (!IsMonsterValid()) return;
+        
+        Vector3 targetPosition = GridManager.Instance.GetCellCenterWorld(GridManager.Instance.WorldToCell(_monster.transform.position));
+
+        float duration = 0.15f;
+        float elapsed = 0f;
+        Vector3 startPosition = _monster.transform.position;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            _monster.transform.position = Vector3.Lerp(startPosition, targetPosition, elapsed / duration);
+
+            await UniTask.Yield(cancellationToken);
+        }
+
+        if (IsMonsterValid())
+            _monster.transform.position = targetPosition;
+    }
+
+    private bool IsMonsterValid()
+    {
+        return _monster != null && _context != null && _ai != null;
+    }
+}

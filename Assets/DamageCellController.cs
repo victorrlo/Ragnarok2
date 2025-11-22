@@ -38,11 +38,11 @@ public class DamageCellController : MonoBehaviour
     {
         InvokeDamageCells -= CastDamageCellsOnGround;
     }
+    
 
     private async void CastDamageCellsOnGround(GameObject caster, Skill skill)
     {
         var damageCell = _monsterDamageCell;
-        
         
         if (caster.tag == "Player")
             damageCell = _playerDamageCell;
@@ -69,43 +69,90 @@ public class DamageCellController : MonoBehaviour
     private async UniTask RemoveDamageCells(GameObject caster, Skill skill, List<Vector3Int> cellsAffected)
     {
         var castingTime = skill.CastingTime;
-        await UniTask.Delay(TimeSpan.FromSeconds(castingTime));
-        
-        foreach (var cell in _activeDamageCells[caster])
-        {
-            Destroy(cell);
-        }
 
-        ApplySkillEffect(caster, skill, cellsAffected);
+        try
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(castingTime));
+
+            if (caster != null)
+            {
+                ApplySkillEffect(caster, skill, cellsAffected);
+            }
+
+            if (_activeDamageCells.ContainsKey(caster))
+            {
+                foreach (var cell in _activeDamageCells[caster])
+                {
+                    if (cell != null)
+                    {
+                        Destroy(cell);
+                    }
+                }
+
+                _activeDamageCells.Remove(caster);
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error removing damage cells: {e.Message}");
+        }
     }
 
     private void ApplySkillEffect(GameObject caster, Skill skill, List<Vector3Int> cellsAffected)
     {
-        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Enemy");
 
-        foreach (GameObject monster in monsters)
+        if (caster == null) return;
+
+        if (caster.CompareTag("Player"))
         {
-            Vector3Int monsterCell = GridManager.Instance.WorldToCell(monster.transform.position);
+            GameObject[] monsters = GameObject.FindGameObjectsWithTag("Enemy");
 
-            if (cellsAffected.Contains(monsterCell))
+            foreach (GameObject monster in monsters)
             {
-                var monsterCombat = monster.GetComponent<EnemyCombat>();
-                var playerContext = caster.GetComponent<PlayerContext>();
+                Vector3Int monsterCell = GridManager.Instance.WorldToCell(monster.transform.position);
 
-                if (monsterCombat == null)
+                if (cellsAffected.Contains(monsterCell))
                 {
-                    Debug.LogError("Couldn't find [EnemyCombat] component in monster...");
-                    return;
-                }
+                    var monsterCombat = monster.GetComponent<EnemyCombat>();
+                    var playerContext = caster.GetComponent<PlayerContext>();
 
-                if (playerContext == null)
+                    if (monsterCombat == null)
+                    {
+                        Debug.LogError("Couldn't find [EnemyCombat] component in monster...");
+                        return;
+                    }
+
+                    if (playerContext == null)
+                    {
+                        Debug.LogError("Couldn't find [PlayerContext] component in player...");
+                        return;
+                    }
+
+                    var damage = Mathf.RoundToInt(skill.Multiplier * playerContext.Stats.Attack);
+                    monsterCombat.TakeDamage(damage);
+                }
+            }
+        }
+
+        else if (caster.CompareTag("Enemy"))
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+            if (player != null)
+            {
+                Vector3Int playerCell = GridManager.Instance.WorldToCell(player.transform.position);
+
+                if (cellsAffected.Contains(playerCell))
                 {
-                    Debug.LogError("Couldn't find [PlayerContext] component in player...");
-                    return;
-                }
+                    var playerCombat = player.GetComponent<PlayerCombat>();
+                    var enemyContext = caster.GetComponent<EnemyContext>();
 
-                var damage = Mathf.RoundToInt(skill.Multiplier * playerContext.Stats.Attack);
-                monsterCombat.TakeDamage(damage);
+                    if (playerCombat != null && enemyContext != null)
+                    {
+                        int damage = Mathf.RoundToInt(skill.Multiplier * enemyContext.Stats.Attack);
+                        playerCombat.TakeDamage(damage);
+                    }
+                }
             }
         }
     }

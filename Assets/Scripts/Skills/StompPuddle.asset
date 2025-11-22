@@ -22,3 +22,4 @@ MonoBehaviour:
   <Multiplier>k__BackingField: 3
   <TimeOfEffect>k__BackingField: 0
   <Range>k__BackingField: 1
+  <ChanceOfCasting>k__BackingField: 50
