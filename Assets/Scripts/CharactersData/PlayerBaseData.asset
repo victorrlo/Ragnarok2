@@ -19,5 +19,3 @@ MonoBehaviour:
   <MoveSpeed>k__BackingField: 3
   <AttackRange>k__BackingField: 1
   <Agility>k__BackingField: 1
-  _currentHP: 50
-  _currentSP: 50

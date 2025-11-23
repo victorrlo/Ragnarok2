@@ -669,9 +669,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32ca4d4f0b65324d927ecb46429f54d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _apple: {fileID: 11400000, guid: a9be15b536d005c47b32c835495ff1df, type: 2}
   _appleSprite: {fileID: 8737780947545298273}
   _quantity: {fileID: 4571134293944628953}
-  _skillDescription: {fileID: 3532987355517876327}
+  _skillDescriptionObject: {fileID: 3532987355517876327}
+  _description: {fileID: 5125544177188270667}
+  _effectDescription: {fileID: 1267901468449575874}
 --- !u!1 &8454064465247424210
 GameObject:
   m_ObjectHideFlags: 0

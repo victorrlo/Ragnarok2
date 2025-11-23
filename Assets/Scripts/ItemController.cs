@@ -8,8 +8,7 @@ public class ItemController : MonoBehaviour
 
 #region PlayerItems
     public int MaxApples = 99;
-    public int MaxApplesObtained = 99;
-    public int Apples = 99;
+    public int Apples = 0;
 #endregion
 
 #region Events

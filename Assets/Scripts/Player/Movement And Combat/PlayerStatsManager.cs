@@ -101,14 +101,17 @@ public class PlayerStatsManager : MonoBehaviour
 
     public void Heal(float multiplier)
     {
+        int oldHP = _runtimeStats.CurrentHP;
         int amount = Mathf.RoundToInt(_runtimeStats.MaxHP*multiplier);
         int newHP = _runtimeStats.CurrentHP + amount;
+
+        int amountHealed = amount - oldHP;
 
         // prevent over healing
         _runtimeStats.CurrentHP = Mathf.Min(newHP, _runtimeStats.MaxHP);
 
 
-        FloatingTextPool.Instance.ShowHeal(transform.position, amount);
+        FloatingTextPool.Instance.ShowHeal(transform.position, amountHealed);
         OnHPChanged?.Invoke(_runtimeStats.CurrentHP, _playerContext.Stats.MaxHP);
     }
 

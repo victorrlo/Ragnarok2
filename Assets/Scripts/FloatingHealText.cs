@@ -14,11 +14,9 @@ public class FloatingHealText : MonoBehaviour
     private float _fadeTime;
     private System.Action<FloatingHealText> OnReturnToPool;
 
-    public void Initialize(float amount, float lifeTime, float fadeTime, 
-        System.Action<FloatingHealText> returnToPool, Color color)
+    public void Initialize(float lifeTime, float fadeTime, 
+        System.Action<FloatingHealText> returnToPool, Color color, string text = null, float amount = -1f)
     {
-        int roundedAmount = (int)Math.Round(amount);
-        _text.text = roundedAmount.ToString();
         _text.color = color;
         _lifeTime = lifeTime;
         _startPos = transform.position + _offSet;
@@ -27,9 +25,27 @@ public class FloatingHealText : MonoBehaviour
         OnReturnToPool = returnToPool;
 
         _canvasGroup.alpha = 1f;
-        gameObject.SetActive(true);
+        
+        if (amount > -1f)
+        {
+            int roundedAmount = (int)Math.Round(amount);
+            _text.text = roundedAmount.ToString();
+            
+            gameObject.SetActive(true);
 
-        StartCoroutine(AnimateText());
+            StartCoroutine(AnimateText());
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(text))
+        {
+            _text.text = text;
+            
+            gameObject.SetActive(true);
+
+            StartCoroutine(AnimateText());
+            return;
+        }
     }
 
     private void Awake()

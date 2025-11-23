@@ -33,11 +33,6 @@ public class ItemManager : MonoBehaviour
         
         if (itemName == ItemName.Apple)
         {
-            if (ItemController.Instance.MaxApplesObtained < ItemController.Instance.MaxApples) 
-            {
-                ItemController.Instance.MaxApplesObtained++;
-            }
-
             if (ItemController.Instance.Apples < ItemController.Instance.MaxApples)
             {
                 ItemController.Instance.Apples++;

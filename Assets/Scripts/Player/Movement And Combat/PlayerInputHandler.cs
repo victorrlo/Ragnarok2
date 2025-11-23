@@ -62,14 +62,19 @@ public class PlayerInputHandler : MonoBehaviour
         Vector3Int player = GridManager.Instance.WorldToCell(this.transform.position);
         Vector3Int item = GridManager.Instance.WorldToCell(_target.transform.position);
 
-        MarkTarget(Color.yellow);
+        if (DistanceHelper.IsInAttackRange(player, item, 1))
+        {
+            _context.Control.ChangeState(new PickingItemState());
+            return;
+        }
+
+        if (player == item)
+        {
+            _context.Control.ChangeState(new PickingItemState());
+            return;
+        }
 
         _context.Control.ChangeState(new WalkingState());
-
-        if (!DistanceHelper.IsInAttackRange(player, item, 1))
-            return;
-
-        _context.Control.ChangeState(new PickingItemState());
     }
 
     private void ClickOnEnemy()

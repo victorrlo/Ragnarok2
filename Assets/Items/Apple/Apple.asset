@@ -16,5 +16,5 @@ MonoBehaviour:
     type: 3}
   _name: 0
   _description: A small apple. Still consumable and not living.
-  healPercent: 0.25
-  _effectDescription: Recovers 25% of HP.
+  healPercent: 1
+  _effectDescription: Recovers 100% of HP.

@@ -5,39 +5,37 @@ using UnityEngine.UI;
 
 public class CheckIfPlayerHasApples : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    [SerializeField] Consumable _apple;
     [SerializeField] Image _appleSprite;
     [SerializeField] TextMeshProUGUI _quantity;
-    [SerializeField] private Image _skillDescription;
+    [SerializeField] private Image _skillDescriptionObject;
+    [SerializeField] private TextMeshProUGUI _description;
+    [SerializeField] private TextMeshProUGUI _effectDescription;
 
     private void FixedUpdate()
     {
-        if (ItemController.Instance.MaxApplesObtained > 0)
-        {
-            _appleSprite.gameObject.SetActive(true);
-            var quantity = ItemController.Instance.MaxApplesObtained > ItemController.Instance.MaxApples ? ItemController.Instance.MaxApples : ItemController.Instance.Apples;
-            _quantity.text = quantity.ToString() + "x";
-        }
-        else
-        {
-            _appleSprite.gameObject.SetActive(false);
-            _quantity.text = "";
-        }
+        _appleSprite.gameObject.SetActive(true);
+        var quantity = ItemController.Instance.Apples;
+        _quantity.text = quantity.ToString() + "x";
     }
 
     private void Awake()
     {
-        _skillDescription.gameObject.SetActive(false);
+        _description.text = _apple.Description;
+        var percentage = _apple.healPercent * 100;
+        _effectDescription.text = $"Recovers {percentage}% of HP.";
+        _skillDescriptionObject.gameObject.SetActive(false);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (ItemController.Instance.MaxApplesObtained > 0)
-            _skillDescription.gameObject.SetActive(true);
+        if (ItemController.Instance.Apples > 0)
+            _skillDescriptionObject.gameObject.SetActive(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (ItemController.Instance.MaxApplesObtained > 0)
-            _skillDescription.gameObject.SetActive(false);
+        if (_skillDescriptionObject.IsActive())
+            _skillDescriptionObject.gameObject.SetActive(false);
     }
 }

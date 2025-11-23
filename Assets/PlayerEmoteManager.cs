@@ -37,19 +37,20 @@ public class PlayerEmoteManager : MonoBehaviour
 
     private void ShowFailEmote(bool failed)
     {
-        Debug.Log("Try showing failed emote!");
-        if (failed)
-        {
-            Debug.Log("Showing failed emote!");
-            _spriteRenderer.sprite = _emoteFailSprite;
-            _animator.runtimeAnimatorController = _emoteFailAnimator;
-            _emote.SetActive(true);
-            _animator.Play("emote-fail_Clip", -1, 0f);
+        FloatingTextPool.Instance.ShowFailMessage(this.transform.position);
+        // Debug.Log("Try showing failed emote!");
+        // if (failed)
+        // {
+        //     Debug.Log("Showing failed emote!");
+        //     _spriteRenderer.sprite = _emoteFailSprite;
+        //     _animator.runtimeAnimatorController = _emoteFailAnimator;
+        //     _emote.SetActive(true);
+        //     _animator.Play("emote-fail_Clip", -1, 0f);
 
-            if (_emoteCoroutine != null)
-                StopCoroutine(_emoteCoroutine);
-            _emoteCoroutine = StartCoroutine(DisableAfterAnimation());
-        }
+        //     if (_emoteCoroutine != null)
+        //         StopCoroutine(_emoteCoroutine);
+        //     _emoteCoroutine = StartCoroutine(DisableAfterAnimation());
+        // }
     }
 
     private IEnumerator DisableAfterAnimation()

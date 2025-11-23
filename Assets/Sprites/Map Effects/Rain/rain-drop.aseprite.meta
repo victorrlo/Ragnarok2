@@ -125,7 +125,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: rain-drop
     originalName: 
-    pivot: {x: 0.5, y: -0.4}
+    pivot: {x: 0.5, y: -0.44444445}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -134,7 +134,7 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 8
-      height: 10
+      height: 9
     spriteID: cad1db9215e88b647a08937a6d0510f3
     spriteBone: []
     spriteOutline: []
@@ -160,7 +160,7 @@ ScriptedImporter:
         x: 4
         y: 4
         width: 8
-        height: 10
+        height: 9
       spriteId: cad1db9215e88b647a08937a6d0510f3
     linkedCells: []
     parentIndex: -1

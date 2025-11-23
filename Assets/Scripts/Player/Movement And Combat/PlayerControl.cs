@@ -222,6 +222,21 @@ public class WalkingState : IPlayerState
             {
                 Vector3Int player = GridManager.Instance.WorldToCell(_player.transform.position);
                 Vector3Int item = GridManager.Instance.WorldToCell(_target.transform.position);
+
+                if (DistanceHelper.IsInAttackRange(player, item, _context.Stats.AttackRange))
+                {
+                    _isMoving = false;
+
+                    _player.transform.position = Vector3.MoveTowards
+                    (
+                        _player.transform.position,
+                        _nextNodePosition,
+                        _moveSpeed * Time.deltaTime
+                    );
+
+                    _control.ChangeState(new PickingItemState());
+                    return;
+                }
             }
 
             // reached destination
@@ -291,42 +306,50 @@ public class AttackingState : IPlayerState
     private GameObject _enemy;
     private bool _isAttacking;
     private float _lastAttackTime;
+    private bool _firstAttack;
     
     public void Enter(GameObject player)
     {
-
-
         _player = player;
         _context = player.GetComponent<PlayerContext>();
         _control = player.GetComponent<PlayerControl>();
         _enemy = _control.CurrentTarget;
         _lastAttackTime = Time.time;
         _isAttacking = true;
+        _firstAttack = true;
     }
 
     public void Execute()
     {
         if (!_isAttacking) return;
 
-        if (_control.CurrentTarget == null || !_control.CurrentTarget.tag.Equals("Enemy"))
+        if (_enemy == null || _control.CurrentTarget == null || !_control.CurrentTarget.CompareTag("Enemy"))
         {
             _control.ChangeState(new IdleState());
             _isAttacking = false;
-            _enemy = null;
-            return;
-        }
-
-        if (_enemy == null)
-        {
-            _isAttacking = false;
-            _control.ChangeState(new IdleState());
             return;
         }
 
         // if monster is out of range, starts walking to it
         Vector3Int player = GridManager.Instance.WorldToCell(_player.transform.position);
         Vector3Int enemy = GridManager.Instance.WorldToCell(_enemy.transform.position);
-        
+
+        if (_firstAttack)
+        {
+            Attack();
+            _firstAttack = false;
+            return;
+        }
+
+        if (player == enemy)
+        {
+            if (Time.time - _lastAttackTime >= _context.Stats.AttackSpeed)
+            {
+                Attack();
+                return;
+            }
+        }
+
         if (!DistanceHelper.IsInAttackRange(player, enemy, _context.Stats.AttackRange))
         {
             Debug.Log("Enemy out of range - start chasing...");

@@ -34,6 +34,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Start()
     {
+        SnapToNearestGrid();
         ChangeState(new PassiveState());
     }
 
@@ -53,10 +54,20 @@ public class EnemyAI : MonoBehaviour
 
         if (_currentState != null && _currentState.GetType() == newState.GetType()) 
             return;
-
+        
+        Debug.Log($"Changing state to {newState}");
         _currentState?.Exit();
         _currentState = newState;
         _currentState.Enter(gameObject);
+    }
+
+    private void SnapToNearestGrid()
+    {
+        if (GridManager.Instance == null) return;
+
+        Vector3Int currentCell = GridManager.Instance.WorldToCell(this.transform.position);
+        Vector3 snappedPosition = GridManager.Instance.GetCellCenterWorld(currentCell);
+        this.transform.position = snappedPosition;
     }
 
     private void OnDamageTaken(DamageEventData data)
@@ -188,6 +199,7 @@ public class PassiveState : IEnemyState
             {
                 _isMoving = false;
                 _destination = null;
+
                 return;
             }
 
@@ -424,7 +436,6 @@ public class AggressiveState : IEnemyState
 
     private void Attack()
     {
-
         // whenever attacking, snap to grid
         _self.transform.position = Vector3.MoveTowards
         (
@@ -653,10 +664,13 @@ public class EnemyCastingState : IEnemyState
         }
         catch (Exception e)
         {
-            Debug.LogError($"Casting failed: {e.Message}");
+            // Debug.LogError($"Casting failed: {e.Message}");
             
-            _ai.SetStateChangeBlock(false);
-            _ai.ChangeState(new AggressiveState());
+            if (_ai != null)
+            {
+                _ai.SetStateChangeBlock(false);
+                _ai.ChangeState(new AggressiveState());
+            }
         }
     }
 
@@ -666,7 +680,7 @@ public class EnemyCastingState : IEnemyState
         
         Vector3 targetPosition = GridManager.Instance.GetCellCenterWorld(GridManager.Instance.WorldToCell(_monster.transform.position));
 
-        float duration = 0.15f;
+        float duration = 0.3f;
         float elapsed = 0f;
         Vector3 startPosition = _monster.transform.position;
 
