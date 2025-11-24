@@ -15,6 +15,9 @@ public class EnemyStatsManager : MonoBehaviour
     private bool hasBeenDamaged = false;
     private Camera _mainCamera;
     [SerializeField] private Vector3 _offset = new Vector3(0, -30f, 0);
+    private float _spRecoveryTimer = 0f;
+    private float _spRecoveryInterval = 1f; // in seconds
+    private int _spRecoveryRate = 1;
 
     private void Awake()
     {
@@ -29,11 +32,41 @@ public class EnemyStatsManager : MonoBehaviour
         _spiritBar.gameObject.SetActive(false);
     }
 
+    private void Update()
+    {
+        _spRecoveryTimer += Time.deltaTime;
+
+        if (_spRecoveryTimer >= _spRecoveryInterval)
+        {
+            RecoverSP();
+            _spRecoveryTimer = 0f;
+        }
+    }
+
     private void LateUpdate()
     {
         if (this.gameObject == null || _mainCamera == null) return;
 
         ShowStatsBar();
+    }
+
+    public void RecoverSP()
+    {
+        if (_currentSP < _enemyContext.Stats.MaxSP)
+        {
+            float oldSP = _currentSP;
+
+            _currentSP = Mathf.Min(_currentSP + _spRecoveryRate,  _enemyContext.Stats.MaxSP);
+
+            float recoveredSP = _currentSP - oldSP;
+
+            if (recoveredSP > 0)
+            {
+                // FloatingTextPool.Instance.ShowSPRecovery(transform.position, recoveredSP);
+            }
+        }
+
+        _spiritBar.fillAmount = (float)_currentSP / _enemyContext.Stats.MaxSP;
     }
 
     private void ShowStatsBar()

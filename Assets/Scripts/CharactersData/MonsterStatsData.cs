@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MonsterStatsData", menuName = "Scriptable Objects/MonsterStatsData")]
@@ -19,10 +20,12 @@ public class MonsterData : CharacterStatsData
     [field: SerializeField] public int  RestTime {get; private set;} // time between new movements when wandering
     [field: SerializeField] public float StaminaToChaseInSeconds; 
 
-    [field: SerializeField] public List<Skill> Skills; 
-
     [Header("Skill Overrides")]
     [SerializeField] private List<SkillCastingData> _skillOverrides = new List<SkillCastingData>();
+    public List<Skill> Skills => _skillOverrides
+        .Where(overrideData => overrideData.skill != null)
+        .Select(overrideData => overrideData.skill)
+        .ToList();
 
     private Dictionary<Skill, float> _skillChanceCache;
 
@@ -41,9 +44,9 @@ public class MonsterData : CharacterStatsData
 
         foreach (var skillData in _skillOverrides)
         {
-            if (skillData.Skill != null)
+            if (skillData.skill != null)
             {
-                _skillChanceCache[skillData.Skill] = skillData.ChanceOfCasting;
+                _skillChanceCache[skillData.skill] = skillData.chanceOfCasting;
             }
         }
     }
@@ -53,8 +56,9 @@ public class MonsterData : CharacterStatsData
 
 public class SkillCastingData
 {
-    public Skill Skill;
-    public int ChanceOfCasting;
+    public Skill skill;
+    public int chanceOfCasting;
+    public float delay;
 }
 
 
