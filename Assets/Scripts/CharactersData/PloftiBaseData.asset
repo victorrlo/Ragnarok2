@@ -24,8 +24,7 @@ MonoBehaviour:
   SightRangeToTurnAgressive: 5
   <RestTime>k__BackingField: 5
   StaminaToChaseInSeconds: 5
-  Skills:
-  - {fileID: 11400000, guid: b0180e57d98ddbd4cb34c41d516ed596, type: 2}
   _skillOverrides:
-  - Skill: {fileID: 11400000, guid: b0180e57d98ddbd4cb34c41d516ed596, type: 2}
-    ChanceOfCasting: 10
+  - skill: {fileID: 11400000, guid: b0180e57d98ddbd4cb34c41d516ed596, type: 2}
+    chanceOfCasting: 10
+    delay: 5

@@ -587,18 +587,28 @@ public class AggressiveState : IEnemyState
 
         foreach(var skill in monsterSkills)
         {
-            var chanceOfCasting = _context.Stats.GetChanceOfCasting(skill);
-
-            // Debug.Log($"Chance of casting {skill.name}: {chanceOfCasting}%");
-
-            if (UnityEngine.Random.Range(0f, 100f) <= chanceOfCasting)
+            if (_context.IsOnCooldown(skill))
             {
-                if (_context.StatsManager.CurrentSP >= skill.SpCost)
-                {
-                    // Debug.Log("Chosen skill to cast!");
-                    _chosenSkillToCast = skill;
-                    return true;
-                }
+                Debug.Log($"{skill.name} is on cooldown, skipping");
+                continue;
+            }
+
+            if (_context.StatsManager.CurrentSP < skill.SpCost)
+            {
+                Debug.Log($"Not enough SP for {skill.name}, skipping");
+                continue;
+            }
+
+            var chanceOfCasting = _context.Stats.GetChanceOfCasting(skill);
+            var roll = UnityEngine.Random.Range(0f, 100f);
+
+            Debug.Log($"Rolled {roll:F1} for {skill.name} (needed <= {chanceOfCasting}%)");
+
+            if (roll <= chanceOfCasting)
+            {
+                Debug.Log("Chosen skill to cast!");
+                _chosenSkillToCast = skill;
+                return true;
             }
         }
 
@@ -608,6 +618,7 @@ public class AggressiveState : IEnemyState
     private void CastSkill(Skill skill)
     {
         _ai.ChangeState(new EnemyCastingState(skill));
+        _context.PutOnCooldown(skill);
         _context.StatsManager.UseSP(skill.SpCost);
     }
 }

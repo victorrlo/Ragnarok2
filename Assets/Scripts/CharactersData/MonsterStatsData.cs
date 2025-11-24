@@ -28,6 +28,7 @@ public class MonsterData : CharacterStatsData
         .ToList();
 
     private Dictionary<Skill, float> _skillChanceCache;
+    private Dictionary<Skill, float> _skillCooldownCache;
 
     public float GetChanceOfCasting(Skill skill)
     {
@@ -36,6 +37,15 @@ public class MonsterData : CharacterStatsData
         return _skillChanceCache.TryGetValue(skill, out float chance)
         ? chance
         : skill.ChanceOfCasting;
+    }
+
+    public float GetSkillCooldown(Skill skill)
+    {
+        if (_skillCooldownCache == null) BuildSkillCooldownCache();
+
+        return _skillCooldownCache.TryGetValue(skill, out float delay)
+        ? delay
+        : 0f;
     }
 
     private void BuildSkillCache()
@@ -50,6 +60,19 @@ public class MonsterData : CharacterStatsData
             }
         }
     }
+
+    private void BuildSkillCooldownCache()
+    {
+        _skillCooldownCache = new Dictionary<Skill, float>();
+
+        foreach (var skillData in _skillOverrides)
+        {
+            if (skillData.skill != null)
+            {
+                _skillCooldownCache[skillData.skill] = skillData.delay;
+            }
+        }
+    }
 }
 
 [System.Serializable]
@@ -57,7 +80,7 @@ public class MonsterData : CharacterStatsData
 public class SkillCastingData
 {
     public Skill skill;
-    public int chanceOfCasting;
+    public float chanceOfCasting;
     public float delay;
 }
 
