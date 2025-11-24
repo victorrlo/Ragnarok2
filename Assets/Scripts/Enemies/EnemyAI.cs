@@ -348,6 +348,7 @@ public class AggressiveState : IEnemyState
     private Vector3 _nextNodePosition;
     private bool _isChasing = false;
     private float _moveSpeed;
+    private Skill _chosenSkillToCast;
     public void Enter(GameObject enemy)
     {
         // Debug.Log($"{enemy.name} entered aggressive state!");
@@ -364,6 +365,7 @@ public class AggressiveState : IEnemyState
         _isAttacking = true;
         _lastAttackTime = Time.time;
         _chaseTimer = 0f;
+        _chosenSkillToCast = null;
 
         _isChasing = false;
         _path = null;
@@ -450,17 +452,14 @@ public class AggressiveState : IEnemyState
 
             if (player != null)
             {
-                if (TryCastingRandomSkill())
+                if (TryCastingSkill())
                 {
+                    CastSkill(_chosenSkillToCast);
                     return;
                 }
 
                 player.TakeDamage(_context.Stats.Attack);
                 _lastAttackTime = Time.time;
-
-                // maybe add casting skill logic here?
-                // the idea is that it's cast randomly
-                // for example, certain skill has 50% to be cast by the enemy, so every attack, it rolls a dice
             }
         }
     }
@@ -582,25 +581,34 @@ public class AggressiveState : IEnemyState
         // play footstep sound, play animation etc
     }
 
-    private bool TryCastingRandomSkill()
+    private bool TryCastingSkill()
     {
         var monsterSkills = _context.Stats.Skills;
 
-        if (monsterSkills == null || monsterSkills.Count == 0)
-        {
-            return false;
-        }
-
         foreach(var skill in monsterSkills)
         {
-            if (UnityEngine.Random.Range(0f, 100f) >= skill.ChanceOfCasting)
+            var chanceOfCasting = _context.Stats.GetChanceOfCasting(skill);
+
+            // Debug.Log($"Chance of casting {skill.name}: {chanceOfCasting}%");
+
+            if (UnityEngine.Random.Range(0f, 100f) <= chanceOfCasting)
             {
-                _ai.ChangeState(new EnemyCastingState(skill));
-                return true;
+                if (_context.StatsManager.CurrentSP >= skill.SpCost)
+                {
+                    // Debug.Log("Chosen skill to cast!");
+                    _chosenSkillToCast = skill;
+                    return true;
+                }
             }
         }
 
         return false;
+    }
+
+    private void CastSkill(Skill skill)
+    {
+        _ai.ChangeState(new EnemyCastingState(skill));
+        _context.StatsManager.UseSP(skill.SpCost);
     }
 }
 
@@ -648,6 +656,7 @@ public class EnemyCastingState : IEnemyState
             await SnapToGrid(cancellationToken);
 
             if (!IsMonsterValid() || cancellationToken.IsCancellationRequested) return;
+
 
             CastingBarPool.Instance.ShowCastingBar(_monster, _skill);
             DamageCellController.Instance.InvokeDamageCells?.Invoke(_monster, _skill);

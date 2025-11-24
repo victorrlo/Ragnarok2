@@ -20,4 +20,41 @@ public class MonsterData : CharacterStatsData
     [field: SerializeField] public float StaminaToChaseInSeconds; 
 
     [field: SerializeField] public List<Skill> Skills; 
+
+    [Header("Skill Overrides")]
+    [SerializeField] private List<SkillCastingData> _skillOverrides = new List<SkillCastingData>();
+
+    private Dictionary<Skill, float> _skillChanceCache;
+
+    public float GetChanceOfCasting(Skill skill)
+    {
+        if (_skillChanceCache == null) BuildSkillCache();
+
+        return _skillChanceCache.TryGetValue(skill, out float chance)
+        ? chance
+        : skill.ChanceOfCasting;
+    }
+
+    private void BuildSkillCache()
+    {
+        _skillChanceCache = new Dictionary<Skill, float>();
+
+        foreach (var skillData in _skillOverrides)
+        {
+            if (skillData.Skill != null)
+            {
+                _skillChanceCache[skillData.Skill] = skillData.ChanceOfCasting;
+            }
+        }
+    }
 }
+
+[System.Serializable]
+
+public class SkillCastingData
+{
+    public Skill Skill;
+    public int ChanceOfCasting;
+}
+
+

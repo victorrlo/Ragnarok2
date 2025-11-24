@@ -18,5 +18,5 @@ public class Skill : ScriptableObject
     [field: SerializeField] public int Range {get; private set;}
 
     public float CastingTime => SpCost/10f;
-    [field: SerializeField] public int ChanceOfCasting {get; private set;}
+    [field: SerializeField] public float ChanceOfCasting {get; private set;}
 }
