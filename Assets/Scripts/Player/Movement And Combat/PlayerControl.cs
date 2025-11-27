@@ -306,7 +306,6 @@ public class AttackingState : IPlayerState
     private GameObject _enemy;
     private bool _isAttacking;
     private float _lastAttackTime;
-    private bool _firstAttack;
     
     public void Enter(GameObject player)
     {
@@ -316,7 +315,6 @@ public class AttackingState : IPlayerState
         _enemy = _control.CurrentTarget;
         _lastAttackTime = Time.time;
         _isAttacking = true;
-        _firstAttack = true;
     }
 
     public void Execute()
@@ -333,13 +331,6 @@ public class AttackingState : IPlayerState
         // if monster is out of range, starts walking to it
         Vector3Int player = GridManager.Instance.WorldToCell(_player.transform.position);
         Vector3Int enemy = GridManager.Instance.WorldToCell(_enemy.transform.position);
-
-        if (_firstAttack)
-        {
-            Attack();
-            _firstAttack = false;
-            return;
-        }
 
         if (player == enemy)
         {

@@ -52,6 +52,10 @@ public class PlayerInputHandler : MonoBehaviour
                 return;
             }
         }
+
+        _context.Control.ClearCurrentTarget();
+        _context.Control.ChangeState(new WalkingState());
+        ClearMarker();
     }
 
     private void ClickOnItem()
@@ -80,6 +84,13 @@ public class PlayerInputHandler : MonoBehaviour
     private void ClickOnEnemy()
     {
         // Debug.Log("ClickOnEnemy");
+
+        if (_context.Control.CurrentTarget == _target) 
+        {
+            Debug.LogError("Same enemy, should not do anything...");
+            return;
+        }
+
         _context.Control.SetCurrentTarget(_target);
 
         Vector3Int player = GridManager.Instance.WorldToCell(this.transform.position);
@@ -109,10 +120,6 @@ public class PlayerInputHandler : MonoBehaviour
         _target = null;
 
         _context.Control.SetDestination(targetPosition);
-        _context.Control.ClearCurrentTarget();
-        _context.Control.ChangeState(new WalkingState());
-
-        ClearMarker();
     }
 
     public void MarkTarget(Color color)
