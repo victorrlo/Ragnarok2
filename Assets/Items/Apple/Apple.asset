@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 60af218c17fae8048a20edcc7f86a1c6, type: 3}
   m_Name: Apple
-  m_EditorClassIdentifier: Assembly-CSharp::Consumable
+  m_EditorClassIdentifier: 
   _sprite: {fileID: -8515358143813566477, guid: f4a0ca9e619be8d41a34750cb6038b68,
     type: 3}
   _name: "Ma\xE7\xE3"
-  _englishDescription: An apple that is still consumable.
+  _englishDescription: A still consumable apple.
   _brazilianDescription: "Uma ma\xE7\xE3 ainda comest\xEDvel."
   healPercent: 1
   _effectDescription: Recupera 100% do HP.
