@@ -20174,6 +20174,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6375720020386041629, guid: ddfc5633e99af1e4490cfe802331edfa,
+        type: 3}
+      propertyPath: m_text
+      value: Custa 10 de SP.
+      objectReference: {fileID: 0}
+    - target: {fileID: 6755538559995906596, guid: ddfc5633e99af1e4490cfe802331edfa,
+        type: 3}
+      propertyPath: m_text
+      value: "Corpo d'\xC1gua: Enquanto ativa, habilidade impede jogador de sua movimenta\xE7\xE3o
+        interrompida por ataques.\n"
+      objectReference: {fileID: 0}
     - target: {fileID: 7501939016485390844, guid: ddfc5633e99af1e4490cfe802331edfa,
         type: 3}
       propertyPath: _skill
@@ -29234,6 +29245,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6375720020386041629, guid: ddfc5633e99af1e4490cfe802331edfa,
         type: 3}
+      propertyPath: m_text
+      value: Custa 10 de SP.
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375720020386041629, guid: ddfc5633e99af1e4490cfe802331edfa,
+        type: 3}
       propertyPath: m_fontSize
       value: 36
       objectReference: {fileID: 0}
@@ -29245,10 +29261,8 @@ PrefabInstance:
     - target: {fileID: 6755538559995906596, guid: ddfc5633e99af1e4490cfe802331edfa,
         type: 3}
       propertyPath: m_text
-      value: 'Stomp Puddle: While standing on top of a puddle of water, stomps it
-        causing damage around the player.
-
-'
+      value: "Pisotear Po\xE7a: Enquanto em cima de uma po\xE7a, pisoteia e causa
+        dano a sua volta.\n"
       objectReference: {fileID: 0}
     - target: {fileID: 6755538559995906596, guid: ddfc5633e99af1e4490cfe802331edfa,
         type: 3}

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: WaterBody
   <SkillType>k__BackingField: 0
-  <Description>k__BackingField: Makes your body act like water. While active, prevents
-    player from being staggered.
+  <Description>k__BackingField: "Enquanto ativa, impede jogador de ter sua movimenta\xE7\xE3o
+    interrompida."
   <Icon>k__BackingField: {fileID: -4834672142914513273, guid: 4b158dfa68c17174291e07d01965874f,
     type: 3}
   <SpCost>k__BackingField: 25

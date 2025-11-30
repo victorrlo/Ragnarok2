@@ -7,17 +7,15 @@ public enum ItemType
     Card
 }
 
-public enum ItemName { Apple };
-
 public abstract class Item : ScriptableObject
 {
     [SerializeField] private Sprite _sprite;
-    [SerializeField] private ItemName _name;
+    [SerializeField] private string _name;
     [SerializeField] private string _englishDescription;
 
     [SerializeField] private string _brazilianDescription;
     // A small apple. Still consumable and not living.
-    public ItemName Name => _name;
+    public string Name => _name;
     public Sprite Sprite => _sprite;
     public string EnglishDescription => _englishDescription;
     public string BrazilianDescription => _brazilianDescription;

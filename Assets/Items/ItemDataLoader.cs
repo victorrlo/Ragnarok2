@@ -5,7 +5,7 @@ public class ItemDataLoader : MonoBehaviour
 {
     [SerializeField] private Item _itemData;
     private SpriteRenderer _spriteRenderer;
-    public ItemName Name => _itemData.Name;
+    public string Name => _itemData.Name;
     
     private void Awake()
     {

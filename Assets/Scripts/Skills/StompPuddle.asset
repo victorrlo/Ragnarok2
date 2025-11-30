@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Stomp Puddle
   <SkillType>k__BackingField: 2
-  <Description>k__BackingField: Stomps a puddle of water and causes damage around
-    the user.
+  <Description>k__BackingField: "Pisoteia po\xE7a, causando dano a sua volta."
   <Icon>k__BackingField: {fileID: -4996203822924275574, guid: 2fdade691ae9b3742b6c850e43f54582,
     type: 3}
   <SpCost>k__BackingField: 10

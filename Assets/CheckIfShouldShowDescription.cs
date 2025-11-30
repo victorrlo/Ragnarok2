@@ -18,7 +18,7 @@ public class CheckIfShouldShowDescription : MonoBehaviour, IPointerEnterHandler,
     private void Start()
     {
         _description.text = _skill.Description;
-        _spCost.text = $"Costs {_skill.SpCost.ToString()} SP.";
+        _spCost.text = $"Custa {_skill.SpCost.ToString()} de SP.";
     }
 
     public void OnPointerEnter(PointerEventData eventData)

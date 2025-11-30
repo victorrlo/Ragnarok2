@@ -31,7 +31,7 @@ public class ItemManager : MonoBehaviour
         
         var itemName = item.GetComponent<ItemDataLoader>().Name;
         
-        if (itemName == ItemName.Apple)
+        if (itemName == "Maçã")
         {
             if (ItemController.Instance.Apples < ItemController.Instance.MaxApples)
             {
