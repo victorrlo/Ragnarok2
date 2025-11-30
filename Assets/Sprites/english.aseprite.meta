@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1fa5d74b1f1077d4b9c66508156f4e56
+guid: e91c40688dcfab84da741ed6c1787a2a
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,9 +123,9 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: icon-game
+  - name: english
     originalName: 
-    pivot: {x: 0.5, y: 0}
+    pivot: {x: 0.5, y: -0.3}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -134,8 +134,8 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 16
-      height: 15
-    spriteID: ec27f9c16e104834384e2671f4f75b3a
+      height: 10
+    spriteID: a4d7fb348a56ccd41a0690a54bf8f1ed
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -147,21 +147,21 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: 209031764
-    name: icon-game
+    guid: 1722217962
+    name: english
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: icon-game
+    - name: english
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
         x: 0
-        y: 0
+        y: 3
         width: 16
-        height: 15
-      spriteId: ec27f9c16e104834384e2671f4f75b3a
+        height: 10
+      spriteId: a4d7fb348a56ccd41a0690a54bf8f1ed
     linkedCells: []
     parentIndex: -1
   platformSettings:

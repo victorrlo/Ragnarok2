@@ -43,7 +43,10 @@ public class SkillController : MonoBehaviour
                 control.Casting(_stompPuddle);
                 control.ChangeState(new CastingState());
                 PlayerStatsManager.Instance.UseSP(_stompPuddle.SpCost);
+                return;
             }
+
+            FloatingTextPool.Instance.ShowFailMessage(caster.transform.position);
 
         }
     }

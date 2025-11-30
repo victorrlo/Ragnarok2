@@ -21,7 +21,7 @@ public class CheckIfPlayerHasApples : MonoBehaviour, IPointerEnterHandler, IPoin
 
     private void Awake()
     {
-        _description.text = _apple.Description;
+        _description.text = _apple.EnglishDescription;
         var percentage = _apple.healPercent * 100;
         _effectDescription.text = $"Recovers {percentage}% of HP.";
         _skillDescriptionObject.gameObject.SetActive(false);
