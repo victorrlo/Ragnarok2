@@ -1,17 +1,18 @@
 
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class BinaryNodeHeap
 {
     private List<Node> heap = new List<Node>();
+    private HashSet<Node> nodeSet = new HashSet<Node>();
+
     public int Count => heap.Count;
 
     public void Add(Node node)
     {
         heap.Add(node);
-        
+        nodeSet.Add(node);
+
         int bubbleIndex = heap.Count -1;
 
         while (bubbleIndex > 0)
@@ -32,16 +33,17 @@ public class BinaryNodeHeap
 
     public Node Remove()
     {
-        if (heap.Count == 0)
-        {
-            return null;
-        }
-    
+        if (heap.Count == 0) return null;
+        
         Node removedNode = heap[0];
+        nodeSet.Remove(removedNode);
+
         heap[0] = heap[heap.Count -1];
         heap.RemoveAt(heap.Count -1);
 
-        SinkDown(0);
+        if (heap.Count > 0)
+            SinkDown(0);
+
         return removedNode;
     }
 
@@ -77,7 +79,7 @@ public class BinaryNodeHeap
 
     public bool Contains(Node node)
     {
-        return heap.Contains(node);
+        return nodeSet.Contains(node);
     }
 
     public void PrintHeap()

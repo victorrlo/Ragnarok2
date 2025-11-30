@@ -91,7 +91,7 @@ public class NodeManager : MonoBehaviour
                 }
 
                 int costToNeighbor = (currentNode._gridPosition.x != neighbor._gridPosition.x &&
-                                        currentNode._gridPosition.y != neighbor._gridPosition.y) ? 14 : 10;
+                                        currentNode._gridPosition.y != neighbor._gridPosition.y) ? 10 : 10;
 
                 int newGCost = currentNode._gCost + costToNeighbor;
 
@@ -130,7 +130,7 @@ public class NodeManager : MonoBehaviour
     {
         int dx = Mathf.Abs(a._gridPosition.x - b._gridPosition.x);
         int dy = Mathf.Abs(a._gridPosition.y - b._gridPosition.y);
-        return (dx + dy) *10;
+        return Mathf.Max(dx + dy) *10;
     }
 
     List<Node> GetNeighbors(Node node)
