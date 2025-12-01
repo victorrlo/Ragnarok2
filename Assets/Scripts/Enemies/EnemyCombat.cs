@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyContext))]
@@ -27,6 +28,12 @@ public class EnemyCombat : MonoBehaviour
     private void Die()
     {
         _enemyContext.AI.CurrentState?.Exit();
+        
+        if (ItemDropManager.Instance != null)
+        {
+            ItemDropManager.Instance.DropItems(_enemyContext.Stats, transform.position);
+        }
+        
         Destroy(gameObject);
     }
 }

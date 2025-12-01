@@ -408,6 +408,8 @@ public class AggressiveState : IEnemyState
         // target is out of attack range
         else
         {
+            _lastAttackTime = Time.time;
+            
             _chaseTimer += Time.deltaTime;
 
             if (_chaseTimer >= _maxChaseTime)
@@ -438,13 +440,20 @@ public class AggressiveState : IEnemyState
 
     private void Attack()
     {
-        // whenever attacking, snap to grid
-        _self.transform.position = Vector3.MoveTowards
-        (
-            _self.transform.position,
-            _nextNodePosition,
-            _moveSpeed * Time.deltaTime
-        );
+        if (Vector3.Distance(_self.transform.position, _nextNodePosition) > 0.1f)
+        {
+            // whenever attacking, snap to grid
+            _self.transform.position = Vector3.MoveTowards
+            (
+                _self.transform.position,
+                _nextNodePosition,
+                _moveSpeed * Time.deltaTime
+            );
+
+            return;
+        }
+
+        _self.transform.position = _nextNodePosition;
 
         if (Time.time - _lastAttackTime >= _context.Stats.AttackSpeed)
         {
@@ -602,7 +611,7 @@ public class AggressiveState : IEnemyState
             var chanceOfCasting = _context.Stats.GetChanceOfCasting(skill);
             var roll = UnityEngine.Random.Range(0f, 100f);
 
-            Debug.Log($"Rolled {roll:F1} for {skill.name} (needed <= {chanceOfCasting}%)");
+            // Debug.Log($"Rolled {roll:F1} for {skill.name} (needed <= {chanceOfCasting}%)");
 
             if (roll <= chanceOfCasting)
             {

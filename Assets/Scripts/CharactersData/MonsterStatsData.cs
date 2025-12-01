@@ -20,6 +20,10 @@ public class MonsterData : CharacterStatsData
     [field: SerializeField] public int  RestTime {get; private set;} // time between new movements when wandering
     [field: SerializeField] public float StaminaToChaseInSeconds; 
 
+    [Header("Drops")]
+    [SerializeField] private List<ItemDropData> _possibleDrops = new List<ItemDropData>();
+    public List<ItemDropData> PossibleDrops => _possibleDrops;
+
     [Header("Skill Overrides")]
     [SerializeField] private List<SkillCastingData> _skillOverrides = new List<SkillCastingData>();
     public List<Skill> Skills => _skillOverrides
@@ -73,6 +77,16 @@ public class MonsterData : CharacterStatsData
             }
         }
     }
+}
+
+[System.Serializable]
+public class ItemDropData
+{
+    public Item item;
+    [Range(0f, 1f)]
+    public float dropChance = 0.5f;
+    public int minQuantity = 1;
+    public int maxQuantity = 1;
 }
 
 [System.Serializable]
