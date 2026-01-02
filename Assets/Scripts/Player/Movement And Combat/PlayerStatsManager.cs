@@ -27,25 +27,23 @@ public class PlayerStatsManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
+        DontDestroyOnLoad(gameObject);
+
         if (_playerContext == null)
             TryGetComponent<PlayerContext>(out _playerContext);
 
         _mainCamera = Camera.main;
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
-        DontDestroyOnLoad(gameObject);
 
         OnHPChanged += UpdateHealthBar;
         OnSPChanged += UpdateSpiritBar;
-
-
     }
 
     private void Start()

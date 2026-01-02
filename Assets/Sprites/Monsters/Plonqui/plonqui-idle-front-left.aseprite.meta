@@ -134,7 +134,7 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 12
-      height: 9
+      height: 7
     spriteID: 8d780c870b23c9647ba6105c2832d1c7
     spriteBone: []
     spriteOutline: []
@@ -153,9 +153,9 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 4
-      y: 21
+      y: 19
       width: 12
-      height: 8
+      height: 6
     spriteID: 44ddd9477b274cb45aa6157eeb9009a4
     spriteBone: []
     spriteOutline: []
@@ -164,7 +164,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 21}
+    uvTransform: {x: 4, y: 19}
   - name: Frame_2
     originalName: 
     pivot: {x: 0.5, y: 0}
@@ -174,9 +174,9 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 4
-      y: 37
+      y: 33
       width: 12
-      height: 7
+      height: 6
     spriteID: 97b8de2f00c5c8b448aac61710f3f9b3
     spriteBone: []
     spriteOutline: []
@@ -185,7 +185,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 37}
+    uvTransform: {x: 4, y: 33}
   - name: Frame_3
     originalName: 
     pivot: {x: 0.5, y: 0}
@@ -195,9 +195,9 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 4
-      y: 52
+      y: 47
       width: 12
-      height: 7
+      height: 6
     spriteID: 9149e71c7b66df14aa080c9baa5bb132
     spriteBone: []
     spriteOutline: []
@@ -206,7 +206,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 52}
+    uvTransform: {x: 4, y: 47}
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
@@ -223,7 +223,7 @@ ScriptedImporter:
         x: 2
         y: 0
         width: 12
-        height: 9
+        height: 7
       spriteId: 8d780c870b23c9647ba6105c2832d1c7
     - name: Frame_1
       frameIndex: 1
@@ -232,7 +232,7 @@ ScriptedImporter:
         x: 2
         y: 0
         width: 12
-        height: 8
+        height: 6
       spriteId: 44ddd9477b274cb45aa6157eeb9009a4
     - name: Frame_2
       frameIndex: 2
@@ -241,7 +241,7 @@ ScriptedImporter:
         x: 2
         y: 0
         width: 12
-        height: 7
+        height: 6
       spriteId: 97b8de2f00c5c8b448aac61710f3f9b3
     - name: Frame_3
       frameIndex: 3
@@ -250,7 +250,7 @@ ScriptedImporter:
         x: 2
         y: 0
         width: 12
-        height: 7
+        height: 6
       spriteId: 9149e71c7b66df14aa080c9baa5bb132
     linkedCells: []
     parentIndex: -1
