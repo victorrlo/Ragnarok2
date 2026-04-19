@@ -93,6 +93,7 @@ public class IdleState : IPlayerState
     private GameObject _player;
     private PlayerControl _playerControl;
     private PlayerContext _playerContext;
+    private PlayerAnimation _playerAnimation;
     
 
     public void Enter(GameObject player)
@@ -101,6 +102,7 @@ public class IdleState : IPlayerState
 
         _playerContext = _player.GetComponent<PlayerContext>();
         _playerControl = _player.GetComponent<PlayerControl>();
+        _playerAnimation = _player.GetComponent<PlayerAnimation>();
         
         _playerControl.ClearCurrentTarget();
         _playerControl.ClearDestination();
@@ -168,6 +170,8 @@ public class WalkingState : IPlayerState
             return;
         }
 
+        _context.EventBus.OnPlayerMovementStateChanged(true);
+
         _index = 0;
         _isMoving = true;
         SetNextTargetCell();
@@ -183,6 +187,19 @@ public class WalkingState : IPlayerState
             _nextNodePosition,
             _moveSpeed * Time.deltaTime
         );
+
+        Vector3 moveDirection3D = (_nextNodePosition - _player.transform.position).normalized;
+
+        Debug.LogWarning($"moveDirection3D {moveDirection3D}");
+
+        Vector2 moveDirection = new Vector2(moveDirection3D.x, moveDirection3D.z);
+
+        Debug.LogWarning($"moveDirection {moveDirection}");
+
+        if (moveDirection != Vector2.zero)
+        {
+            _context.EventBus.OnPlayerMoveDirectionChanged?.Invoke(moveDirection);
+        }
 
         if (Vector3.Distance(_player.transform.position, _nextNodePosition) < 0.1f)
         {
@@ -244,6 +261,7 @@ public class WalkingState : IPlayerState
                 if (_target != null && _target.tag.Equals("Item"))
                 {
                     _isMoving = false;
+                    _context.EventBus.OnPlayerMovementStateChanged(false);
 
                     _player.transform.position = Vector3.MoveTowards
                     (
@@ -252,11 +270,14 @@ public class WalkingState : IPlayerState
                         _moveSpeed * Time.deltaTime
                     );
 
+                    
+
                     _control.ChangeState(new PickingItemState());
                     return;
                 }
                 
                 _isMoving = false;
+                _context.EventBus.OnPlayerMovementStateChanged(false);
 
                 _player.transform.position = Vector3.MoveTowards
                 (
