@@ -394,11 +394,13 @@ public class AttackingState : IPlayerState
 public class PickingItemState : IPlayerState
 {
     private GameObject _player;
+    private PlayerContext _context;
     private PlayerControl _control;
     private GameObject _item;
     public void Enter(GameObject player)
     {
         _player = player;
+        _context = player.GetComponent<PlayerContext>();
         _control = player.GetComponent<PlayerControl>();
 
         if (_control.CurrentTarget == null || !_control.CurrentTarget.tag.Equals("Item"))
@@ -406,10 +408,18 @@ public class PickingItemState : IPlayerState
             _control.ChangeState(new IdleState());
             return;
         }
-        
-        _item = _control.CurrentTarget;
 
+        _item = _control.CurrentTarget;
+        _context.EventBus.OnPlayerPickUp?.Invoke();
+
+        _context.EventBus.OnPlayerFinishedPickingUp += PickUpItem;
+        
+    }
+
+    private void PickUpItem()
+    {
         ItemManager.Instance.PickItem(_item);
+        _context.EventBus.OnPlayerFinishedPickingUp -= PickUpItem;
     }
 
     public void Execute()

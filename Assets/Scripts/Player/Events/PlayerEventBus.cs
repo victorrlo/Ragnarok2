@@ -10,5 +10,6 @@ public class PlayerEventBus : MonoBehaviour
     public Action OnPlayerAttackTriggered;
     public Action<Vector2, Skill> OnPlayerCastingStarted;
     public Action<Vector2> OnPlayerDeath;
-    public Action <Vector2> OnPlayerPickUp;
+    public Action OnPlayerPickUp;
+    public Action OnPlayerFinishedPickingUp;
 }

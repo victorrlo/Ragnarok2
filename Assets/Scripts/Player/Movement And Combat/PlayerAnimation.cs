@@ -17,6 +17,7 @@ public class PlayerAnimation : MonoBehaviour
 {
 
     private float ATTACK_ANIMATION_LENGTH = 0.9f; // in miliseconds!
+    private float PICKUP_ANIMATION_LENGTH = 0.45f;
 
 
 
@@ -28,6 +29,7 @@ public class PlayerAnimation : MonoBehaviour
     private Vector2 _lastDirection;
     public bool SpecialAnimationPlaying {get; private set;} = false;
     private Coroutine _attackRoutine;
+    private Coroutine _pickUpRoutine;
 
 
 
@@ -48,6 +50,7 @@ public class PlayerAnimation : MonoBehaviour
         _context.EventBus.OnPlayerMoveDirectionChanged          += UpdateWalkingOrIdleDirection;
         _context.EventBus.OnPlayerMovementStateChanged          += SetMovementState;
         _context.EventBus.OnPlayerAttackTriggered               += PlayAttackAnimation;
+        _context.EventBus.OnPlayerPickUp                        += PlayPickUpAnimation;
     }
 
     private void OnDisable()
@@ -55,12 +58,36 @@ public class PlayerAnimation : MonoBehaviour
         _context.EventBus.OnPlayerMoveDirectionChanged          -= UpdateWalkingOrIdleDirection;
         _context.EventBus.OnPlayerMovementStateChanged          -= SetMovementState;
         _context.EventBus.OnPlayerAttackTriggered               -= PlayAttackAnimation;
+        _context.EventBus.OnPlayerPickUp                        -= PlayPickUpAnimation;
     }
 
     public void FaceDirection(Vector2 dir)
     {
         _lastDirection = dir;
         _currentFacing = DefineFacingDirection(dir);
+    }
+
+    private void PlayPickUpAnimation()
+    {
+        if (_pickUpRoutine != null)
+            StopCoroutine(_pickUpRoutine);
+
+        _pickUpRoutine = StartCoroutine(PlayPickUpRoutine());
+    }
+
+    private IEnumerator PlayPickUpRoutine()
+    {
+        SpecialAnimationPlaying = true;
+        ChangeAnimation(GetPickUpItemAnimationString(_currentFacing));
+
+        yield return new WaitForSeconds(PICKUP_ANIMATION_LENGTH);
+
+        _context.EventBus.OnPlayerFinishedPickingUp?.Invoke();
+
+        SpecialAnimationPlaying = false;
+        _pickUpRoutine = null;
+
+        UpdateWalkingOrIdleDirection(_lastDirection);        
     }
 
     private void PlayAttackAnimation()
@@ -118,6 +145,26 @@ public class PlayerAnimation : MonoBehaviour
         var animationString = GetWalkingOrIdleAnimationString(_currentFacing);
 
         ChangeAnimation(animationString);
+    }
+
+    private string GetPickUpItemAnimationString(Direction dir)
+    {
+        string prefix = "pick";
+
+        return dir switch
+        {
+            Direction.BackLeft      =>$"{prefix}-diagonal-back-left",
+            Direction.Left          =>$"{prefix}-diagonal-back-left",
+
+            Direction.Front         =>$"{prefix}-diagonal-front-right",
+            Direction.FrontRight    =>$"{prefix}-diagonal-front-right",
+            
+            Direction.FrontLeft     =>$"{prefix}-diagonal-front-left",
+
+            Direction.BackRight     =>$"{prefix}-diagonal-back-right",
+            Direction.Back          =>$"{prefix}-diagonal-back-right",
+            _                       =>$"{prefix}-diagonal-back-right"
+        };
     }
 
     private string GetWalkingOrIdleAnimationString(Direction dir)
