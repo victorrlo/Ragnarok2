@@ -9,6 +9,12 @@ public class PlayerInputHandler : MonoBehaviour
     private GameObject _activeTargetMarker;
     private GameObject _target;
 
+#region PendingAction
+    private GameObject _pendingTarget;
+    private Vector3Int? _pendingDestination;
+    private bool _hasPendingAction;
+#endregion
+
     public void Awake()
     {
         if (_context == null)
@@ -25,9 +31,27 @@ public class PlayerInputHandler : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        if (_context.Animation != null)
+            _context.EventBus.OnSpecialAnimationFinished += ExecutePendingAction;
+    }
+
+    private void OnDisable()
+    {
+        if (_context.Animation != null)
+            _context.EventBus.OnSpecialAnimationFinished -= ExecutePendingAction;
+    }
+
     public void OnMouseClick(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
+
+        if (_context.Animation.SpecialAnimationPlaying)
+        {
+            StorePendingAction();
+            return;
+        }
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -56,6 +80,73 @@ public class PlayerInputHandler : MonoBehaviour
         _context.Control.ClearCurrentTarget();
         _context.Control.ChangeState(new WalkingState());
         ClearMarker();
+    }
+
+    private void StorePendingAction()
+    {
+        ClearPendingAction();
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (hit.collider.TryGetComponent<EnemyCombat>(out _))
+            {
+                _pendingTarget = hit.collider.gameObject;
+            }
+            else if (hit.collider.TryGetComponent<ItemDataLoader>(out _))
+            {
+                _pendingTarget = hit.collider.gameObject;
+            }
+            else
+            {
+                _pendingDestination = AimBehaviour.Instance._lastGridCellPosition;
+            }
+        }
+        else
+        {
+            _pendingDestination = AimBehaviour.Instance._lastGridCellPosition;
+        }
+
+        _hasPendingAction = true;
+    }
+
+    private void ExecutePendingAction()
+    {
+        if (!_hasPendingAction) return;
+        
+        _hasPendingAction = false;
+
+        if (_pendingTarget != null)
+        {
+            _target = _pendingTarget;
+            _pendingTarget = null;
+
+            if (_target.TryGetComponent<EnemyCombat>(out _))
+                ClickOnEnemy();
+            if (_target.TryGetComponent<ItemDataLoader>(out _))
+                ClickOnItem();
+        }
+        else if (_pendingDestination.HasValue)
+        {
+            Vector3Int destination = _pendingDestination.Value;
+            _pendingDestination = null;
+
+            if (AimBehaviour.Instance.IsWalkable(destination))
+            {
+                _context.Control.SetDestination(destination);
+                _context.Control.ClearCurrentTarget();
+                _context.Control.ChangeState(new WalkingState());
+                ClearMarker();
+            }
+        }
+    }
+
+    private void ClearPendingAction()
+    {
+        _pendingTarget = null;
+        _pendingDestination = null;
+        _hasPendingAction = false;
     }
 
     private void ClickOnItem()

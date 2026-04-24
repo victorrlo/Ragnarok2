@@ -7,5 +7,9 @@ public class PlayerEventBus : MonoBehaviour
     public Action<bool> OnPlayerMovementStateChanged;
     public Action<Vector2> OnPlayerStopped;
 
-    public Action<Transform> OnPlayerFaceTarget;
+    public Action OnSpecialAnimationFinished;
+    public Action OnPlayerAttackTriggered;
+    public Action<Vector2, Skill> OnPlayerCastingStarted;
+    public Action<Vector2> OnPlayerDeath;
+    public Action <Vector2> OnPlayerPickUp;
 }

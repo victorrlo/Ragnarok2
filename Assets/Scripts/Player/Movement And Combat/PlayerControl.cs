@@ -140,6 +140,18 @@ public class WalkingState : IPlayerState
         _destination = _control.CurrentDestination;
         _target = _control.CurrentTarget;
 
+        if (_target != null)
+        {
+            Vector3Int playerCell = GridManager.Instance.WorldToCell(_player.transform.position);
+            Vector3Int targetCell = GridManager.Instance.WorldToCell(_target.transform.position);
+
+            if (DistanceHelper.IsInAttackRange(playerCell, targetCell, _context.Stats.AttackRange))
+            {
+                _control.ChangeState(_target.CompareTag("Item") ? new PickingItemState() : new AttackingState());
+                return;
+            }
+        }
+
         Vector3Int playerPosition = GridManager.Instance.WorldToCell(_player.transform.position);
 
         if (_destination == null)
@@ -219,7 +231,7 @@ public class WalkingState : IPlayerState
                 if (DistanceHelper.IsInAttackRange(player, enemy, _context.Stats.AttackRange))
                 {
                     _isMoving = false;
-
+                    _context.EventBus.OnPlayerMovementStateChanged(false);
                     _player.transform.position = Vector3.MoveTowards
                     (
                         _player.transform.position,
@@ -241,7 +253,7 @@ public class WalkingState : IPlayerState
                 if (DistanceHelper.IsInAttackRange(player, item, _context.Stats.AttackRange))
                 {
                     _isMoving = false;
-
+                    _context.EventBus.OnPlayerMovementStateChanged(false);
                     _player.transform.position = Vector3.MoveTowards
                     (
                         _player.transform.position,
@@ -388,6 +400,13 @@ public class AttackingState : IPlayerState
             _control.ChangeState(new IdleState());
             return;
         }
+
+        Vector3 toEnemy = _enemy.transform.position - _player.transform.position;
+        Vector2 attackDir = new Vector2(toEnemy.x, toEnemy.z);
+
+        _context.Animation.FaceDirection(attackDir);
+
+        _context.EventBus.OnPlayerAttackTriggered?.Invoke();
 
         _lastAttackTime = Time.time;
 

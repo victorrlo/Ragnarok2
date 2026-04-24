@@ -7,4 +7,5 @@ public class PlayerContext : MonoBehaviour
     [field: SerializeField] public PlayerStatsData Stats {get; private set;}
     [field: SerializeField] public PlayerEventBus EventBus {get; private set;}
     [field: SerializeField] public PlayerControl Control {get; private set;}
+    [field: SerializeField] public PlayerAnimation Animation {get; private set;}
 }

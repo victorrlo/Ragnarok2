@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public enum Direction
@@ -15,6 +16,8 @@ public enum Direction
 public class PlayerAnimation : MonoBehaviour
 {
 
+    private float ATTACK_ANIMATION_LENGTH = 0.9f; // in miliseconds!
+
 
 
     private PlayerContext _context;
@@ -23,6 +26,8 @@ public class PlayerAnimation : MonoBehaviour
     private Direction _currentFacing = Direction.Front;
     private bool _isWalking = false;
     private Vector2 _lastDirection;
+    public bool SpecialAnimationPlaying {get; private set;} = false;
+    private Coroutine _attackRoutine;
 
 
 
@@ -40,21 +45,53 @@ public class PlayerAnimation : MonoBehaviour
 
     private void OnEnable()
     {
-        _context.EventBus.OnPlayerMoveDirectionChanged += UpdateDirection;
-        _context.EventBus.OnPlayerMovementStateChanged += SetMovementState;
+        _context.EventBus.OnPlayerMoveDirectionChanged          += UpdateWalkingOrIdleDirection;
+        _context.EventBus.OnPlayerMovementStateChanged          += SetMovementState;
+        _context.EventBus.OnPlayerAttackTriggered               += PlayAttackAnimation;
     }
 
     private void OnDisable()
     {
-        _context.EventBus.OnPlayerMoveDirectionChanged -= UpdateDirection;
-        _context.EventBus.OnPlayerMovementStateChanged -= SetMovementState;
+        _context.EventBus.OnPlayerMoveDirectionChanged          -= UpdateWalkingOrIdleDirection;
+        _context.EventBus.OnPlayerMovementStateChanged          -= SetMovementState;
+        _context.EventBus.OnPlayerAttackTriggered               -= PlayAttackAnimation;
+    }
+
+    public void FaceDirection(Vector2 dir)
+    {
+        _lastDirection = dir;
+        _currentFacing = DefineFacingDirection(dir);
+    }
+
+    private void PlayAttackAnimation()
+    {
+
+        if (_attackRoutine != null)
+            StopCoroutine(_attackRoutine);
+
+        _attackRoutine = StartCoroutine(PlayAttackRoutine());
+    }
+
+    private IEnumerator PlayAttackRoutine()
+    {
+        SpecialAnimationPlaying = true;
+        ChangeAnimation(GetAttackAnimationString(_currentFacing));
+        
+        yield return new WaitForSeconds(ATTACK_ANIMATION_LENGTH);
+
+        _context.EventBus.OnSpecialAnimationFinished?.Invoke();
+
+        SpecialAnimationPlaying = false;
+        _attackRoutine = null;
+
+        UpdateWalkingOrIdleDirection(_lastDirection);
     }
 
     private void SetMovementState(bool isWalking)
     {
         _isWalking = isWalking;
 
-        UpdateDirection(_lastDirection);
+        UpdateWalkingOrIdleDirection(_lastDirection);
     }
 
     private void ChangeAnimation(string animation, float crossfade = 0.2f)
@@ -69,33 +106,54 @@ public class PlayerAnimation : MonoBehaviour
         }
     }
 
-    private void UpdateDirection(Vector2 dir)
+    private void UpdateWalkingOrIdleDirection(Vector2 dir)
     {
         _lastDirection = dir;
         
         _currentFacing = DefineFacingDirection(dir);
-        
-        Debug.LogWarning($"Current Facing Direction: {_currentFacing}");
 
-        var animationString = GetAnimationString(_currentFacing);
+        if (SpecialAnimationPlaying)
+            return;
+
+        var animationString = GetWalkingOrIdleAnimationString(_currentFacing);
 
         ChangeAnimation(animationString);
     }
 
-    private string GetAnimationString(Direction dir)
+    private string GetWalkingOrIdleAnimationString(Direction dir)
     {
         string prefix = _isWalking ? "walk" : "idle";
 
         return dir switch
         {
-            Direction.BackRight => $"{prefix}-diagonal-back-right",
-            Direction.Back      => $"{prefix}-back",
-            Direction.BackLeft  => $"{prefix}-diagonal-back-left",
-            Direction.Left      => $"{prefix}-side-left",
-            Direction.FrontLeft => $"{prefix}-diagonal-front-left",
-            Direction.Front     => $"{prefix}-front",
-            Direction.FrontRight=> $"{prefix}-diagonal-front-right",
-            _                   => $"{prefix}-side-right"
+            Direction.BackRight     => $"{prefix}-diagonal-back-right",
+            Direction.Back          => $"{prefix}-back",
+            Direction.BackLeft      => $"{prefix}-diagonal-back-left",
+            Direction.Left          => $"{prefix}-side-left",
+            Direction.FrontLeft     => $"{prefix}-diagonal-front-left",
+            Direction.Front         => $"{prefix}-front",
+            Direction.FrontRight    => $"{prefix}-diagonal-front-right",
+            _                       => $"{prefix}-side-right"
+        };
+    }
+
+    private string GetAttackAnimationString(Direction dir)
+    {
+        string prefix = "attack";
+
+        return dir switch
+        {
+            Direction.BackLeft      =>$"{prefix}-diagonal-back-left",
+            Direction.Left          =>$"{prefix}-diagonal-back-left",
+
+            Direction.Front         =>$"{prefix}-diagonal-front-right",
+            Direction.FrontRight    =>$"{prefix}-diagonal-front-right",
+            
+            Direction.FrontLeft     =>$"{prefix}-diagonal-front-left",
+
+            Direction.BackRight     =>$"{prefix}-diagonal-back-right",
+            Direction.Back          =>$"{prefix}-diagonal-back-right",
+            _                       =>$"{prefix}-diagonal-back-right"
         };
     }
 
