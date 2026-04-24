@@ -16,7 +16,7 @@ public enum Direction
 public class PlayerAnimation : MonoBehaviour
 {
 
-    private float ATTACK_ANIMATION_LENGTH = 0.9f; // in miliseconds!
+    private float ATTACK_ANIMATION_LENGTH = 0.4f; // in miliseconds!
     private float PICKUP_ANIMATION_LENGTH = 0.45f;
 
 
@@ -106,6 +106,7 @@ public class PlayerAnimation : MonoBehaviour
         
         yield return new WaitForSeconds(ATTACK_ANIMATION_LENGTH);
 
+        _context.EventBus.OnPlayerAttackHit?.Invoke();
         _context.EventBus.OnSpecialAnimationFinished?.Invoke();
 
         SpecialAnimationPlaying = false;

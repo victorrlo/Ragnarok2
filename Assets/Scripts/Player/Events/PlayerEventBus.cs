@@ -8,6 +8,7 @@ public class PlayerEventBus : MonoBehaviour
 
     public Action OnSpecialAnimationFinished;
     public Action OnPlayerAttackTriggered;
+    public Action OnPlayerAttackHit;
     public Action<Vector2, Skill> OnPlayerCastingStarted;
     public Action<Vector2> OnPlayerDeath;
     public Action OnPlayerPickUp;

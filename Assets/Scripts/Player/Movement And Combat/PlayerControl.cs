@@ -387,7 +387,13 @@ public class AttackingState : IPlayerState
 
         _lastAttackTime = Time.time;
 
-        enemyCombat.TakeDamage(_context.Stats.Attack);
+        _context.EventBus.OnPlayerAttackHit += HitEnemy;
+    }
+
+    private void HitEnemy()
+    {
+        _enemy.GetComponent<EnemyCombat>()?.TakeDamage(_context.Stats.Attack);
+        _context.EventBus.OnPlayerAttackHit -= HitEnemy;
     }
 }
 
