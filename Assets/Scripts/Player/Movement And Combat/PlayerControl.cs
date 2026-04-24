@@ -359,6 +359,11 @@ public class AttackingState : IPlayerState
             return;
         }
 
+        Vector3 toEnemy = _enemy.transform.position - _player.transform.position;
+        Vector2 attackDir = new Vector2(toEnemy.x, toEnemy.z);
+
+        _context.Animation.FaceDirection(attackDir);
+
         // if monster is out of range, starts walking to it
         Vector3Int player = GridManager.Instance.WorldToCell(_player.transform.position);
         Vector3Int enemy = GridManager.Instance.WorldToCell(_enemy.transform.position);
@@ -400,11 +405,6 @@ public class AttackingState : IPlayerState
             _control.ChangeState(new IdleState());
             return;
         }
-
-        Vector3 toEnemy = _enemy.transform.position - _player.transform.position;
-        Vector2 attackDir = new Vector2(toEnemy.x, toEnemy.z);
-
-        _context.Animation.FaceDirection(attackDir);
 
         _context.EventBus.OnPlayerAttackTriggered?.Invoke();
 
