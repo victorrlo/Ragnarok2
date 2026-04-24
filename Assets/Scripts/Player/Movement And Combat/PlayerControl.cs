@@ -145,9 +145,10 @@ public class WalkingState : IPlayerState
             Vector3Int playerCell = GridManager.Instance.WorldToCell(_player.transform.position);
             Vector3Int targetCell = GridManager.Instance.WorldToCell(_target.transform.position);
 
-            if (DistanceHelper.IsInAttackRange(playerCell, targetCell, _context.Stats.AttackRange))
+            if (_target.CompareTag("Enemy") &&
+                DistanceHelper.IsInAttackRange(playerCell, targetCell, _context.Stats.AttackRange))
             {
-                _control.ChangeState(_target.CompareTag("Item") ? new PickingItemState() : new AttackingState());
+                _control.ChangeState(new AttackingState());
                 return;
             }
         }
@@ -244,28 +245,6 @@ public class WalkingState : IPlayerState
                 }
             }
 
-            // if targetting an item...
-            if (_target != null && _target.tag.Equals("Item"))
-            {
-                Vector3Int player = GridManager.Instance.WorldToCell(_player.transform.position);
-                Vector3Int item = GridManager.Instance.WorldToCell(_target.transform.position);
-
-                if (DistanceHelper.IsInAttackRange(player, item, _context.Stats.AttackRange))
-                {
-                    _isMoving = false;
-                    _context.EventBus.OnPlayerMovementStateChanged(false);
-                    _player.transform.position = Vector3.MoveTowards
-                    (
-                        _player.transform.position,
-                        _nextNodePosition,
-                        _moveSpeed * Time.deltaTime
-                    );
-
-                    _control.ChangeState(new PickingItemState());
-                    return;
-                }
-            }
-
             // reached destination
             if (_index >= _path.Count)
             {
@@ -281,8 +260,6 @@ public class WalkingState : IPlayerState
                         _nextNodePosition,
                         _moveSpeed * Time.deltaTime
                     );
-
-                    
 
                     _control.ChangeState(new PickingItemState());
                     return;
