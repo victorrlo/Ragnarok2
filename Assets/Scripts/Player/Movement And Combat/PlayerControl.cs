@@ -286,6 +286,7 @@ public class WalkingState : IPlayerState
     public void Exit()
     {
         _isMoving = false;
+        _context.EventBus.OnPlayerMovementStateChanged(false);
     }
 
     private void SetNextTargetCell()
