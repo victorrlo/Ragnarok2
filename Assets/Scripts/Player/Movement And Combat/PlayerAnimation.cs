@@ -148,6 +148,26 @@ public class PlayerAnimation : MonoBehaviour
         ChangeAnimation(animationString);
     }
 
+    private string GetTakeDamageAnimationString(Direction dir)
+    {
+        string prefix = "take-damage";
+
+        return dir switch
+        {
+            Direction.BackLeft      =>$"{prefix}-diagonal-back-left",
+            Direction.Left          =>$"{prefix}-diagonal-back-left",
+
+            Direction.Front         =>$"{prefix}-diagonal-front-right",
+            Direction.FrontRight    =>$"{prefix}-diagonal-front-right",
+            
+            Direction.FrontLeft     =>$"{prefix}-diagonal-front-left",
+
+            Direction.BackRight     =>$"{prefix}-diagonal-back-right",
+            Direction.Back          =>$"{prefix}-diagonal-back-right",
+            _                       =>$"{prefix}-diagonal-back-right"
+        };
+    }
+
     private string GetPickUpItemAnimationString(Direction dir)
     {
         string prefix = "pick";

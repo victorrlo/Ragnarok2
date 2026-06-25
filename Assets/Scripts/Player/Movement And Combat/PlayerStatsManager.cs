@@ -1,5 +1,5 @@
 using System;
-using Unity.VisualScripting;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +8,7 @@ public class PlayerStatsManager : MonoBehaviour
     public static PlayerStatsManager Instance {get; private set;}
     [SerializeField] private PlayerStats _runtimeStats;
     public PlayerStats RunTimeStats => _runtimeStats;
+    private bool _isRecoveringSP = false;
     private PlayerContext _playerContext;
     public event Action<float, float> OnHPChanged;
     public event Action<float, float> OnSPChanged;
@@ -66,17 +67,6 @@ public class PlayerStatsManager : MonoBehaviour
         Reset();
     }
 
-    private void Update()
-    {
-        _spRecoveryTimer += Time.deltaTime;
-
-        if (_spRecoveryTimer >= _spRecoveryInterval)
-        {
-            RecoverSP();
-            _spRecoveryTimer = 0f;
-        }
-    }
-
     private void LateUpdate()
     {
         if (_player == null || _mainCamera == null) return;
@@ -129,25 +119,38 @@ public class PlayerStatsManager : MonoBehaviour
 
         _spRecoveryTimer = 0f; // reset timer every time uses a skill
 
-        OnSPChanged?.Invoke(_runtimeStats.CurrentSP, _playerContext.Stats.MaxSP);
+        StartSPRecoveryLoop();
     }
 
-    public void RecoverSP()
+    private void StartSPRecoveryLoop()
     {
-        if (_runtimeStats.CurrentSP < _runtimeStats.MaxSP)
+        if(_isRecoveringSP) return;
+
+        _= RecoverSPLoopAsync(destroyCancellationToken);
+    }
+
+    private async Awaitable RecoverSPLoopAsync(CancellationToken token)
+    {
+        _isRecoveringSP = true;
+
+        while (_runtimeStats.CurrentSP < _runtimeStats.MaxSP)
         {
-            int oldSP = _runtimeStats.CurrentSP;
-
-            _runtimeStats.CurrentSP = Mathf.Min(_runtimeStats.CurrentSP + _spRecoveryRate, _runtimeStats.MaxSP);
-
-            int recoveredSP = _runtimeStats.CurrentSP - oldSP;
-
-            if (recoveredSP > 0)
+            try
             {
-                // FloatingTextPool.Instance.ShowSPRecovery(transform.position, recoveredSP);
+                await Awaitable.WaitForSecondsAsync(_spRecoveryInterval, token);
+
+                if (token.IsCancellationRequested) return;
+
+                _runtimeStats.CurrentSP = Mathf.Min(_runtimeStats.CurrentSP + _spRecoveryRate, _runtimeStats.MaxSP);
                 OnSPChanged?.Invoke(_runtimeStats.CurrentSP, _playerContext.Stats.MaxSP);
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
         }
+
+        _isRecoveringSP = false;
     }
 
     private void UpdateHealthBar(float currentHP, float maxHP)

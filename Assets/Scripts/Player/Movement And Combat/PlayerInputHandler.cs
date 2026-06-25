@@ -59,9 +59,8 @@ public class PlayerInputHandler : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            EnemyCombat enemy = hit.collider.GetComponent<EnemyCombat>();
-            
-            if (enemy != null)
+
+            if (hit.collider.TryGetComponent<EnemyCombat>(out EnemyCombat enemy))
             {
                 _target = enemy.gameObject;
                 ClickOnEnemy();

@@ -145,7 +145,7 @@ public class WalkingState : IPlayerState
             Vector3Int playerCell = GridManager.Instance.WorldToCell(_player.transform.position);
             Vector3Int targetCell = GridManager.Instance.WorldToCell(_target.transform.position);
 
-            if (_target.CompareTag("Enemy") &&
+            if (_target.TryGetComponent<EnemyCombat>(out EnemyCombat enemy) &&
                 DistanceHelper.IsInAttackRange(playerCell, targetCell, _context.Stats.AttackRange))
             {
                 _control.ChangeState(new AttackingState());
@@ -207,7 +207,7 @@ public class WalkingState : IPlayerState
 
         Vector2 moveDirection = new Vector2(moveDirection3D.x, moveDirection3D.z);
 
-        Debug.LogWarning($"moveDirection {moveDirection}");
+        // Debug.LogWarning($"moveDirection {moveDirection}");
 
         if (moveDirection != Vector2.zero)
         {
