@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TradumBaseData
   m_EditorClassIdentifier: 
   <CharacterName>k__BackingField: Tradum
-  <MaxHP>k__BackingField: 200
+  <MaxHP>k__BackingField: 1000
   <MaxSP>k__BackingField: 100
   <Attack>k__BackingField: 5
   <MoveSpeed>k__BackingField: 2
