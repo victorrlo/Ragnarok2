@@ -47,6 +47,9 @@ TagManager:
   - name: Ground Tilemap
     uniqueID: 2126955695
     locked: 0
+  - name: Skill Cells
+    uniqueID: 3398338483
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
