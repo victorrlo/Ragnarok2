@@ -21,5 +21,5 @@ public class CharacterStatsData : ScriptableObject
     // public int _INT; // força de habilidades (no caso de inimigos, defesa à habilidades também)
     
     [Header("Calculations")]
-    public float AttackSpeed => 1f / Agility;
+    public float AttackSpeed => 1f / Mathf.Clamp(Agility, 1, 7);
 }

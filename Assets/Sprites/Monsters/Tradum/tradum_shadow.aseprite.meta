@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 26d4060bb57e9ba4989d5b0f15660242
+guid: e184d65326957b14eaecff71ba10bf4d
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 639180374428051346
+  platformSettingsDirtyTick: 639180379228406431
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -125,49 +125,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: Frame_0
     originalName: 
-    pivot: {x: 0.5625, y: 0}
-    alignment: 9
-    border: {x: 0, y: 0, z: 0, w: 0}
-    customData: 
-    rect:
-      serializedVersion: 2
-      x: 29
-      y: 34
-      width: 16
-      height: 18
-    spriteID: abfa0bbeb547f424ca59a5f53d8b4ac7
-    spriteBone: []
-    spriteOutline: []
-    vertices: []
-    spritePhysicsOutline: []
-    indices: 
-    edges: []
-    tessellationDetail: 0
-    uvTransform: {x: 29, y: 34}
-  - name: Frame_1
-    originalName: 
-    pivot: {x: 0.5294118, y: 0}
-    alignment: 9
-    border: {x: 0, y: 0, z: 0, w: 0}
-    customData: 
-    rect:
-      serializedVersion: 2
-      x: 4
-      y: 34
-      width: 17
-      height: 21
-    spriteID: 900402f246996ab40bf1fadc69ea4117
-    spriteBone: []
-    spriteOutline: []
-    vertices: []
-    spritePhysicsOutline: []
-    indices: 
-    edges: []
-    tessellationDetail: 0
-    uvTransform: {x: 4, y: 34}
-  - name: Frame_2
-    originalName: 
-    pivot: {x: 0.55, y: 0}
+    pivot: {x: 0.5, y: -0.4}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -175,9 +133,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 20
-      height: 22
-    spriteID: 600377c37db8fd1429b03e7bd01e645d
+      width: 10
+      height: 5
+    spriteID: ba71383d801a3804a9ca340e6f27c783
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -186,19 +144,19 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 4}
-  - name: Frame_3
+  - name: Frame_1
     originalName: 
-    pivot: {x: 0.5, y: 0}
+    pivot: {x: 0.5, y: -0.4}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
     rect:
       serializedVersion: 2
-      x: 32
-      y: 4
-      width: 20
-      height: 22
-    spriteID: 5eb893dec16b8ed48a322c5bb9efa2c8
+      x: 4
+      y: 17
+      width: 8
+      height: 5
+    spriteID: 229b1257ab9207f4bb76a9a4cf983c98
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -206,12 +164,75 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 32, y: 4}
+    uvTransform: {x: 4, y: 17}
+  - name: Frame_2
+    originalName: 
+    pivot: {x: 0.5, y: -0.4}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 22
+      y: 4
+      width: 6
+      height: 5
+    spriteID: cb34c14c877436d4c80885f4702a0da0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 22, y: 4}
+  - name: Frame_3
+    originalName: 
+    pivot: {x: 0.5, y: -0.5}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 30
+      width: 4
+      height: 4
+    spriteID: 9f5bcf2860bb3884299ec6880f3bc15f
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 4, y: 30}
+  - name: Frame_4
+    originalName: 
+    pivot: {x: 1, y: -4}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 42
+      width: 1
+      height: 1
+    spriteID: c6aa7c31051ad1541970cb635e740787
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 4, y: 42}
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: -1812563604
-    name: tradum-idle-front-left
+    guid: -220015984
+    name: tradum_shadow
     layerFlags: 0
     layerType: 0
     blendMode: 0
@@ -220,38 +241,47 @@ ScriptedImporter:
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 7
-        y: 0
-        width: 16
-        height: 18
-      spriteId: abfa0bbeb547f424ca59a5f53d8b4ac7
+        x: 3
+        y: 2
+        width: 10
+        height: 5
+      spriteId: ba71383d801a3804a9ca340e6f27c783
     - name: Frame_1
       frameIndex: 1
       additiveSortOrder: 0
       cellRect:
-        x: 7
-        y: 0
-        width: 17
-        height: 21
-      spriteId: 900402f246996ab40bf1fadc69ea4117
+        x: 4
+        y: 2
+        width: 8
+        height: 5
+      spriteId: 229b1257ab9207f4bb76a9a4cf983c98
     - name: Frame_2
       frameIndex: 2
       additiveSortOrder: 0
       cellRect:
         x: 5
-        y: 0
-        width: 20
-        height: 22
-      spriteId: 600377c37db8fd1429b03e7bd01e645d
+        y: 2
+        width: 6
+        height: 5
+      spriteId: cb34c14c877436d4c80885f4702a0da0
     - name: Frame_3
       frameIndex: 3
       additiveSortOrder: 0
       cellRect:
         x: 6
-        y: 0
-        width: 20
-        height: 22
-      spriteId: 5eb893dec16b8ed48a322c5bb9efa2c8
+        y: 2
+        width: 4
+        height: 4
+      spriteId: 9f5bcf2860bb3884299ec6880f3bc15f
+    - name: Frame_4
+      frameIndex: 4
+      additiveSortOrder: 0
+      cellRect:
+        x: 7
+        y: 4
+        width: 1
+        height: 1
+      spriteId: c6aa7c31051ad1541970cb635e740787
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -318,5 +348,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 32, y: 32}
-  previousTextureSize: {x: 64, y: 64}
+  canvasSize: {x: 16, y: 22}
+  previousTextureSize: {x: 32, y: 64}
