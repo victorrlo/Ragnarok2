@@ -4,23 +4,21 @@ using UnityEngine;
 public class PlayerCombat : MonoBehaviour
 {
     private PlayerContext _playerContext;
+    private DamageReaction _damageReaction;
 
     private void Awake()
     {
         if (_playerContext == null)
             TryGetComponent<PlayerContext>(out _playerContext);
+
+        if (_damageReaction == null && !TryGetComponent(out _damageReaction))
+            _damageReaction = gameObject.AddComponent<DamageReaction>();
     }
 
     public void TakeDamage(int amount)
     {
         FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.red);
         _playerContext.StatsManager.TakeDamage(amount);
-        // = stagger player =
-        // maybe send an event for each playerState
-        // that triggers the HurtingState and that HurtingState receives
-        // as parameter the previous playerState so that after the animation is played
-        // the player goes back to the previous state.
+        _damageReaction.React();
     }
-    
-
 }

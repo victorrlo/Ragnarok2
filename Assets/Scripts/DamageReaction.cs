@@ -1,12 +1,15 @@
 using System;
-using System.Collections;
+using System.Threading;
 using UnityEngine;
 
 public class DamageReaction : MonoBehaviour
 {
     [SerializeField] private float duration = 0.5f;
 
-    public bool IsReacting {get; private set;}
+    private CancellationTokenSource _cts;
+    private int _reactionVersion;
+
+    public bool IsReacting { get; private set; }
     public bool BlocksMovement => IsReacting;
 
     public event Action OnReactionStarted;
@@ -14,18 +17,49 @@ public class DamageReaction : MonoBehaviour
 
     public void React()
     {
-        StopAllCoroutines();
-        StartCoroutine(ReactRoutine());
+        CancelActiveReaction();
+
+        int version = ++_reactionVersion;
+        _cts = new CancellationTokenSource();
+
+        _ = ReactAsync(_cts.Token, version);
     }
 
-    private IEnumerator ReactRoutine()
+    private async Awaitable ReactAsync(CancellationToken token, int version)
     {
-        IsReacting = true;
-        OnReactionStarted?.Invoke();
+        try
+        {
+            IsReacting = true;
+            OnReactionStarted?.Invoke();
 
-        yield return new WaitForSeconds(duration);
+            await Awaitable.WaitForSecondsAsync(duration, token);
 
-        IsReacting = false;
-        OnReactionFinished?.Invoke();
+            if (version != _reactionVersion) return;
+
+            IsReacting = false;
+            OnReactionFinished?.Invoke();
+        }
+        catch (OperationCanceledException)
+        {
+            if (version != _reactionVersion) return;
+
+            IsReacting = false;
+            OnReactionFinished?.Invoke();
+        }
+    }
+
+    private void CancelActiveReaction()
+    {
+        if (_cts != null)
+        {
+            _cts.Cancel();
+            _cts.Dispose();
+            _cts = null;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        CancelActiveReaction();
     }
 }

@@ -22,11 +22,13 @@ public class PlayerAnimation : MonoBehaviour
 
 
     private PlayerContext _context;
+    private DamageReaction _damageReaction;
     [SerializeField] private Animator _playerAnimator;
     private string _currentAnimation;
     private Direction _currentFacing = Direction.Front;
     private bool _isWalking = false;
     private Vector2 _lastDirection;
+    private bool _damageReactionAnimationPlaying = false;
     public bool SpecialAnimationPlaying {get; private set;} = false;
     private Coroutine _attackRoutine;
     private Coroutine _pickUpRoutine;
@@ -43,14 +45,22 @@ public class PlayerAnimation : MonoBehaviour
 
         if (_context == null)
             TryGetComponent<PlayerContext>(out _context);
+
+        if (_damageReaction == null && !TryGetComponent(out _damageReaction))
+            _damageReaction = gameObject.AddComponent<DamageReaction>();
     }
 
     private void OnEnable()
     {
+        if (_damageReaction == null && !TryGetComponent(out _damageReaction))
+            _damageReaction = gameObject.AddComponent<DamageReaction>();
+
         _context.EventBus.OnPlayerMoveDirectionChanged          += UpdateWalkingOrIdleDirection;
         _context.EventBus.OnPlayerMovementStateChanged          += SetMovementState;
         _context.EventBus.OnPlayerAttackTriggered               += PlayAttackAnimation;
         _context.EventBus.OnPlayerPickUp                        += PlayPickUpAnimation;
+        _damageReaction.OnReactionStarted                       += PlayTakeDamageAnimation;
+        _damageReaction.OnReactionFinished                      += StopTakeDamageAnimation;
     }
 
     private void OnDisable()
@@ -59,6 +69,11 @@ public class PlayerAnimation : MonoBehaviour
         _context.EventBus.OnPlayerMovementStateChanged          -= SetMovementState;
         _context.EventBus.OnPlayerAttackTriggered               -= PlayAttackAnimation;
         _context.EventBus.OnPlayerPickUp                        -= PlayPickUpAnimation;
+        if (_damageReaction != null)
+        {
+            _damageReaction.OnReactionStarted                   -= PlayTakeDamageAnimation;
+            _damageReaction.OnReactionFinished                  -= StopTakeDamageAnimation;
+        }
     }
 
     public void FaceDirection(Vector2 dir)
@@ -77,6 +92,7 @@ public class PlayerAnimation : MonoBehaviour
 
     private IEnumerator PlayPickUpRoutine()
     {
+        _damageReactionAnimationPlaying = false;
         SpecialAnimationPlaying = true;
         ChangeAnimation(GetPickUpItemAnimationString(_currentFacing));
 
@@ -92,7 +108,6 @@ public class PlayerAnimation : MonoBehaviour
 
     private void PlayAttackAnimation()
     {
-
         if (_attackRoutine != null)
             StopCoroutine(_attackRoutine);
 
@@ -101,6 +116,7 @@ public class PlayerAnimation : MonoBehaviour
 
     private IEnumerator PlayAttackRoutine()
     {
+        _damageReactionAnimationPlaying = false;
         SpecialAnimationPlaying = true;
         ChangeAnimation(GetAttackAnimationString(_currentFacing));
         
@@ -113,6 +129,22 @@ public class PlayerAnimation : MonoBehaviour
         _attackRoutine = null;
 
         UpdateWalkingOrIdleDirection(_lastDirection);
+    }
+
+    private void PlayTakeDamageAnimation()
+    {
+        if (SpecialAnimationPlaying) return;
+
+        _damageReactionAnimationPlaying = true;
+        ChangeAnimation(GetTakeDamageAnimationString(_currentFacing));
+    }
+
+    private void StopTakeDamageAnimation()
+    {
+        _damageReactionAnimationPlaying = false;
+
+        if (!SpecialAnimationPlaying)
+            UpdateWalkingOrIdleDirection(_lastDirection);
     }
 
     private void SetMovementState(bool isWalking)
@@ -140,7 +172,7 @@ public class PlayerAnimation : MonoBehaviour
         
         _currentFacing = DefineFacingDirection(dir);
 
-        if (SpecialAnimationPlaying)
+        if (SpecialAnimationPlaying || _damageReactionAnimationPlaying)
             return;
 
         var animationString = GetWalkingOrIdleAnimationString(_currentFacing);

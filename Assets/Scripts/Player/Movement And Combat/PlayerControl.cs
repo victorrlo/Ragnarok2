@@ -6,6 +6,7 @@ public class PlayerControl : MonoBehaviour
 {
     private PlayerContext _context;
     private PlayerEventBus _eventBus;
+    private DamageReaction _damageReaction;
     private IPlayerState _currentState = new IdleState();
     public bool _blockStateChange = false;
 
@@ -21,8 +22,25 @@ public class PlayerControl : MonoBehaviour
         if (_eventBus == null)
             _context.TryGetComponent<PlayerEventBus>(out _eventBus);
 
+        if (_damageReaction == null && !TryGetComponent(out _damageReaction))
+            _damageReaction = gameObject.AddComponent<DamageReaction>();
+
         _currentState = null;
-    }   
+    }
+
+    private void OnEnable()
+    {
+        if (_damageReaction == null && !TryGetComponent(out _damageReaction))
+            _damageReaction = gameObject.AddComponent<DamageReaction>();
+
+        _damageReaction.OnReactionStarted += StopMovementForDamageReaction;
+    }
+
+    private void OnDisable()
+    {
+        if (_damageReaction != null)
+            _damageReaction.OnReactionStarted -= StopMovementForDamageReaction;
+    }
 
     private void Start()
     {
@@ -37,6 +55,9 @@ public class PlayerControl : MonoBehaviour
     public void ChangeState(IPlayerState newState)
     {
         if (_blockStateChange) return;
+
+        if (newState is WalkingState && _damageReaction != null && _damageReaction.BlocksMovement)
+            return;
         
         // Debug.Log($"[Player Control] change player state to {newState}!");
 
@@ -78,6 +99,12 @@ public class PlayerControl : MonoBehaviour
     public void ClearDestination()
     {
         CurrentDestination = null;
+    }
+
+    private void StopMovementForDamageReaction()
+    {
+        if (_currentState is WalkingState)
+            ChangeState(new IdleState());
     }
 }
 
@@ -322,7 +349,7 @@ public class AttackingState : IPlayerState
         _context = player.GetComponent<PlayerContext>();
         _control = player.GetComponent<PlayerControl>();
         _enemy = _control.CurrentTarget;
-        _lastAttackTime = Time.time;
+        _lastAttackTime = 0f;
         _isAttacking = true;
     }
 
