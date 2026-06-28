@@ -21,4 +21,5 @@ MonoBehaviour:
   <Multiplier>k__BackingField: 3
   <TimeOfEffect>k__BackingField: 0
   <Range>k__BackingField: 1
-  <ChanceOfCasting>k__BackingField: 50
+  <Effect>k__BackingField: {fileID: 11400000, guid: 982ee052f9de37a4b93e4b0bd71ac8f0,
+    type: 2}

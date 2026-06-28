@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 [RequireComponent(typeof(PlayerContext))]
 public class PlayerControl : MonoBehaviour
@@ -472,6 +475,9 @@ public class CastingState : IPlayerState
     private PlayerControl _control;
     private Skill _skill;
     private Coroutine _castingRoutine;
+    
+    // Usamos o CancellationTokenSource do próprio C# para gerenciar o escopo desse estado
+    private CancellationTokenSource _stateCts;
 
     public void Enter(GameObject player)
     {
@@ -479,68 +485,72 @@ public class CastingState : IPlayerState
         _control = player.GetComponent<PlayerControl>();
         _skill = _control.CurrentSkill;
 
-        if (player == null)
-        {
-            Debug.LogError($"[PlayerControl - Casting State] player is null. Can't enter state.");
-            return;
-        }
+        if (_player == null) return;
+
+        // 1. Criamos um CTS vinculado ao ciclo de vida do GameObject do Player.
+        // Se o Player for destruído, o token cancela automaticamente.
+        _stateCts = CancellationTokenSource.CreateLinkedTokenSource(_player.GetCancellationTokenOnDestroy());
 
         _control._blockStateChange = true;
 
-        StartCasting();
-
-        ShortcutManager.Instance.OnStopCastingSkill += LetPlayerMove;
+        // 2. Iniciamos o fluxo assíncrono do Cast sem travar a Main Thread
+        _ = ExecuteCastWorkflowAsync(_stateCts.Token); 
     }
 
-    public void Execute()
-    {
-        // StartCasting();
-    }
+    public void Execute() { }
 
     public void Exit()
     {
-        ShortcutManager.Instance.OnStopCastingSkill -= LetPlayerMove;
-    }
-
-    private void LetPlayerMove(bool hasFinishedCasting)
-    { 
-        if (hasFinishedCasting) 
+        // 5. Se o jogador sair do estado antes da hora (Ex: tomou Stun),
+        // cancelamos tudo instantaneamente.
+        if (_stateCts != null)
         {
-            ApplySkillEffect();
-
-            _player.GetComponent<PlayerControl>()._blockStateChange = false;
-            _player.GetComponent<PlayerControl>().ChangeState(new IdleState());
+            _stateCts.Cancel();
+            _stateCts.Dispose();
+            _stateCts = null;
         }
     }
 
-    private void ApplySkillEffect()
+    // O "Coração" do formato assíncrono
+    private async Awaitable ExecuteCastWorkflowAsync(CancellationToken token)
     {
-        if (_skill != null)
+        try
         {
-            switch (_skill.Name)
-            {
-                case "Stomp Puddle":
+            // A) Começa o visual do Cast (Barras, Snaps, Partículas)
+            StartCastingVisuals();
 
-                    break;
-            }
+            // B) ESPERA linearmente o tempo de conjuração da Skill acabar
+            // Substitui totalmente a necessidade de escutar eventos externos!
+            await Awaitable.WaitForSecondsAsync(_skill.CastingTime, cancellationToken: token);
+
+            // C) Se chegou aqui sem ser cancelado, o cast terminou com sucesso!
+            _skill.Effect.OnCastFinished(_player, _skill, token);
+        }
+        catch (OperationCanceledException)
+        {
+            // O cast foi interrompido por movimento, dano ou morte.
+            Debug.Log("[CastingState] Confeção de skill cancelada.");
+        }
+        finally
+        {
+            // D) Executado SEMPRE (terminando com sucesso ou sendo cancelado)
+            // Garante que o Player nunca fique travado no jogo
+            _control._blockStateChange = false;
+            _control.ChangeState(new IdleState());
         }
     }
 
-    private IEnumerator SmoothSnapOnce()
+    private void StartCastingVisuals()
     {
-        yield return GridHelper.SnapToNearestCellCenter(_player, 0.15f);
-    }
-
-    public void StartCasting()
-    {
-        if (_castingRoutine != null)
-            _control.StopCoroutine(_castingRoutine);
-        _castingRoutine = null;
-        
+        if (_castingRoutine != null) _control.StopCoroutine(_castingRoutine);
         _castingRoutine = _control.StartCoroutine(SmoothSnapOnce());
 
-        DamageCellController.Instance.InvokeDamageCells?.Invoke(_player, _skill);
-        CastingBarPool.Instance.ShowCastingBar(_player, _skill);
+        _skill.Effect.OnCastStarted(_player, _skill, _stateCts.Token);
+    }
+
+    private System.Collections.IEnumerator SmoothSnapOnce()
+    {
+        yield return GridHelper.SnapToNearestCellCenter(_player, 0.15f);
     }
 }
 

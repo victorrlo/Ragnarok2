@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Skill", menuName = "Scriptable Objects/Skill")]
@@ -18,5 +19,6 @@ public class Skill : ScriptableObject
     [field: SerializeField] public int Range {get; private set;}
 
     public float CastingTime => SpCost/10f;
-    [field: SerializeField] public float ChanceOfCasting {get; private set;}
+
+    [field: SerializeField] public SkillEffect Effect {get; private set;}
 }
