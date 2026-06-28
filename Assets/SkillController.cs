@@ -19,6 +19,7 @@ public class SkillController : MonoBehaviour
     [SerializeField] private Skill _stompPuddle;
     #endregion
     public Action<GameObject, bool> TryUsingStompPuddle;
+    public Action<GameObject> TryCastingWaterBody;
 
     private void Awake()
     {
@@ -31,6 +32,24 @@ public class SkillController : MonoBehaviour
     private void Start()
     {
         TryUsingStompPuddle += CastStompPuddle;
+        TryCastingWaterBody += CastWaterBody;
+    }
+
+    private void CastWaterBody(GameObject caster)
+    {
+        if (caster.CompareTag("Player"))
+        {
+            var control = caster.GetComponent<PlayerControl>();
+            if (PlayerStatsManager.Instance.RunTimeStats.CurrentSP >= _waterBody.SpCost)
+            {
+                control.Casting(_waterBody);
+                control.ChangeState(new CastingState());
+                return;
+            }
+
+            FloatingTextPool.Instance.ShowFailMessage(caster.transform.position);
+
+        }
     }
 
     private void CastStompPuddle(GameObject caster, bool shouldCast)
@@ -42,7 +61,6 @@ public class SkillController : MonoBehaviour
             {
                 control.Casting(_stompPuddle);
                 control.ChangeState(new CastingState());
-                PlayerStatsManager.Instance.UseSP(_stompPuddle.SpCost);
                 return;
             }
 

@@ -516,25 +516,15 @@ public class CastingState : IPlayerState
     {
         try
         {
-            // A) Começa o visual do Cast (Barras, Snaps, Partículas)
             StartCastingVisuals();
-
-            // B) ESPERA linearmente o tempo de conjuração da Skill acabar
-            // Substitui totalmente a necessidade de escutar eventos externos!
             await Awaitable.WaitForSecondsAsync(_skill.CastingTime, cancellationToken: token);
-
-            // C) Se chegou aqui sem ser cancelado, o cast terminou com sucesso!
             _skill.Effect.OnCastFinished(_player, _skill, token);
         }
         catch (OperationCanceledException)
         {
-            // O cast foi interrompido por movimento, dano ou morte.
-            Debug.Log("[CastingState] Confeção de skill cancelada.");
         }
         finally
         {
-            // D) Executado SEMPRE (terminando com sucesso ou sendo cancelado)
-            // Garante que o Player nunca fique travado no jogo
             _control._blockStateChange = false;
             _control.ChangeState(new IdleState());
         }
@@ -542,10 +532,10 @@ public class CastingState : IPlayerState
 
     private void StartCastingVisuals()
     {
+        _skill.Effect.OnCastStarted(_player, _skill, _stateCts.Token);
         if (_castingRoutine != null) _control.StopCoroutine(_castingRoutine);
         _castingRoutine = _control.StartCoroutine(SmoothSnapOnce());
 
-        _skill.Effect.OnCastStarted(_player, _skill, _stateCts.Token);
     }
 
     private System.Collections.IEnumerator SmoothSnapOnce()

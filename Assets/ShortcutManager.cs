@@ -48,9 +48,11 @@ public class ShortcutManager : MonoBehaviour
 
     private void SkillHotkey2Clicked(InputAction.CallbackContext callbackContext)
     {
+        var player = GameObject.FindWithTag("Player");
+
         if (SkillController.Instance.HasWaterBodySkill)
         {
-            Debug.Log("use skill 2");
+            SkillController.Instance.TryCastingWaterBody(player);
         }
     }
 

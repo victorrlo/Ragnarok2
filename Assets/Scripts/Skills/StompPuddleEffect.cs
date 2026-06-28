@@ -6,6 +6,7 @@ public class StompPuddleEffect : SkillEffect
 {
     public override void OnCastStarted(GameObject caster, Skill skill, CancellationToken cancellationToken)
     {
+        PlayerStatsManager.Instance.UseSP(skill.SpCost);
         CastingBarPool.Instance.ShowCastingBar(caster, skill);
         DamageCellController.Instance.InvokeDamageCells?.Invoke(caster, skill);
     }

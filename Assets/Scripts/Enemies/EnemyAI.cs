@@ -655,7 +655,7 @@ public class EnemyCastingState : IEnemyState
 
         _ai.SetStateChangeBlock(true);
 
-        StartCasting(_cancellationTokenSource.Token).Forget();
+        _ = StartCasting(_cancellationTokenSource.Token);
     }
 
     public void Execute()
@@ -667,7 +667,7 @@ public class EnemyCastingState : IEnemyState
         _ai.SetStateChangeBlock(false);
     }
 
-    private async UniTask StartCasting(CancellationToken cancellationToken)
+    private async Awaitable StartCasting(CancellationToken cancellationToken)
     {
         try 
         {
@@ -678,10 +678,9 @@ public class EnemyCastingState : IEnemyState
             if (!IsMonsterValid() || cancellationToken.IsCancellationRequested) return;
 
 
-            CastingBarPool.Instance.ShowCastingBar(_monster, _skill);
-            DamageCellController.Instance.InvokeDamageCells?.Invoke(_monster, _skill);
+            _skill.Effect.OnCastStarted(_monster, _skill, cancellationToken);
 
-            await UniTask.Delay(TimeSpan.FromSeconds(_skill.CastingTime), cancellationToken: cancellationToken);
+            await Awaitable.WaitForSecondsAsync(_skill.CastingTime, cancellationToken: cancellationToken);
 
             if (!IsMonsterValid() || cancellationToken.IsCancellationRequested) return;
             
@@ -700,6 +699,10 @@ public class EnemyCastingState : IEnemyState
                 _ai.SetStateChangeBlock(false);
                 _ai.ChangeState(new AggressiveState());
             }
+        }
+        finally
+        {
+            _skill.Effect.OnCastFinished(_monster, _skill, cancellationToken);
         }
     }
 
