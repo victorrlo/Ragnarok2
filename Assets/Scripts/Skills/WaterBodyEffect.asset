@@ -12,3 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4488f8b56db5b214492e3bd29e6155b3, type: 3}
   m_Name: WaterBodyEffect
   m_EditorClassIdentifier: 
+  _visualEffect:
+    Id: water-body
+    Color: {r: 0.42114633, g: 0.82558054, b: 0.9811321, a: 0.55}
+    Material: {fileID: 2100000, guid: 7b5e04ec63cd23746b2ac906c357f0e9, type: 2}
+    SortingOrderOffset: 1
+    LocalPositionOffset: {x: 0, y: 0, z: 0}
+    LocalScaleMultiplier: {x: 1, y: 1, z: 1}
