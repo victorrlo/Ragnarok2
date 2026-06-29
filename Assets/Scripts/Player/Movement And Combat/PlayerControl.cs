@@ -473,6 +473,7 @@ public class CastingState : IPlayerState
 {
     private GameObject _player;
     private PlayerControl _control;
+    private PlayerContext _context;
     private Skill _skill;
     private Coroutine _castingRoutine;
     
@@ -483,6 +484,7 @@ public class CastingState : IPlayerState
     {
         _player = player;
         _control = player.GetComponent<PlayerControl>();
+        _context = player.GetComponent<PlayerContext>();
         _skill = _control.CurrentSkill;
 
         if (_player == null) return;
@@ -518,6 +520,7 @@ public class CastingState : IPlayerState
         {
             StartCastingVisuals();
             await Awaitable.WaitForSecondsAsync(_skill.CastingTime, cancellationToken: token);
+            _context.EventBus.OnPlayerAttackTriggered?.Invoke();
             _skill.Effect.OnCastFinished(_player, _skill, token);
         }
         catch (OperationCanceledException)
