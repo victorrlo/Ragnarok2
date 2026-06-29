@@ -423,7 +423,12 @@ public class AttackingState : IPlayerState
 
     private void HitEnemy()
     {
-        _enemy.GetComponent<EnemyCombat>()?.TakeDamage(_context.Stats.Attack);
+        var damage = DamageCalculator.Roll(
+            _context.StatsManager.RunTimeStats.Attack,
+            _context.StatsManager.RunTimeStats.CriticalChance,
+            _context.StatsManager.RunTimeStats.CriticalDamageMultiplier);
+
+        _enemy.GetComponent<EnemyCombat>()?.TakeDamage(damage);
         _context.EventBus.OnPlayerAttackHit -= HitEnemy;
     }
 }

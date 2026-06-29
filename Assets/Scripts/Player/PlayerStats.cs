@@ -7,6 +7,8 @@ public class PlayerStats : MonoBehaviour
     public int MaxSP;
     public int Attack;
     public int AttackRange;
+    public float CriticalChance;
+    public float CriticalDamageMultiplier;
     public int Agility;
     public int AttackSpeed => Mathf.RoundToInt( 1f / Agility );
     public int MoveSpeed;

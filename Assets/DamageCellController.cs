@@ -128,7 +128,13 @@ public class DamageCellController : MonoBehaviour
                         return;
                     }
 
-                    var damage = Mathf.RoundToInt(skill.Multiplier * playerContext.Stats.Attack);
+                    var playerStats = playerContext.StatsManager.RunTimeStats;
+                    var baseDamage = Mathf.RoundToInt(skill.Multiplier * playerStats.Attack);
+                    var damage = DamageCalculator.Roll(
+                        baseDamage,
+                        playerStats.CriticalChance,
+                        playerStats.CriticalDamageMultiplier);
+
                     monsterCombat.TakeDamage(damage);
                 }
             }
@@ -149,7 +155,12 @@ public class DamageCellController : MonoBehaviour
 
                     if (playerCombat != null && enemyContext != null)
                     {
-                        int damage = Mathf.RoundToInt(skill.Multiplier * enemyContext.Stats.Attack);
+                        int baseDamage = Mathf.RoundToInt(skill.Multiplier * enemyContext.Stats.Attack);
+                        var damage = DamageCalculator.Roll(
+                            baseDamage,
+                            enemyContext.Stats.CriticalChance,
+                            enemyContext.Stats.CriticalDamageMultiplier);
+
                         playerCombat.TakeDamage(damage);
                     }
                 }

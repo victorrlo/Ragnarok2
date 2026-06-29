@@ -17,8 +17,14 @@ public class PlayerCombat : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.red);
-        _playerContext.StatsManager.TakeDamage(amount);
+        TakeDamage(new DamageResult(amount, false));
+    }
+
+    public void TakeDamage(DamageResult damage)
+    {
+        Color damageColor = damage.IsCritical ? Color.yellow : Color.red;
+        FloatingTextPool.Instance.ShowDamage(transform.position, damage.Amount, damageColor);
+        _playerContext.StatsManager.TakeDamage(damage.Amount);
         _damageReaction.React();
     }
 }

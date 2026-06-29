@@ -467,7 +467,12 @@ public class AggressiveState : IEnemyState
                     return;
                 }
 
-                player.TakeDamage(_context.Stats.Attack);
+                var damage = DamageCalculator.Roll(
+                    _context.Stats.Attack,
+                    _context.Stats.CriticalChance,
+                    _context.Stats.CriticalDamageMultiplier);
+
+                player.TakeDamage(damage);
                 _lastAttackTime = Time.time;
             }
         }

@@ -16,8 +16,14 @@ public class EnemyCombat : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        FloatingTextPool.Instance.ShowDamage(transform.position, amount, Color.white);
-        _enemyContext.StatsManager.TakeDamage(amount);
+        TakeDamage(new DamageResult(amount, false));
+    }
+
+    public void TakeDamage(DamageResult damage)
+    {
+        Color damageColor = damage.IsCritical ? Color.yellow : Color.white;
+        FloatingTextPool.Instance.ShowDamage(transform.position, damage.Amount, damageColor);
+        _enemyContext.StatsManager.TakeDamage(damage.Amount);
 
         if (_enemyContext.StatsManager.CurrentHP <= 0)
         {

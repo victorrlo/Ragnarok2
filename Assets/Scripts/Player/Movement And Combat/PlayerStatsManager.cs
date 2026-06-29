@@ -60,6 +60,10 @@ public class PlayerStatsManager : MonoBehaviour
         _runtimeStats
             .Agility = baseStats.Agility;
         _runtimeStats
+            .CriticalChance = baseStats.CriticalChance;
+        _runtimeStats
+            .CriticalDamageMultiplier = baseStats.CriticalDamageMultiplier;
+        _runtimeStats
             .MoveSpeed = baseStats.MoveSpeed;
         _runtimeStats
             .AttackRange = baseStats.AttackRange;

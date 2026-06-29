@@ -11,6 +11,8 @@ public class CharacterStatsData : ScriptableObject
     [field: SerializeField] public int Attack {get; private set;}
     [field: SerializeField] public int MoveSpeed {get; private set;}
     [field: SerializeField] public int AttackRange {get; private set;}
+    [field: SerializeField, Range(0f, 1f)] public float CriticalChance {get; private set;} = 0.1f;
+    [field: SerializeField] public float CriticalDamageMultiplier {get; private set;} = 1.5f;
 
     [Header("Attributes")]
     // simplificando o sistema de jogo porque acho que não terei tempo de balancear, mais fácil apenas aumentar o HP dos monstros e ir aumentando o ataque do jogador ao passar de nível
