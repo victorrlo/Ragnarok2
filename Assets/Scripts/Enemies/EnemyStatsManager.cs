@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(EnemyContext))]
-public class EnemyStatsManager : MonoBehaviour
+public class EnemyStatsManager : MonoBehaviour, ISkillResourceUser
 {
     private EnemyContext _enemyContext;
     private float _currentHP;
@@ -105,5 +105,10 @@ public class EnemyStatsManager : MonoBehaviour
     {
         _currentSP -= amount;
         _spiritBar.fillAmount = (float)_currentSP / _enemyContext.Stats.MaxSP;
+    }
+
+    public bool HasEnoughSP(int amount)
+    {
+        return _currentSP >= amount;
     }
 }

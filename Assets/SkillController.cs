@@ -39,16 +39,7 @@ public class SkillController : MonoBehaviour
     {
         if (caster.CompareTag("Player"))
         {
-            var control = caster.GetComponent<PlayerControl>();
-            if (PlayerStatsManager.Instance.RunTimeStats.CurrentSP >= _waterBody.SpCost)
-            {
-                control.Casting(_waterBody);
-                control.ChangeState(new CastingState());
-                return;
-            }
-
-            FloatingTextPool.Instance.ShowFailMessage(caster.transform.position);
-
+            TryStartPlayerCast(caster, _waterBody);
         }
     }
 
@@ -56,22 +47,33 @@ public class SkillController : MonoBehaviour
     {   
         if (caster.CompareTag("Player"))
         {
-            var control = caster.GetComponent<PlayerControl>();
-            if (PlayerStatsManager.Instance.RunTimeStats.CurrentSP >= _stompPuddle.SpCost)
-            {
-                control.Casting(_stompPuddle);
-                control.ChangeState(new CastingState());
-                return;
-            }
-
-            FloatingTextPool.Instance.ShowFailMessage(caster.transform.position);
-
+            TryStartPlayerCast(caster, _stompPuddle);
         }
+    }
+
+    private void TryStartPlayerCast(GameObject caster, Skill skill)
+    {
+        var control = caster.GetComponent<PlayerControl>();
+
+        if (control == null)
+            return;
+
+        if (!SkillResourceUserResolver.TryGet(caster, out ISkillResourceUser resourceUser) ||
+            !resourceUser.HasEnoughSP(skill.SpCost))
+        {
+            FloatingTextPool.Instance.ShowFailMessage(caster.transform.position);
+            return;
+        }
+
+        resourceUser.UseSP(skill.SpCost);
+        control.Casting(skill);
+        control.ChangeState(new CastingState());
     }
 
     private void OnDestroy()
     {
         TryUsingStompPuddle -= CastStompPuddle;
+        TryCastingWaterBody -= CastWaterBody;
     }
 
 

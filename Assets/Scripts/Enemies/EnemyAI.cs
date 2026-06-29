@@ -607,7 +607,8 @@ public class AggressiveState : IEnemyState
                 continue;
             }
 
-            if (_context.StatsManager.CurrentSP < skill.SpCost)
+            if (!SkillResourceUserResolver.TryGet(_self, out ISkillResourceUser resourceUser) ||
+                !resourceUser.HasEnoughSP(skill.SpCost))
             {
                 Debug.Log($"Not enough SP for {skill.name}, skipping");
                 continue;
@@ -631,9 +632,13 @@ public class AggressiveState : IEnemyState
 
     private void CastSkill(Skill skill)
     {
+        if (!SkillResourceUserResolver.TryGet(_self, out ISkillResourceUser resourceUser) ||
+            !resourceUser.HasEnoughSP(skill.SpCost))
+            return;
+
+        resourceUser.UseSP(skill.SpCost);
         _ai.ChangeState(new EnemyCastingState(skill));
         _context.PutOnCooldown(skill);
-        _context.StatsManager.UseSP(skill.SpCost);
     }
 }
 

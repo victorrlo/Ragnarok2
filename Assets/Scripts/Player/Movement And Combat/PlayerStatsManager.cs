@@ -3,7 +3,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerStatsManager : MonoBehaviour
+public class PlayerStatsManager : MonoBehaviour, ISkillResourceUser
 {
     public static PlayerStatsManager Instance {get; private set;}
     [SerializeField] private PlayerStats _runtimeStats;
@@ -120,10 +120,16 @@ public class PlayerStatsManager : MonoBehaviour
     public void UseSP(int amount)
     {
         _runtimeStats.CurrentSP -= amount;
+        OnSPChanged?.Invoke(_runtimeStats.CurrentSP, _playerContext.Stats.MaxSP);
 
         _spRecoveryTimer = 0f; // reset timer every time uses a skill
 
         StartSPRecoveryLoop();
+    }
+
+    public bool HasEnoughSP(int amount)
+    {
+        return _runtimeStats.CurrentSP >= amount;
     }
 
     private void StartSPRecoveryLoop()

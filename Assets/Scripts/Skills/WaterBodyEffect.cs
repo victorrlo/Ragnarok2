@@ -13,9 +13,6 @@ public class WaterBodyEffect : SkillEffect
 
     public override void OnCastStarted(GameObject caster, Skill skill, CancellationToken cancellationToken)
     {
-        if (caster.CompareTag("Player") && PlayerStatsManager.Instance != null)
-            PlayerStatsManager.Instance.UseSP(skill.SpCost);
-
         CastingBarPool.Instance.ShowCastingBar(caster, skill);
     }
 
