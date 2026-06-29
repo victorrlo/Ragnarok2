@@ -16,6 +16,7 @@ public class PlayerControl : MonoBehaviour
     public GameObject CurrentTarget {get; set;}
     public Vector3Int? CurrentDestination {get; set;}
     public Skill CurrentSkill {get; set;}
+    public GameObject CurrentSkillTarget {get; set;}
 
     private void Awake()
     {
@@ -69,14 +70,16 @@ public class PlayerControl : MonoBehaviour
         _currentState.Enter(gameObject);
     }
 
-    public void Casting(Skill skill)
+    public void Casting(Skill skill, GameObject target = null)
     {
         CurrentSkill = skill;
+        CurrentSkillTarget = target;
     }
 
     public void ClearSkill()
     {
         CurrentSkill = null;
+        CurrentSkillTarget = null;
     }
 
     public IPlayerState GetCurrentState()
@@ -480,6 +483,7 @@ public class CastingState : IPlayerState
     private PlayerControl _control;
     private PlayerContext _context;
     private Skill _skill;
+    private GameObject _target;
     private Coroutine _castingRoutine;
     
     // Usamos o CancellationTokenSource do próprio C# para gerenciar o escopo desse estado
@@ -491,6 +495,7 @@ public class CastingState : IPlayerState
         _control = player.GetComponent<PlayerControl>();
         _context = player.GetComponent<PlayerContext>();
         _skill = _control.CurrentSkill;
+        _target = _control.CurrentSkillTarget;
 
         if (_player == null) return;
 
@@ -526,7 +531,7 @@ public class CastingState : IPlayerState
             StartCastingVisuals();
             await Awaitable.WaitForSecondsAsync(_skill.CastingTime, cancellationToken: token);
             _context.EventBus.OnPlayerAttackTriggered?.Invoke();
-            _skill.Effect.OnCastFinished(_player, _skill, token);
+            _skill.Effect.OnCastFinished(_player, _target, _skill, token);
         }
         catch (OperationCanceledException)
         {
@@ -534,13 +539,14 @@ public class CastingState : IPlayerState
         finally
         {
             _control._blockStateChange = false;
+            _control.ClearSkill();
             _control.ChangeState(new IdleState());
         }
     }
 
     private void StartCastingVisuals()
     {
-        _skill.Effect.OnCastStarted(_player, _skill, _stateCts.Token);
+        _skill.Effect.OnCastStarted(_player, _target, _skill, _stateCts.Token);
         if (_castingRoutine != null) _control.StopCoroutine(_castingRoutine);
         _castingRoutine = _control.StartCoroutine(SmoothSnapOnce());
 

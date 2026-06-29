@@ -12,14 +12,18 @@ public class SkillController : MonoBehaviour
     public bool HasStompPuddleSkill => _hasStompPuddleSkill;
     private bool _hasWaterBombSkill = false;
     public bool HasWaterBombSkill => _hasWaterBombSkill;
+    private bool _hasBashSkill = true;
+    public bool HasBashSkill => _hasBashSkill;
     #endregion
 
     #region Skills
     [SerializeField] private Skill _waterBody;
     [SerializeField] private Skill _stompPuddle;
+    [SerializeField] private Skill _bash;
     #endregion
     public Action<GameObject, bool> TryUsingStompPuddle;
     public Action<GameObject> TryCastingWaterBody;
+    public Action<GameObject, GameObject> TryCastingBash;
 
     private void Awake()
     {
@@ -33,6 +37,7 @@ public class SkillController : MonoBehaviour
     {
         TryUsingStompPuddle += CastStompPuddle;
         TryCastingWaterBody += CastWaterBody;
+        TryCastingBash += CastBash;
     }
 
     private void CastWaterBody(GameObject caster)
@@ -51,12 +56,26 @@ public class SkillController : MonoBehaviour
         }
     }
 
-    private void TryStartPlayerCast(GameObject caster, Skill skill)
+    private void CastBash(GameObject caster, GameObject target)
+    {
+        if (caster.CompareTag("Player"))
+        {
+            TryStartPlayerCast(caster, _bash, target);
+        }
+    }
+
+    private void TryStartPlayerCast(GameObject caster, Skill skill, GameObject target = null)
     {
         var control = caster.GetComponent<PlayerControl>();
 
         if (control == null)
             return;
+
+        if (skill == null || !SingleTargetSkillValidator.CanCast(caster, target, skill))
+        {
+            FloatingTextPool.Instance.ShowFailMessage(caster.transform.position);
+            return;
+        }
 
         if (!SkillResourceUserResolver.TryGet(caster, out ISkillResourceUser resourceUser) ||
             !resourceUser.HasEnoughSP(skill.SpCost))
@@ -66,7 +85,7 @@ public class SkillController : MonoBehaviour
         }
 
         resourceUser.UseSP(skill.SpCost);
-        control.Casting(skill);
+        control.Casting(skill, target);
         control.ChangeState(new CastingState());
     }
 
@@ -74,6 +93,7 @@ public class SkillController : MonoBehaviour
     {
         TryUsingStompPuddle -= CastStompPuddle;
         TryCastingWaterBody -= CastWaterBody;
+        TryCastingBash -= CastBash;
     }
 
 

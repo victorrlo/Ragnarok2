@@ -17,8 +17,7 @@ public class Skill : ScriptableObject
     [field: SerializeField] public float Multiplier {get; private set;}
     [field: SerializeField] public float TimeOfEffect {get; private set;}
     [field: SerializeField] public int Range {get; private set;}
-
-    public float CastingTime => SpCost/10f;
+    [field: SerializeField] public float CastingTime {get; private set;}
 
     [field: SerializeField] public SkillEffect Effect {get; private set;}
 }

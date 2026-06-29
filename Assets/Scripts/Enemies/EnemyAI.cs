@@ -40,6 +40,9 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        if (TryGetComponent(out EnemyStatusController statusController) && statusController.IsStunned)
+            return;
+
         _currentState?.Execute();
     }
 
@@ -648,6 +651,7 @@ public class EnemyCastingState : IEnemyState
     private EnemyContext _context;
     private EnemyAI _ai;
     private Skill _skill;
+    private GameObject _target;
     
     private CancellationTokenSource _cancellationTokenSource;
     public EnemyCastingState(Skill skill)
@@ -660,6 +664,7 @@ public class EnemyCastingState : IEnemyState
         _monster = monster;
         _context = monster.GetComponent<EnemyContext>();
         _ai = monster.GetComponent<EnemyAI>();
+        _target = _ai.CurrentTarget;
 
         _cancellationTokenSource = new CancellationTokenSource();
 
@@ -688,7 +693,7 @@ public class EnemyCastingState : IEnemyState
             if (!IsMonsterValid() || cancellationToken.IsCancellationRequested) return;
 
 
-            _skill.Effect.OnCastStarted(_monster, _skill, cancellationToken);
+            _skill.Effect.OnCastStarted(_monster, _target, _skill, cancellationToken);
 
             await Awaitable.WaitForSecondsAsync(_skill.CastingTime, cancellationToken: cancellationToken);
 
@@ -712,7 +717,7 @@ public class EnemyCastingState : IEnemyState
         }
         finally
         {
-            _skill.Effect.OnCastFinished(_monster, _skill, cancellationToken);
+            _skill.Effect.OnCastFinished(_monster, _target, _skill, cancellationToken);
         }
     }
 
