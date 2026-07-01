@@ -165,15 +165,7 @@ public class DamageCellController : MonoBehaviour
                     var enemyContext = caster.GetComponent<EnemyContext>();
 
                     if (playerCombat != null && enemyContext != null)
-                    {
-                        int baseDamage = Mathf.RoundToInt(skill.Multiplier * enemyContext.Stats.Attack);
-                        var damage = DamageCalculator.Roll(
-                            baseDamage,
-                            enemyContext.Stats.CriticalChance,
-                            enemyContext.Stats.CriticalDamageMultiplier);
-
-                        playerCombat.TakeDamage(damage);
-                    }
+                        ApplyEnemyAreaDamage(caster, skill, charged, player, playerCombat, enemyContext);
                 }
             }
         }
@@ -237,6 +229,62 @@ public class DamageCellController : MonoBehaviour
 
         if (accumulatedDamageSteps.Count > 0)
             FloatingTextPool.Instance.ShowAccumulatingDamage(monster.transform.position, accumulatedDamageSteps, Color.yellow);
+    }
+
+    private void ApplyEnemyAreaDamage(
+        GameObject caster,
+        Skill skill,
+        bool charged,
+        GameObject player,
+        PlayerCombat playerCombat,
+        EnemyContext enemyContext)
+    {
+        int baseDamage = Mathf.RoundToInt(skill.Multiplier * enemyContext.Stats.Attack);
+
+        if (!charged)
+        {
+            var normalDamage = DamageCalculator.Roll(
+                baseDamage,
+                enemyContext.Stats.CriticalChance,
+                enemyContext.Stats.CriticalDamageMultiplier);
+
+            playerCombat.TakeDamage(normalDamage);
+            return;
+        }
+
+        Vector3Int casterCell = GridManager.Instance.WorldToCell(caster.transform.position);
+        Vector3Int playerCell = GridManager.Instance.WorldToCell(player.transform.position);
+        bool isOriginalCell = IsInsideSquareRange(casterCell, playerCell, skill.Range);
+        int chargedBaseDamage = baseDamage * 2;
+
+        if (!isOriginalCell)
+        {
+            var borderDamage = DamageCalculator.Roll(
+                chargedBaseDamage,
+                enemyContext.Stats.CriticalChance,
+                enemyContext.Stats.CriticalDamageMultiplier);
+
+            playerCombat.TakeDamage(borderDamage);
+            return;
+        }
+
+        List<int> accumulatedDamageSteps = new List<int>();
+        int accumulatedDamage = 0;
+
+        for (int hit = 0; hit < 2; hit++)
+        {
+            var innerDamage = DamageCalculator.Roll(
+                chargedBaseDamage,
+                enemyContext.Stats.CriticalChance,
+                enemyContext.Stats.CriticalDamageMultiplier);
+
+            playerCombat.TakeDamage(innerDamage);
+            accumulatedDamage += innerDamage.Amount;
+            accumulatedDamageSteps.Add(accumulatedDamage);
+        }
+
+        if (accumulatedDamageSteps.Count > 0)
+            FloatingTextPool.Instance.ShowAccumulatingDamage(player.transform.position, accumulatedDamageSteps, Color.yellow);
     }
 
     private List<Vector3Int> DefineRangeOfCells(GameObject caster, Skill skill, int rangeBonus = 0)

@@ -35,6 +35,7 @@ public class MonsterData : CharacterStatsData
 
     private Dictionary<Skill, float> _skillChanceCache;
     private Dictionary<Skill, float> _skillCooldownCache;
+    private Dictionary<Skill, float> _skillChargedChanceCache;
 
     public float GetChanceOfCasting(Skill skill)
     {
@@ -52,6 +53,15 @@ public class MonsterData : CharacterStatsData
         return _skillCooldownCache.TryGetValue(skill, out float cooldown)
         ? cooldown
         : 0f;
+    }
+
+    public float GetChanceOfChargedCasting(Skill skill)
+    {
+        if (_skillChargedChanceCache == null) BuildSkillChargedChanceCache();
+
+        return _skillChargedChanceCache.TryGetValue(skill, out float chance)
+            ? chance
+            : 0f;
     }
 
     private void BuildSkillCache()
@@ -79,6 +89,19 @@ public class MonsterData : CharacterStatsData
             }
         }
     }
+
+    private void BuildSkillChargedChanceCache()
+    {
+        _skillChargedChanceCache = new Dictionary<Skill, float>();
+
+        foreach (var skillData in _monsterSkillRules)
+        {
+            if (skillData.skill != null)
+            {
+                _skillChargedChanceCache[skillData.skill] = skillData.chanceOfChargedCasting;
+            }
+        }
+    }
 }
 
 [System.Serializable]
@@ -98,6 +121,8 @@ public class SkillCastingData
     public Skill skill;
     [Range(0f, 100f)]
     public float chanceOfCasting;
+    [Range(0f, 100f)]
+    public float chanceOfChargedCasting;
     [FormerlySerializedAs("delay")]
     public float cooldown;
 }

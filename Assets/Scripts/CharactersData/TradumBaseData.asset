@@ -18,6 +18,8 @@ MonoBehaviour:
   <Attack>k__BackingField: 5
   <MoveSpeed>k__BackingField: 2
   <AttackRange>k__BackingField: 1
+  <CriticalChance>k__BackingField: 0.1
+  <CriticalDamageMultiplier>k__BackingField: 1.5
   <Agility>k__BackingField: 2
   _monsterNature: 1
   _sightRange: 15
@@ -25,7 +27,12 @@ MonoBehaviour:
   <RestTime>k__BackingField: 10
   StaminaToChaseInSeconds: 20
   _possibleDrops: []
-  _skillOverrides:
+  _monsterSkillRules:
   - skill: {fileID: 11400000, guid: b0180e57d98ddbd4cb34c41d516ed596, type: 2}
     chanceOfCasting: 20
-    delay: 0
+    chanceOfChargedCasting: 20
+    cooldown: 0
+  - skill: {fileID: 11400000, guid: ed021e3b49b041538a214d682fbf3c1d, type: 2}
+    chanceOfCasting: 20
+    chanceOfChargedCasting: 0
+    cooldown: 5

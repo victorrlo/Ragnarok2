@@ -367,6 +367,7 @@ public class AggressiveState : IEnemyState
     private bool _isChasing = false;
     private float _moveSpeed;
     private Skill _chosenSkillToCast;
+    private bool _chosenSkillIsCharged;
     private EnemyAnimation _animation;
     public void Enter(GameObject enemy)
     {
@@ -386,6 +387,7 @@ public class AggressiveState : IEnemyState
         _lastAttackTime = Time.time;
         _chaseTimer = 0f;
         _chosenSkillToCast = null;
+        _chosenSkillIsCharged = false;
 
         _isChasing = false;
         _path = null;
@@ -669,11 +671,23 @@ public class AggressiveState : IEnemyState
             {
                 Debug.Log("Chosen skill to cast!");
                 _chosenSkillToCast = skill;
+                _chosenSkillIsCharged = RollChargedSkill(skill);
                 return true;
             }
         }
 
         return false;
+    }
+
+    private bool RollChargedSkill(Skill skill)
+    {
+        if (skill == null || skill.Effect is not StompPuddleEffect)
+            return false;
+
+        float chanceOfChargedCasting = _context.Stats.GetChanceOfChargedCasting(skill);
+        float roll = UnityEngine.Random.Range(0f, 100f);
+
+        return roll <= chanceOfChargedCasting;
     }
 
     private void CastSkill(Skill skill)
@@ -683,7 +697,7 @@ public class AggressiveState : IEnemyState
             return;
 
         resourceUser.UseSP(skill.SpCost);
-        _ai.ChangeState(new EnemyCastingState(skill));
+        _ai.ChangeState(new EnemyCastingState(skill, _chosenSkillIsCharged));
         _context.PutOnCooldown(skill);
     }
 }
@@ -695,11 +709,13 @@ public class EnemyCastingState : IEnemyState
     private EnemyAI _ai;
     private Skill _skill;
     private GameObject _target;
+    private bool _charged;
     
     private CancellationTokenSource _cancellationTokenSource;
-    public EnemyCastingState(Skill skill)
+    public EnemyCastingState(Skill skill, bool charged = false)
     {
         _skill = skill;
+        _charged = charged;
     }
 
     public void Enter(GameObject monster)
@@ -736,7 +752,7 @@ public class EnemyCastingState : IEnemyState
             if (!IsMonsterValid() || cancellationToken.IsCancellationRequested) return;
 
 
-            _skill.Effect.OnCastStarted(_monster, _target, _skill, cancellationToken);
+            _skill.Effect.OnCastStarted(_monster, _target, _skill, cancellationToken, _charged);
 
             await Awaitable.WaitForSecondsAsync(_skill.CastingTime, cancellationToken: cancellationToken);
 
