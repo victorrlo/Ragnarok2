@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c9540172627a94e8b46f9ba9aa3324, type: 3}
   m_Name: WaterBody
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: WaterBody
+  <Name>k__BackingField: "Corpo D'\xC1gua"
   <SkillType>k__BackingField: 0
   <Description>k__BackingField: "Enquanto ativa, impede jogador de ter sua movimenta\xE7\xE3o
     interrompida."

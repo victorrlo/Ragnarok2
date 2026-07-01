@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c9540172627a94e8b46f9ba9aa3324, type: 3}
   m_Name: Bash
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Bash
+  <Name>k__BackingField: Soco Fulminante
   <SkillType>k__BackingField: 3
   <Description>k__BackingField: Single target melee attack that can stun the enemy.
   <Icon>k__BackingField: {fileID: 0}

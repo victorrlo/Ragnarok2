@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c9540172627a94e8b46f9ba9aa3324, type: 3}
   m_Name: StompPuddle
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Stomp Puddle
+  <Name>k__BackingField: Pisotear
   <SkillType>k__BackingField: 2
   <Description>k__BackingField: "Pisoteia po\xE7a, causando dano a sua volta."
   <Icon>k__BackingField: {fileID: -4996203822924275574, guid: 2fdade691ae9b3742b6c850e43f54582,

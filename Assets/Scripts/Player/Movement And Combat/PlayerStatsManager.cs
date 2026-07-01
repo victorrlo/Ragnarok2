@@ -12,6 +12,8 @@ public class PlayerStatsManager : MonoBehaviour, ISkillResourceUser
     private PlayerContext _playerContext;
     public event Action<float, float> OnHPChanged;
     public event Action<float, float> OnSPChanged;
+    [SerializeField, Range(0f, 1f)] private float _hpRecoveryOnDamageChance = 0.1f;
+    [SerializeField, Range(0f, 1f)] private float _maxHpRecoveryFromDamagePercent = 0.1f;
     [SerializeField] private Image _healthBar;
     [SerializeField] private Image _spiritBar;
     [SerializeField] private GameObject _statsBar;
@@ -93,15 +95,35 @@ public class PlayerStatsManager : MonoBehaviour, ISkillResourceUser
 
     public void Heal(float multiplier)
     {
-        int oldHP = _runtimeStats.CurrentHP;
         int amount = Mathf.RoundToInt(_runtimeStats.MaxHP*multiplier);
-        int newHP = _runtimeStats.CurrentHP + amount;
+        HealAmount(amount);
+    }
 
-        int amountHealed = amount - oldHP;
+    public void TryRecoverHPFromDamageDealt(int damageDealt)
+    {
+        if (damageDealt <= 0 || _runtimeStats.CurrentHP >= _runtimeStats.MaxHP)
+            return;
 
-        // prevent over healing
-        _runtimeStats.CurrentHP = Mathf.Min(newHP, _runtimeStats.MaxHP);
+        if (UnityEngine.Random.value > Mathf.Clamp01(_hpRecoveryOnDamageChance))
+            return;
 
+        int maxRecovery = Mathf.FloorToInt(_runtimeStats.MaxHP * _maxHpRecoveryFromDamagePercent);
+        int amount = Mathf.Min(damageDealt, maxRecovery);
+
+        HealAmount(amount);
+    }
+
+    private void HealAmount(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        int oldHP = _runtimeStats.CurrentHP;
+        _runtimeStats.CurrentHP = Mathf.Min(_runtimeStats.CurrentHP + amount, _runtimeStats.MaxHP);
+        int amountHealed = _runtimeStats.CurrentHP - oldHP;
+
+        if (amountHealed <= 0)
+            return;
 
         FloatingTextPool.Instance.ShowHeal(transform.position, amountHealed);
         OnHPChanged?.Invoke(_runtimeStats.CurrentHP, _playerContext.Stats.MaxHP);

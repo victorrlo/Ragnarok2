@@ -136,6 +136,8 @@ public class IdleState : IPlayerState
         _playerContext = _player.GetComponent<PlayerContext>();
         _playerControl = _player.GetComponent<PlayerControl>();
         _playerAnimation = _player.GetComponent<PlayerAnimation>();
+
+        GridHelper.SnapToNearestCellCenter(_player);
         
         _playerControl.ClearCurrentTarget();
         _playerControl.ClearDestination();
@@ -181,6 +183,7 @@ public class WalkingState : IPlayerState
             if (_target.TryGetComponent<EnemyCombat>(out EnemyCombat enemy) &&
                 DistanceHelper.IsInAttackRange(playerCell, targetCell, _context.Stats.AttackRange))
             {
+                GridHelper.SnapToNearestCellCenter(_player);
                 _control.ChangeState(new AttackingState());
                 return;
             }
@@ -190,13 +193,7 @@ public class WalkingState : IPlayerState
 
         if (_destination == null)
         {
-            _player.transform.position = Vector3.MoveTowards
-            (
-                _player.transform.position,
-                _nextNodePosition,
-                _moveSpeed * Time.deltaTime
-            );
-
+            GridHelper.SnapToNearestCellCenter(_player);
             _control.ChangeState(new IdleState());
             return;
         }
@@ -205,13 +202,7 @@ public class WalkingState : IPlayerState
 
         if (_path == null || _path.Count == 0)
         {
-            _player.transform.position = Vector3.MoveTowards
-            (
-                _player.transform.position,
-                _nextNodePosition,
-                _moveSpeed * Time.deltaTime
-            );
-
+            GridHelper.SnapToNearestCellCenter(_player);
             _control.ChangeState(new IdleState());
             return;
         }
@@ -266,12 +257,6 @@ public class WalkingState : IPlayerState
                 {
                     _isMoving = false;
                     _context.EventBus.OnPlayerMovementStateChanged(false);
-                    _player.transform.position = Vector3.MoveTowards
-                    (
-                        _player.transform.position,
-                        _nextNodePosition,
-                        _moveSpeed * Time.deltaTime
-                    );
 
                     _control.ChangeState(new AttackingState());
                     return;
@@ -287,26 +272,12 @@ public class WalkingState : IPlayerState
                     _isMoving = false;
                     _context.EventBus.OnPlayerMovementStateChanged(false);
 
-                    _player.transform.position = Vector3.MoveTowards
-                    (
-                        _player.transform.position,
-                        _nextNodePosition,
-                        _moveSpeed * Time.deltaTime
-                    );
-
                     _control.ChangeState(new PickingItemState());
                     return;
                 }
                 
                 _isMoving = false;
                 _context.EventBus.OnPlayerMovementStateChanged(false);
-
-                _player.transform.position = Vector3.MoveTowards
-                (
-                    _player.transform.position,
-                    _nextNodePosition,
-                    _moveSpeed * Time.deltaTime
-                );
 
                 _control.ChangeState(new IdleState());
                 return;
@@ -328,7 +299,7 @@ public class WalkingState : IPlayerState
         if (_index < _path.Count)
         {
             Node nextNode = _path[_index];
-            _nextNodePosition = GridManager.Instance.GetCellCenterWorld(nextNode._gridPosition);
+            _nextNodePosition = GridHelper.GetCellCenterWorld(_player, nextNode._gridPosition);
             OnStep(nextNode._gridPosition);
         }
     }
@@ -357,6 +328,8 @@ public class AttackingState : IPlayerState
         _enemy = _control.CurrentTarget;
         _lastAttackTime = 0f;
         _isAttacking = true;
+
+        GridHelper.SnapToNearestCellCenter(_player);
     }
 
     public void Execute()
@@ -404,11 +377,14 @@ public class AttackingState : IPlayerState
     public void Exit()
     {
         _isAttacking = false;
+
+        if (_context != null)
+            _context.EventBus.OnPlayerAttackHit -= HitEnemy;
     }
 
     private void Attack()
     {
-        var enemyCombat = _enemy.GetComponent<EnemyCombat>();
+        var enemyCombat = _enemy != null ? _enemy.GetComponent<EnemyCombat>() : null;
 
         if (enemyCombat == null)
         {
@@ -417,22 +393,31 @@ public class AttackingState : IPlayerState
             return;
         }
 
+        _context.EventBus.OnPlayerAttackHit -= HitEnemy;
+        _context.EventBus.OnPlayerAttackHit += HitEnemy;
+        
         _context.EventBus.OnPlayerAttackTriggered?.Invoke();
 
         _lastAttackTime = Time.time;
-
-        _context.EventBus.OnPlayerAttackHit += HitEnemy;
     }
 
     private void HitEnemy()
     {
+        _context.EventBus.OnPlayerAttackHit -= HitEnemy;
+
+        if (_enemy == null || !_enemy.TryGetComponent(out EnemyCombat enemyCombat))
+        {
+            _isAttacking = false;
+            _control.ChangeState(new IdleState());
+            return;
+        }
+
         var damage = DamageCalculator.Roll(
             _context.StatsManager.RunTimeStats.Attack,
             _context.StatsManager.RunTimeStats.CriticalChance,
             _context.StatsManager.RunTimeStats.CriticalDamageMultiplier);
 
-        _enemy.GetComponent<EnemyCombat>()?.TakeDamage(damage);
-        _context.EventBus.OnPlayerAttackHit -= HitEnemy;
+        enemyCombat.TakeDamage(damage);
     }
 }
 
@@ -526,12 +511,15 @@ public class CastingState : IPlayerState
     // O "Coração" do formato assíncrono
     private async Awaitable ExecuteCastWorkflowAsync(CancellationToken token)
     {
+        bool castFinished = false;
+
         try
         {
             StartCastingVisuals();
             await Awaitable.WaitForSecondsAsync(_skill.CastingTime, cancellationToken: token);
             _context.EventBus.OnPlayerAttackTriggered?.Invoke();
             _skill.Effect.OnCastFinished(_player, _target, _skill, token);
+            castFinished = true;
         }
         catch (OperationCanceledException)
         {
@@ -539,13 +527,46 @@ public class CastingState : IPlayerState
         finally
         {
             _control._blockStateChange = false;
+
+            Skill finishedSkill = _skill;
+            GameObject finishedTarget = _target;
+
             _control.ClearSkill();
-            _control.ChangeState(new IdleState());
+
+            if (castFinished && ShouldResumeAttackingTarget(finishedSkill, finishedTarget))
+            {
+                _control.SetCurrentTarget(finishedTarget);
+                _control.SetDestination(GridManager.Instance.WorldToCell(finishedTarget.transform.position));
+                _control.ChangeState(new AttackingState());
+            }
+            else
+            {
+                _control.ChangeState(new IdleState());
+            }
         }
+    }
+
+    private bool ShouldResumeAttackingTarget(Skill skill, GameObject target)
+    {
+        if (skill == null || skill.SkillType != Skill.Type.SingleTarget)
+            return false;
+
+        if (target == null || !target.CompareTag("Enemy"))
+            return false;
+
+        if (!target.TryGetComponent<EnemyCombat>(out _))
+            return false;
+
+        if (target.TryGetComponent<EnemyStatsManager>(out EnemyStatsManager statsManager) &&
+            statsManager.CurrentHP <= 0f)
+            return false;
+
+        return true;
     }
 
     private void StartCastingVisuals()
     {
+        PlayerSkillNameBaloon.Instance?.Show(_skill);
         _skill.Effect.OnCastStarted(_player, _target, _skill, _stateCts.Token);
         if (_castingRoutine != null) _control.StopCoroutine(_castingRoutine);
         _castingRoutine = _control.StartCoroutine(SmoothSnapOnce());

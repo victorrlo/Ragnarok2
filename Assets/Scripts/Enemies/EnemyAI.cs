@@ -68,9 +68,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (GridManager.Instance == null) return;
 
-        Vector3Int currentCell = GridManager.Instance.WorldToCell(this.transform.position);
-        Vector3 snappedPosition = GridManager.Instance.GetCellCenterWorld(currentCell);
-        this.transform.position = snappedPosition;
+        GridHelper.SnapToNearestCellCenter(gameObject);
     }
 
     private void OnDamageTaken(DamageEventData data)
@@ -131,6 +129,8 @@ public class PassiveState : IEnemyState
         _moveSpeed = _context.Stats.MoveSpeed;
         _timer = _context.Stats.RestTime;
         _wanderRange = 2;
+
+        GridHelper.SnapToNearestCellCenter(_self);
 
         Wander();
     }
@@ -202,6 +202,7 @@ public class PassiveState : IEnemyState
             {
                 _isMoving = false;
                 _destination = null;
+                GridHelper.SnapToNearestCellCenter(_self);
 
                 return;
             }
@@ -247,6 +248,7 @@ public class PassiveState : IEnemyState
 
         _isMoving = false;
         _destination = null;
+        GridHelper.SnapToNearestCellCenter(_self);
     }
 
     private Vector3Int GetDirectionOffset(int direction)
@@ -274,6 +276,7 @@ public class PassiveState : IEnemyState
         if (_path == null || _path.Count == 0)
         {
             _isMoving = false;
+            GridHelper.SnapToNearestCellCenter(_self);
             return;
         }
 
@@ -288,7 +291,7 @@ public class PassiveState : IEnemyState
         if (_index < _path.Count)
         {
             Node nextNode = _path[_index];
-            _nextNodePosition = GridManager.Instance.GetCellCenterWorld(nextNode._gridPosition);
+            _nextNodePosition = GridHelper.GetCellCenterWorld(_self, nextNode._gridPosition);
             OnStep(nextNode._gridPosition);
         }
     }
@@ -374,6 +377,7 @@ public class AggressiveState : IEnemyState
         _path = null;
         _index = 0;
 
+        GridHelper.SnapToNearestCellCenter(_self);
         RecalculatePath();
     }
 
@@ -443,20 +447,22 @@ public class AggressiveState : IEnemyState
 
     private void Attack()
     {
-        if (Vector3.Distance(_self.transform.position, _nextNodePosition) > 0.1f)
+        Vector3 attackCellCenter = GridHelper.GetNearestCellCenterWorld(_self);
+
+        if (Vector3.Distance(_self.transform.position, attackCellCenter) > 0.1f)
         {
             // whenever attacking, snap to grid
             _self.transform.position = Vector3.MoveTowards
             (
                 _self.transform.position,
-                _nextNodePosition,
+                attackCellCenter,
                 _moveSpeed * Time.deltaTime
             );
 
             return;
         }
 
-        _self.transform.position = _nextNodePosition;
+        _self.transform.position = attackCellCenter;
 
         if (Time.time - _lastAttackTime >= _context.Stats.AttackSpeed)
         {
@@ -524,6 +530,13 @@ public class AggressiveState : IEnemyState
         Vector3Int self = GridManager.Instance.WorldToCell(_self.transform.position);
         Vector3Int target = GridManager.Instance.WorldToCell(_target.transform.position);
 
+        if (DistanceHelper.IsInAttackRange(self, target, _context.Stats.AttackRange))
+        {
+            _isChasing = false;
+            _nextNodePosition = GridHelper.GetNearestCellCenterWorld(_self);
+            return;
+        }
+
         // find a adjacent cell to player cell
         Vector3Int attackPosition = FindAttackPosition(self, target, _context.Stats.AttackRange);
 
@@ -532,6 +545,7 @@ public class AggressiveState : IEnemyState
         if (_path == null || _path.Count == 0)
         {
             _isChasing = false;
+            GridHelper.SnapToNearestCellCenter(_self);
             return;
         }
 
@@ -587,7 +601,7 @@ public class AggressiveState : IEnemyState
         if (_index < _path.Count)
         {
             Node nextNode = _path[_index];
-            _nextNodePosition = GridManager.Instance.GetCellCenterWorld(nextNode._gridPosition);
+            _nextNodePosition = GridHelper.GetCellCenterWorld(_self, nextNode._gridPosition);
             OnStep(nextNode._gridPosition);
         }
     }
@@ -725,7 +739,7 @@ public class EnemyCastingState : IEnemyState
     {
         if (!IsMonsterValid()) return;
         
-        Vector3 targetPosition = GridManager.Instance.GetCellCenterWorld(GridManager.Instance.WorldToCell(_monster.transform.position));
+        Vector3 targetPosition = GridHelper.GetNearestCellCenterWorld(_monster);
 
         float duration = 0.3f;
         float elapsed = 0f;

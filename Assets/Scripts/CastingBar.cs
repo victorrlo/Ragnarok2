@@ -5,59 +5,118 @@ using UnityEngine.UI;
 
 public class CastingBar : MonoBehaviour
 {
+    [SerializeField] private GameObject _castingBar;
     [SerializeField] private Image _castingBarFill;
     private CancellationTokenSource  _cancellationTokenSource;
     public System.Action<GameObject, Skill> OnCastingComplete;
-    private Vector3 _offSet = new Vector3(0, 1.5f, 0);
+    public GameObject CurrentCaster { get; private set; }
+    private Vector3 _offSet = new Vector3(0, 2f, 0);
+    private int _invocationId;
+
+    private void Awake()
+    {
+        if (_castingBar == null && _castingBarFill != null)
+            _castingBar = _castingBarFill.transform.parent.gameObject;
+    }
 
     public void Initialize(GameObject caster, Skill skill, System.Action<CastingBar> returnToPool)
     {
-        _castingBarFill.fillAmount = 0f;
-        
-        _cancellationTokenSource = new CancellationTokenSource();
+        CurrentCaster = caster;
+        float duration = skill != null ? Mathf.Max(0f, skill.CastingTime) : 0f;
+        bool hasCastTime = duration > 0f;
 
-        AnimateCastingBar(caster, skill, returnToPool).Forget();
+        if (_castingBarFill != null)
+            _castingBarFill.fillAmount = 0f;
+
+        if (_castingBar != null)
+            _castingBar.SetActive(hasCastTime);
+
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = new CancellationTokenSource();
+        int invocationId = ++_invocationId;
+
+        AnimateCastingBar(caster, skill, returnToPool, invocationId).Forget();
     }
 
-    private async UniTask AnimateCastingBar(GameObject caster, Skill skill, System.Action<CastingBar> returnToPool)
+    private async UniTask AnimateCastingBar(GameObject caster, Skill skill, System.Action<CastingBar> returnToPool, int invocationId)
     {
         float elapsedTime = 0f;
-        float duration = skill.CastingTime;
+        float duration = skill != null ? Mathf.Max(0f, skill.CastingTime) : 0f;
+        bool completionRaised = false;
         gameObject.SetActive(true);
 
-        while (elapsedTime < duration)
+        try
         {
+            while (elapsedTime < duration)
+            {
+                if (invocationId != _invocationId)
+                    return;
+
+                if (caster == null || _cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    CancelCast();
+                    ReturnToPoolIfCurrent(returnToPool, invocationId);
+                    return;
+                }
+
+                if (_castingBarFill != null)
+                    _castingBarFill.fillAmount = duration <= 0f ? 1f : Mathf.Clamp01(elapsedTime / duration);
+
+                transform.position = caster.transform.position + _offSet;
+
+                if (!completionRaised && elapsedTime >= duration)
+                {
+                    completionRaised = true;
+                    OnCastingComplete?.Invoke(caster, skill);
+                }
+
+                await UniTask.Yield(_cancellationTokenSource.Token);
+                elapsedTime += Time.deltaTime;
+            }
+
+            if (invocationId != _invocationId)
+                return;
+
             if (caster == null || _cancellationTokenSource.Token.IsCancellationRequested)
             {
                 CancelCast();
-                returnToPool?.Invoke(this);
+                ReturnToPoolIfCurrent(returnToPool, invocationId);
                 return;
             }
 
-            _castingBarFill.fillAmount = elapsedTime / duration;
-            transform.position = caster.transform.position + _offSet;
-            await UniTask.Yield(_cancellationTokenSource.Token);
-            elapsedTime += Time.deltaTime;
-        }
+            if (_castingBarFill != null)
+                _castingBarFill.fillAmount = 1f;
 
-        if (caster == null || _cancellationTokenSource.Token.IsCancellationRequested)
+            if (!completionRaised)
+                OnCastingComplete?.Invoke(caster, skill);
+
+            await UniTask.Yield(cancellationToken: _cancellationTokenSource.Token);
+            ReturnToPoolIfCurrent(returnToPool, invocationId);
+        }
+        catch (System.OperationCanceledException)
         {
-            CancelCast();
-            returnToPool?.Invoke(this);
-            return;
         }
-
-        _castingBarFill.fillAmount = 1f;
-        OnCastingComplete?.Invoke(caster, skill);
-
-        await UniTask.Yield(cancellationToken: _cancellationTokenSource.Token);
-        returnToPool?.Invoke(this);
     }
 
     private void CancelCast()
     {
         _cancellationTokenSource?.Cancel();
-        _castingBarFill.fillAmount = 0f;
+        if (_castingBarFill != null)
+            _castingBarFill.fillAmount = 0f;
+    }
+
+    public void ClearCaster()
+    {
+        CurrentCaster = null;
+    }
+
+    private void ReturnToPoolIfCurrent(System.Action<CastingBar> returnToPool, int invocationId)
+    {
+        if (invocationId != _invocationId)
+            return;
+
+        returnToPool?.Invoke(this);
     }
 
     private void OnDestroy()

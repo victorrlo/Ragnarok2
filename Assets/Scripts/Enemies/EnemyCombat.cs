@@ -22,8 +22,11 @@ public class EnemyCombat : MonoBehaviour
     public void TakeDamage(DamageResult damage)
     {
         Color damageColor = damage.IsCritical ? Color.yellow : Color.white;
+        int damageDealt = Mathf.Clamp(damage.Amount, 0, Mathf.CeilToInt(_enemyContext.StatsManager.CurrentHP));
+
         FloatingTextPool.Instance.ShowDamage(transform.position, damage.Amount, damageColor);
         _enemyContext.StatsManager.TakeDamage(damage.Amount);
+        PlayerStatsManager.Instance?.TryRecoverHPFromDamageDealt(damageDealt);
 
         if (_enemyContext.StatsManager.CurrentHP <= 0)
         {
