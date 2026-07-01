@@ -4,6 +4,7 @@ using UnityEngine;
 public class SpriteRenderOrder : MonoBehaviour
 {
     private SpriteRenderer _renderer;
+    [SerializeField] bool _shouldRemainBehind = false;
 
     private void Awake()
     {
@@ -12,6 +13,12 @@ public class SpriteRenderOrder : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (_shouldRemainBehind)
+        {
+            _renderer.sortingOrder = Mathf.RoundToInt(-transform.position.z * 100) + 32000;
+            return;
+        }
+
         _renderer.sortingOrder = Mathf.RoundToInt(-transform.position.z * 100);
     }
 }
