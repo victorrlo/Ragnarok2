@@ -112,6 +112,7 @@ public class PassiveState : IEnemyState
     private bool _isMoving = false;
     private float _moveSpeed;
     private int _wanderRange;
+    private EnemyAnimation _animation;
 
 
     public void Enter(GameObject enemy)
@@ -121,6 +122,7 @@ public class PassiveState : IEnemyState
         _self = enemy;
         _self.TryGetComponent<EnemyContext>(out _context);
         _self.TryGetComponent<EnemyAI>(out _ai);
+        _self.TryGetComponent<EnemyAnimation>(out _animation);
 
         _player = GameObject.FindWithTag("Player");
 
@@ -131,6 +133,7 @@ public class PassiveState : IEnemyState
         _wanderRange = 2;
 
         GridHelper.SnapToNearestCellCenter(_self);
+        _animation?.SetMovementState(false);
 
         Wander();
     }
@@ -175,11 +178,16 @@ public class PassiveState : IEnemyState
     {
         _isMoving = false;
         _destination = null;
+        _animation?.SetMovementState(false);
     }
 
     private void Move()
     {
         if (!_isMoving || _path == null || _index >= _path.Count) return;
+
+        Vector3 moveDirection3D = (_nextNodePosition - _self.transform.position).normalized;
+        _animation?.FaceDirection(new Vector2(moveDirection3D.x, moveDirection3D.z));
+        _animation?.SetMovementState(true);
 
         // move towards next node
         _self.transform.position = Vector3.MoveTowards
@@ -202,6 +210,7 @@ public class PassiveState : IEnemyState
             {
                 _isMoving = false;
                 _destination = null;
+                _animation?.SetMovementState(false);
                 GridHelper.SnapToNearestCellCenter(_self);
 
                 return;
@@ -248,6 +257,7 @@ public class PassiveState : IEnemyState
 
         _isMoving = false;
         _destination = null;
+        _animation?.SetMovementState(false);
         GridHelper.SnapToNearestCellCenter(_self);
     }
 
@@ -276,6 +286,7 @@ public class PassiveState : IEnemyState
         if (_path == null || _path.Count == 0)
         {
             _isMoving = false;
+            _animation?.SetMovementState(false);
             GridHelper.SnapToNearestCellCenter(_self);
             return;
         }
@@ -283,6 +294,7 @@ public class PassiveState : IEnemyState
         _destination = cell;
         _index = 0;
         _isMoving = true;
+        _animation?.SetMovementState(true);
         SetNextTargetCell();
     }
 
@@ -355,6 +367,7 @@ public class AggressiveState : IEnemyState
     private bool _isChasing = false;
     private float _moveSpeed;
     private Skill _chosenSkillToCast;
+    private EnemyAnimation _animation;
     public void Enter(GameObject enemy)
     {
         // Debug.Log($"{enemy.name} entered aggressive state!");
@@ -362,6 +375,7 @@ public class AggressiveState : IEnemyState
         _self = enemy;
         _context = _self.GetComponent<EnemyContext>();
         _ai = _self.GetComponent<EnemyAI>();
+        _self.TryGetComponent<EnemyAnimation>(out _animation);
 
         _target = _ai.CurrentTarget;        
 
@@ -378,6 +392,7 @@ public class AggressiveState : IEnemyState
         _index = 0;
 
         GridHelper.SnapToNearestCellCenter(_self);
+        _animation?.SetMovementState(false);
         RecalculatePath();
     }
 
@@ -443,10 +458,15 @@ public class AggressiveState : IEnemyState
     {
         _isAttacking = false;
         _isChasing = false;
+        _animation?.SetMovementState(false);
     }
 
     private void Attack()
     {
+        Vector3 attackDirection3D = (_target.transform.position - _self.transform.position).normalized;
+        _animation?.FaceDirection(new Vector2(attackDirection3D.x, attackDirection3D.z));
+        _animation?.SetMovementState(false);
+
         Vector3 attackCellCenter = GridHelper.GetNearestCellCenterWorld(_self);
 
         if (Vector3.Distance(_self.transform.position, attackCellCenter) > 0.1f)
@@ -481,6 +501,7 @@ public class AggressiveState : IEnemyState
                     _context.Stats.CriticalChance,
                     _context.Stats.CriticalDamageMultiplier);
 
+                _animation?.PlayAttackAnimation(new Vector2(attackDirection3D.x, attackDirection3D.z));
                 player.TakeDamage(damage);
                 _lastAttackTime = Time.time;
             }
@@ -490,6 +511,10 @@ public class AggressiveState : IEnemyState
     private void Chase()
     {
         if (!_isChasing || _path == null || _index >= _path.Count) return;
+
+        Vector3 moveDirection3D = (_nextNodePosition - _self.transform.position).normalized;
+        _animation?.FaceDirection(new Vector2(moveDirection3D.x, moveDirection3D.z));
+        _animation?.SetMovementState(true);
 
         _self.transform.position = Vector3.MoveTowards
         (
@@ -510,6 +535,7 @@ public class AggressiveState : IEnemyState
             if (DistanceHelper.IsInAttackRange(currentPosition, positionTarget, _context.Stats.AttackRange))
             {
                 _isChasing = false;
+                _animation?.SetMovementState(false);
                 return;
             }
 
@@ -533,6 +559,7 @@ public class AggressiveState : IEnemyState
         if (DistanceHelper.IsInAttackRange(self, target, _context.Stats.AttackRange))
         {
             _isChasing = false;
+            _animation?.SetMovementState(false);
             _nextNodePosition = GridHelper.GetNearestCellCenterWorld(_self);
             return;
         }
@@ -545,12 +572,14 @@ public class AggressiveState : IEnemyState
         if (_path == null || _path.Count == 0)
         {
             _isChasing = false;
+            _animation?.SetMovementState(false);
             GridHelper.SnapToNearestCellCenter(_self);
             return;
         }
 
         _index = 0;
         _isChasing = true;
+        _animation?.SetMovementState(true);
         SetNextTargetCell();
     }
 

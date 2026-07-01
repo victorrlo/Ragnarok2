@@ -89,6 +89,20 @@ public class EnemyStatsManager : MonoBehaviour, ISkillResourceUser
         _enemyContext.EventBus.RaiseOnDamaged(data);
     }
 
+    public void HideStatsBar()
+    {
+        hasBeenDamaged = false;
+
+        if (_statsBar != null)
+            _statsBar.SetActive(false);
+
+        if (_healthBar != null)
+            _healthBar.gameObject.SetActive(false);
+
+        if (_spiritBar != null)
+            _spiritBar.gameObject.SetActive(false);
+    }
+
     private void SetHealthBarPosition()
     {
         _statsBar.SetActive(true);

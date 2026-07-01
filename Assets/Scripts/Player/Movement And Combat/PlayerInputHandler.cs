@@ -232,6 +232,26 @@ public class PlayerInputHandler : MonoBehaviour
         // Debug.Log("marked target!");
     }
 
+    public void ClearTargetIfMatching(GameObject target)
+    {
+        if (target == null)
+            return;
+
+        if (_target == target)
+            _target = null;
+
+        if (_pendingTarget == target)
+            ClearPendingAction();
+
+        if (_context.Control.CurrentTarget == target)
+        {
+            _context.Control.ClearCurrentTarget();
+            _context.Control.ChangeState(new IdleState());
+        }
+
+        ClearMarker();
+    }
+
     private void ClearMarker()
     {
         if (_activeTargetMarker != null)

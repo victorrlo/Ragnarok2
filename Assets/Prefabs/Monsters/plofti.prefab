@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 684161066911973323}
   - component: {fileID: 7116505063230905466}
   - component: {fileID: 5208352337176137190}
+  - component: {fileID: 7296409105044582301}
   m_Layer: 8
   m_Name: plofti
   m_TagString: Enemy
@@ -129,6 +130,22 @@ MonoBehaviour:
   _healthBar: {fileID: 435192981788293242}
   _spiritBar: {fileID: 6349778254286315578}
   _offset: {x: 0, y: -30, z: 0}
+--- !u!114 &7296409105044582301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850954093980881960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a0e9db9c5b64d34aa3538e4bd9bcaf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyAnimator: {fileID: 5480114140948467754}
+  _attackAnimationLength: 0.4
+  _deathAnimationLength: 0.5
+  _deathLastFrameHoldDuration: 1
 --- !u!1 &3313055147213635945
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,7 +415,7 @@ Animator:
   m_GameObject: {fileID: 5238235426050195379}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 1535052751200753304, guid: b856b623609b177489982b9261c79185,
+  m_Controller: {fileID: 1535052751200753304, guid: b7258a0a53e7d2546b929b36d5db2d07,
     type: 3}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -423,6 +440,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe2b8281549a924da71d5262d7ddfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shouldRemainBehind: 0
+  _orderOffset: 0
+  _behindOrderOffset: -1000
+  _precision: 10
 --- !u!1 &6356646410388024147
 GameObject:
   m_ObjectHideFlags: 0
