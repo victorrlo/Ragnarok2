@@ -54,6 +54,36 @@ public class FloatingTextPool : MonoBehaviour
         text.Initialize(amount, color, 1.2f, 0.5f, 0.6f, ReturnDamageTextToPool);
     }
 
+    public void ShowAccumulatingDamage(Vector3 worldPos, IReadOnlyList<int> accumulatedAmounts, Color color)
+    {
+        if (accumulatedAmounts == null || accumulatedAmounts.Count == 0)
+            return;
+
+        if (_damageTextPool.Count == 0)
+            CreateNewDamageText();
+
+        var text = _damageTextPool.Dequeue();
+        text.transform.position = worldPos + new Vector3(0f, 0.4f, 0f);
+        text.Initialize(accumulatedAmounts[0], color, 2f, 1f, 0.8f, ReturnDamageTextToPool);
+
+        StartCoroutine(UpdateAccumulatingDamageText(text, accumulatedAmounts));
+    }
+
+    private IEnumerator UpdateAccumulatingDamageText(FloatingDamageText text, IReadOnlyList<int> accumulatedAmounts)
+    {
+        const float updateDelay = 0.25f;
+
+        for (int i = 1; i < accumulatedAmounts.Count; i++)
+        {
+            yield return new WaitForSeconds(updateDelay);
+
+            if (text == null || !text.gameObject.activeInHierarchy)
+                yield break;
+
+            text.SetAmount(accumulatedAmounts[i]);
+        }
+    }
+
     public void ShowHeal(Vector3 worldPos, float amount)
     {
         if (_damageTextPool.Count == 0)

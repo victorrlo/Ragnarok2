@@ -18,7 +18,13 @@ public class FloatingDamageText : MonoBehaviour
     public void Initialize(int amount, Color color, float lifeTime, float fadeTime, float arcHeight, 
         System.Action<FloatingDamageText> returnToPool)
     {
-        _text.text = amount.ToString();
+        Initialize(amount.ToString(), color, lifeTime, fadeTime, arcHeight, returnToPool);
+    }
+
+    public void Initialize(string text, Color color, float lifeTime, float fadeTime, float arcHeight,
+        System.Action<FloatingDamageText> returnToPool)
+    {
+        _text.text = text;
         _text.color = color;
         _lifeTime = lifeTime;
         _startPos = transform.position + _offSet;
@@ -32,6 +38,11 @@ public class FloatingDamageText : MonoBehaviour
         gameObject.SetActive(true);
 
         StartCoroutine(AnimateText());
+    }
+
+    public void SetAmount(int amount)
+    {
+        _text.text = amount.ToString();
     }
 
     private void Awake()

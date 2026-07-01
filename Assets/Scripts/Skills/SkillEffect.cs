@@ -10,6 +10,11 @@ public abstract class SkillEffect : ScriptableObject
         OnCastStarted(caster, skill, cancellationToken);
     }
 
+    public virtual void OnCastStarted(GameObject caster, GameObject target, Skill skill, CancellationToken cancellationToken, bool charged)
+    {
+        OnCastStarted(caster, target, skill, cancellationToken);
+    }
+
     public virtual void OnCastFinished(GameObject caster, GameObject target, Skill skill, CancellationToken cancellationToken)
     {
         OnCastFinished(caster, skill, cancellationToken);

@@ -17,6 +17,8 @@ public class ShortcutManager : MonoBehaviour
 
     public System.Action<bool> OnStartCastingSkill;
     public System.Action<bool> OnStopCastingSkill;
+    private bool _isStompPuddleShortcutHeld;
+    public bool IsStompPuddleShortcutHeld => _isStompPuddleShortcutHeld;
 
 
     private void Awake()
@@ -32,13 +34,20 @@ public class ShortcutManager : MonoBehaviour
     {
         _hotkeyNumber1.action.performed += ItemHotkeyClicked;
         _hotkeyNumber2.action.performed += SkillHotkey2Clicked;
+        _hotkeyNumber3.action.started += StompPuddleHotkeyStarted;
         _hotkeyNumber3.action.performed += SkillHotkey3Clicked;
+        _hotkeyNumber3.action.canceled += StompPuddleHotkeyCanceled;
         _hotkeyNumber4.action.performed += SkillHotkey4Clicked;
     }
 
     private void OnDestroy()
     {
         _hotkeyNumber1.action.performed -= ItemHotkeyClicked;
+        _hotkeyNumber2.action.performed -= SkillHotkey2Clicked;
+        _hotkeyNumber3.action.started -= StompPuddleHotkeyStarted;
+        _hotkeyNumber3.action.performed -= SkillHotkey3Clicked;
+        _hotkeyNumber3.action.canceled -= StompPuddleHotkeyCanceled;
+        _hotkeyNumber4.action.performed -= SkillHotkey4Clicked;
     }
 
     private void ItemHotkeyClicked(InputAction.CallbackContext callbackContext)
@@ -58,6 +67,8 @@ public class ShortcutManager : MonoBehaviour
 
     private void SkillHotkey3Clicked(InputAction.CallbackContext callbackContext)
     {
+        _isStompPuddleShortcutHeld = true;
+
         var player = GameObject.FindWithTag("Player");
 
         if (player.GetComponent<PlayerControl>().GetCurrentState() is CastingState) return; 
@@ -68,6 +79,16 @@ public class ShortcutManager : MonoBehaviour
             SkillController.Instance.TryUsingStompPuddle?.Invoke(player, true);
             OnStartCastingSkill?.Invoke(true);
         }
+    }
+
+    private void StompPuddleHotkeyStarted(InputAction.CallbackContext callbackContext)
+    {
+        _isStompPuddleShortcutHeld = true;
+    }
+
+    private void StompPuddleHotkeyCanceled(InputAction.CallbackContext callbackContext)
+    {
+        _isStompPuddleShortcutHeld = false;
     }
 
     private void SkillHotkey4Clicked(InputAction.CallbackContext callbackContext)

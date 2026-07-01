@@ -17,6 +17,7 @@ public class PlayerControl : MonoBehaviour
     public Vector3Int? CurrentDestination {get; set;}
     public Skill CurrentSkill {get; set;}
     public GameObject CurrentSkillTarget {get; set;}
+    public bool CurrentSkillCharged {get; set;}
 
     private void Awake()
     {
@@ -70,16 +71,18 @@ public class PlayerControl : MonoBehaviour
         _currentState.Enter(gameObject);
     }
 
-    public void Casting(Skill skill, GameObject target = null)
+    public void Casting(Skill skill, GameObject target = null, bool charged = false)
     {
         CurrentSkill = skill;
         CurrentSkillTarget = target;
+        CurrentSkillCharged = charged;
     }
 
     public void ClearSkill()
     {
         CurrentSkill = null;
         CurrentSkillTarget = null;
+        CurrentSkillCharged = false;
     }
 
     public IPlayerState GetCurrentState()
@@ -469,6 +472,7 @@ public class CastingState : IPlayerState
     private PlayerContext _context;
     private Skill _skill;
     private GameObject _target;
+    private bool _charged;
     private Coroutine _castingRoutine;
     
     // Usamos o CancellationTokenSource do próprio C# para gerenciar o escopo desse estado
@@ -481,6 +485,7 @@ public class CastingState : IPlayerState
         _context = player.GetComponent<PlayerContext>();
         _skill = _control.CurrentSkill;
         _target = _control.CurrentSkillTarget;
+        _charged = _control.CurrentSkillCharged;
 
         if (_player == null) return;
 
@@ -539,11 +544,38 @@ public class CastingState : IPlayerState
                 _control.SetDestination(GridManager.Instance.WorldToCell(finishedTarget.transform.position));
                 _control.ChangeState(new AttackingState());
             }
+            else if (castFinished && ShouldStartChargedStompPuddle(finishedSkill))
+            {
+                _control.Casting(finishedSkill, charged: true);
+                _control.ChangeState(new CastingState());
+            }
             else
             {
                 _control.ChangeState(new IdleState());
             }
         }
+    }
+
+    private bool ShouldStartChargedStompPuddle(Skill skill)
+    {
+        if (_charged)
+            return false;
+
+        if (skill == null || skill.Effect is not StompPuddleEffect)
+            return false;
+
+        if (ShortcutManager.Instance == null || !ShortcutManager.Instance.IsStompPuddleShortcutHeld)
+            return false;
+
+        // if (!SkillResourceUserResolver.TryGet(_player, out ISkillResourceUser resourceUser) ||
+        //     !resourceUser.HasEnoughSP(skill.SpCost))
+        // {
+        //     FloatingTextPool.Instance.ShowFailMessage(_player.transform.position);
+        //     return false;
+        // }
+
+        // resourceUser.UseSP(skill.SpCost);
+        return true;
     }
 
     private bool ShouldResumeAttackingTarget(Skill skill, GameObject target)
@@ -567,7 +599,7 @@ public class CastingState : IPlayerState
     private void StartCastingVisuals()
     {
         PlayerSkillNameBaloon.Instance?.Show(_skill);
-        _skill.Effect.OnCastStarted(_player, _target, _skill, _stateCts.Token);
+        _skill.Effect.OnCastStarted(_player, _target, _skill, _stateCts.Token, _charged);
         if (_castingRoutine != null) _control.StopCoroutine(_castingRoutine);
         _castingRoutine = _control.StartCoroutine(SmoothSnapOnce());
 

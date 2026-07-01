@@ -16,7 +16,7 @@ MonoBehaviour:
   <SkillType>k__BackingField: 3
   <Description>k__BackingField: Single target melee attack that can stun the enemy.
   <Icon>k__BackingField: {fileID: 0}
-  <SpCost>k__BackingField: 8
+  <SpCost>k__BackingField: 5
   <Multiplier>k__BackingField: 1.5
   <TimeOfEffect>k__BackingField: 1.5
   <Range>k__BackingField: 0

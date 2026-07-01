@@ -40,14 +40,24 @@ public class DamageCellController : MonoBehaviour
     }
     
 
-    private async void CastDamageCellsOnGround(GameObject caster, Skill skill)
+    public void CastDamageCellsOnGround(GameObject caster, Skill skill)
+    {
+        CastDamageCellsOnGround(caster, skill, false);
+    }
+
+    public async void CastDamageCellsOnGround(GameObject caster, Skill skill, bool charged)
+    {
+        CastDamageCellsOnGround(caster, skill, charged, null);
+    }
+
+    public async void CastDamageCellsOnGround(GameObject caster, Skill skill, bool charged, Func<bool> shouldSuppressDamage)
     {
         var damageCell = _monsterDamageCell;
         
         if (caster.tag == "Player")
             damageCell = _playerDamageCell;
 
-        var cellsAffected = DefineRangeOfCells(caster, skill);
+        var cellsAffected = DefineRangeOfCells(caster, skill, charged ? 1 : 0);
         var spawnedCells = new List<GameObject>();
 
         foreach (var cell in cellsAffected)
@@ -63,10 +73,16 @@ public class DamageCellController : MonoBehaviour
         else
             _activeDamageCells[caster] = spawnedCells;
 
-        await RemoveDamageCells(caster, skill, cellsAffected);
+        await RemoveDamageCells(caster, skill, cellsAffected, spawnedCells, charged, shouldSuppressDamage);
     }
 
-    private async UniTask RemoveDamageCells(GameObject caster, Skill skill, List<Vector3Int> cellsAffected)
+    private async UniTask RemoveDamageCells(
+        GameObject caster,
+        Skill skill,
+        List<Vector3Int> cellsAffected,
+        List<GameObject> spawnedCells,
+        bool charged,
+        Func<bool> shouldSuppressDamage)
     {
         var castingTime = skill.CastingTime;
 
@@ -74,22 +90,24 @@ public class DamageCellController : MonoBehaviour
         {
             await UniTask.Delay(TimeSpan.FromSeconds(castingTime));
 
-            if (caster != null)
+            if (caster != null && (shouldSuppressDamage == null || !shouldSuppressDamage()))
             {
-                ApplySkillEffect(caster, skill, cellsAffected);
+                ApplySkillEffect(caster, skill, cellsAffected, charged);
             }
 
-            if (_activeDamageCells.ContainsKey(caster))
+            foreach (var cell in spawnedCells)
             {
-                foreach (var cell in _activeDamageCells[caster])
-                {
-                    if (cell != null)
-                    {
-                        Destroy(cell);
-                    }
-                }
+                if (cell != null)
+                    Destroy(cell);
+            }
 
-                _activeDamageCells.Remove(caster);
+            if (caster != null && _activeDamageCells.TryGetValue(caster, out List<GameObject> activeCells))
+            {
+                foreach (var cell in spawnedCells)
+                    activeCells.Remove(cell);
+
+                if (activeCells.Count == 0)
+                    _activeDamageCells.Remove(caster);
             }
         }
         catch (Exception e)
@@ -98,7 +116,7 @@ public class DamageCellController : MonoBehaviour
         }
     }
 
-    private void ApplySkillEffect(GameObject caster, Skill skill, List<Vector3Int> cellsAffected)
+    private void ApplySkillEffect(GameObject caster, Skill skill, List<Vector3Int> cellsAffected, bool charged)
     {
 
         if (caster == null) return;
@@ -128,14 +146,7 @@ public class DamageCellController : MonoBehaviour
                         return;
                     }
 
-                    var playerStats = playerContext.StatsManager.RunTimeStats;
-                    var baseDamage = Mathf.RoundToInt(skill.Multiplier * playerStats.Attack);
-                    var damage = DamageCalculator.Roll(
-                        baseDamage,
-                        playerStats.CriticalChance,
-                        playerStats.CriticalDamageMultiplier);
-
-                    monsterCombat.TakeDamage(damage);
+                    ApplyPlayerAreaDamage(caster, skill, charged, monster, monsterCombat, playerContext);
                 }
             }
         }
@@ -168,18 +179,79 @@ public class DamageCellController : MonoBehaviour
         }
     }
 
-    private List<Vector3Int> DefineRangeOfCells(GameObject caster, Skill skill)
+    private void ApplyPlayerAreaDamage(
+        GameObject caster,
+        Skill skill,
+        bool charged,
+        GameObject monster,
+        EnemyCombat monsterCombat,
+        PlayerContext playerContext)
+    {
+        var playerStats = playerContext.StatsManager.RunTimeStats;
+        var baseDamage = Mathf.RoundToInt(skill.Multiplier * playerStats.Attack);
+
+        if (!charged)
+        {
+            var normalDamage = DamageCalculator.Roll(
+                baseDamage,
+                playerStats.CriticalChance,
+                playerStats.CriticalDamageMultiplier);
+
+            monsterCombat.TakeDamage(normalDamage);
+            return;
+        }
+
+        Vector3Int casterCell = GridManager.Instance.WorldToCell(caster.transform.position);
+        Vector3Int monsterCell = GridManager.Instance.WorldToCell(monster.transform.position);
+        bool isOriginalCell = IsInsideSquareRange(casterCell, monsterCell, skill.Range);
+        int chargedBaseDamage = baseDamage * 2;
+
+        if (!isOriginalCell)
+        {
+            var borderDamage = DamageCalculator.Roll(
+                chargedBaseDamage,
+                playerStats.CriticalChance,
+                playerStats.CriticalDamageMultiplier);
+
+            monsterCombat.TakeDamage(borderDamage);
+            return;
+        }
+
+        List<int> accumulatedDamageSteps = new List<int>();
+        int accumulatedDamage = 0;
+
+        for (int hit = 0; hit < 2; hit++)
+        {
+            if (monsterCombat == null || monsterCombat.IsDead)
+                break;
+
+            var innerDamage = DamageCalculator.Roll(
+                chargedBaseDamage,
+                playerStats.CriticalChance,
+                playerStats.CriticalDamageMultiplier);
+
+            monsterCombat.TakeDamage(innerDamage);
+            accumulatedDamage += innerDamage.Amount;
+            accumulatedDamageSteps.Add(accumulatedDamage);
+        }
+
+        if (accumulatedDamageSteps.Count > 0)
+            FloatingTextPool.Instance.ShowAccumulatingDamage(monster.transform.position, accumulatedDamageSteps, Color.yellow);
+    }
+
+    private List<Vector3Int> DefineRangeOfCells(GameObject caster, Skill skill, int rangeBonus = 0)
     {
         var startingPosition = GridManager.Instance.WorldToCell(caster.transform.position);
         List<Vector3Int> cellsAffected = new List<Vector3Int>();
+        int range = skill.Range + rangeBonus;
         
         if (skill.SkillType == Skill.Type.AreaOfEffect)
         {
             cellsAffected.Add(startingPosition);
 
-            for (int x = -skill.Range; x <= skill.Range; x++)
+            for (int x = -range; x <= range; x++)
             {
-                for (int y = -skill.Range; y <= skill.Range; y++)
+                for (int y = -range; y <= range; y++)
                 {
                     Vector3Int potentialPosition = startingPosition + new Vector3Int(x, y, 0);
 
@@ -192,6 +264,12 @@ public class DamageCellController : MonoBehaviour
             }       
         }
         return cellsAffected;
+    }
+
+    private bool IsInsideSquareRange(Vector3Int center, Vector3Int cell, int range)
+    {
+        return Mathf.Abs(cell.x - center.x) <= range &&
+               Mathf.Abs(cell.y - center.y) <= range;
     }
 
     private void DefineAllDamageableCells()
