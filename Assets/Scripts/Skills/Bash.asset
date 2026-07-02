@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Soco Fulminante
   <SkillType>k__BackingField: 3
-  <Description>k__BackingField: Single target melee attack that can stun the enemy.
+  <Description>k__BackingField: "Aumenta o dano do pr\xF3ximo ataque."
   <Icon>k__BackingField: {fileID: 0}
   <SpCost>k__BackingField: 5
   <Multiplier>k__BackingField: 1.5

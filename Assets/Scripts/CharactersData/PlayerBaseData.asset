@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: PlayerBaseData
   m_EditorClassIdentifier: 
   <CharacterName>k__BackingField: Player
-  <MaxHP>k__BackingField: 100
+  <MaxHP>k__BackingField: 200
   <MaxSP>k__BackingField: 50
   <Attack>k__BackingField: 10
   <MoveSpeed>k__BackingField: 3
   <AttackRange>k__BackingField: 1
+  <CriticalChance>k__BackingField: 0.1
+  <CriticalDamageMultiplier>k__BackingField: 1.5
   <Agility>k__BackingField: 1

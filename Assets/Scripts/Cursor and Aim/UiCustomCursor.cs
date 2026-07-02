@@ -10,6 +10,7 @@ public class UiCustomCursor : MonoBehaviour
     private Texture2D _currentCursorTexture;
     private Vector2 _cursorHotSpot;
     [SerializeField] private Camera _mainCamera;
+    private readonly RaycastHit[] _mouseRaycastHits = new RaycastHit[64];
 
     private void Awake()
     {
@@ -24,14 +25,15 @@ public class UiCustomCursor : MonoBehaviour
 
     private void Update()
     {
+        MouseInteractableType interactableType = GetMouseInteractableType();
 
-        if (IsMouseOverEnemy())
+        if (interactableType == MouseInteractableType.Enemy)
         {
             SetCursorState(_attackCursorSprite);
             return;
         }
 
-        if (IsMouseOverItem())
+        if (interactableType == MouseInteractableType.Item)
         {
             SetCursorState(_itemCursorSprite);
             return;
@@ -42,28 +44,38 @@ public class UiCustomCursor : MonoBehaviour
         SetCursorState(_normalCursorSprite);
     }
 
-    private bool IsMouseOverEnemy()
+    private MouseInteractableType GetMouseInteractableType()
     {
         Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+        int hitCount = Physics.RaycastNonAlloc(ray, _mouseRaycastHits);
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        MouseInteractableType closestType = MouseInteractableType.None;
+        float closestDistance = float.MaxValue;
+
+        for (int i = 0; i < hitCount; i++)
         {
-            return hit.collider.tag.Equals("Enemy");
+            RaycastHit hit = _mouseRaycastHits[i];
+            MouseInteractableType hitType = GetInteractableType(hit.collider);
+
+            if (hitType == MouseInteractableType.None || hit.distance >= closestDistance)
+                continue;
+
+            closestType = hitType;
+            closestDistance = hit.distance;
         }
 
-        return false;
+        return closestType;
     }
 
-    private bool IsMouseOverItem()
+    private MouseInteractableType GetInteractableType(Collider collider)
     {
-        Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+        if (collider.TryGetComponent<EnemyCombat>(out _))
+            return MouseInteractableType.Enemy;
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            return hit.collider.tag.Equals("Item");
-        }
+        if (collider.TryGetComponent<ItemDataLoader>(out _))
+            return MouseInteractableType.Item;
 
-        return false;
+        return MouseInteractableType.None;
     }
 
     private void SetCursorState(Texture2D texture)
@@ -76,5 +88,12 @@ public class UiCustomCursor : MonoBehaviour
     private Texture2D GetCursorState()
     {
         return _currentCursorTexture;
+    }
+
+    private enum MouseInteractableType
+    {
+        None,
+        Enemy,
+        Item
     }
 }

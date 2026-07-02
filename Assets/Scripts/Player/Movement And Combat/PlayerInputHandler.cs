@@ -8,6 +8,7 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] private GameObject _targetMarkerPrefab;
     private GameObject _activeTargetMarker;
     private GameObject _target;
+    private readonly RaycastHit[] _mouseRaycastHits = new RaycastHit[64];
 
 #region PendingAction
     private GameObject _pendingTarget;
@@ -53,24 +54,20 @@ public class PlayerInputHandler : MonoBehaviour
             return;
         }
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
         ClickOnEmptyCell();
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        if (TryGetMouseInteractable(out GameObject target, out MouseInteractableType targetType))
         {
-
-            if (hit.collider.TryGetComponent<EnemyCombat>(out EnemyCombat enemy))
+            if (targetType == MouseInteractableType.Enemy)
             {
-                _target = enemy.gameObject;
+                _target = target;
                 ClickOnEnemy();
                 return;
             }
 
-            ItemDataLoader item = hit.collider.GetComponent<ItemDataLoader>();
-            if (item != null)
+            if (targetType == MouseInteractableType.Item)
             {
-                _target = item.gameObject;
+                _target = target;
                 ClickOnItem();
                 return;
             }
@@ -85,17 +82,11 @@ public class PlayerInputHandler : MonoBehaviour
     {
         ClearPendingAction();
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        if (TryGetMouseInteractable(out GameObject target, out MouseInteractableType targetType))
         {
-            if (hit.collider.TryGetComponent<EnemyCombat>(out _))
+            if (targetType == MouseInteractableType.Enemy || targetType == MouseInteractableType.Item)
             {
-                _pendingTarget = hit.collider.gameObject;
-            }
-            else if (hit.collider.TryGetComponent<ItemDataLoader>(out _))
-            {
-                _pendingTarget = hit.collider.gameObject;
+                _pendingTarget = target;
             }
             else
             {
@@ -108,6 +99,51 @@ public class PlayerInputHandler : MonoBehaviour
         }
 
         _hasPendingAction = true;
+    }
+
+    private bool TryGetMouseInteractable(out GameObject target, out MouseInteractableType targetType)
+    {
+        target = null;
+        targetType = MouseInteractableType.None;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        int hitCount = Physics.RaycastNonAlloc(ray, _mouseRaycastHits);
+
+        float closestDistance = float.MaxValue;
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit hit = _mouseRaycastHits[i];
+            MouseInteractableType hitType = GetInteractableType(hit.collider, out GameObject hitTarget);
+
+            if (hitType == MouseInteractableType.None || hit.distance >= closestDistance)
+                continue;
+
+            target = hitTarget;
+            targetType = hitType;
+            closestDistance = hit.distance;
+        }
+
+        return targetType != MouseInteractableType.None;
+    }
+
+    private MouseInteractableType GetInteractableType(Collider collider, out GameObject target)
+    {
+        target = null;
+
+        if (collider.TryGetComponent<EnemyCombat>(out EnemyCombat enemy))
+        {
+            target = enemy.gameObject;
+            return MouseInteractableType.Enemy;
+        }
+
+        if (collider.TryGetComponent<ItemDataLoader>(out ItemDataLoader item))
+        {
+            target = item.gameObject;
+            return MouseInteractableType.Item;
+        }
+
+        return MouseInteractableType.None;
     }
 
     private void ExecutePendingAction()
@@ -259,6 +295,13 @@ public class PlayerInputHandler : MonoBehaviour
             Destroy(_activeTargetMarker);
             _activeTargetMarker = null;
         }
+    }
+
+    private enum MouseInteractableType
+    {
+        None,
+        Enemy,
+        Item
     }
 
 }

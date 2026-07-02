@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 3237134919047298078}
   - component: {fileID: 7114716203848156284}
   - component: {fileID: 3744060913970132496}
+  - component: {fileID: 3037019526968919735}
   m_Layer: 6
   m_Name: player
   m_TagString: Player
@@ -157,6 +158,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _runtimeStats: {fileID: 2113102477172711322}
+  _hpRecoveryOnDamageChance: 0.1
+  _maxHpRecoveryFromDamagePercent: 0.1
   _healthBar: {fileID: 0}
   _spiritBar: {fileID: 0}
   _statsBar: {fileID: 0}
@@ -178,6 +181,8 @@ MonoBehaviour:
   MaxSP: 0
   Attack: 0
   AttackRange: 0
+  CriticalChance: 0
+  CriticalDamageMultiplier: 0
   Agility: 0
   MoveSpeed: 0
   CurrentHP: 0
@@ -253,6 +258,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   duration: 0.5
+  reactionChance: 0.5
+--- !u!65 &3037019526968919735
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4407582328210922064}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4905283317936555937
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,6 +385,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe2b8281549a924da71d5262d7ddfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shouldRemainBehind: 0
+  _orderOffset: 0
+  _behindOrderOffset: -1000
+  _precision: 10
 --- !u!1 &5790578838243879274
 GameObject:
   m_ObjectHideFlags: 0
@@ -697,6 +728,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe2b8281549a924da71d5262d7ddfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shouldRemainBehind: 0
+  _orderOffset: 0
+  _behindOrderOffset: -1000
+  _precision: 10
 --- !u!1 &7474551064170217867
 GameObject:
   m_ObjectHideFlags: 0
@@ -798,6 +833,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe2b8281549a924da71d5262d7ddfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shouldRemainBehind: 0
+  _orderOffset: 0
+  _behindOrderOffset: -1000
+  _precision: 10
 --- !u!1 &7478859263416226093
 GameObject:
   m_ObjectHideFlags: 0
@@ -874,7 +913,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1706218913
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 10000
   m_Sprite: {fileID: -706056228074197221, guid: 37b4dd67b4c64814e99585c13c9d31cf,
     type: 3}
@@ -900,6 +939,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe2b8281549a924da71d5262d7ddfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shouldRemainBehind: 0
+  _orderOffset: 0
+  _behindOrderOffset: -1000
+  _precision: 10
 --- !u!95 &4582829928274754513
 Animator:
   serializedVersion: 7

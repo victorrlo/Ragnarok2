@@ -71,7 +71,7 @@ public class DamageCellController : MonoBehaviour
         if (_activeDamageCells.ContainsKey(caster))
             _activeDamageCells[caster].AddRange(spawnedCells);
         else
-            _activeDamageCells[caster] = spawnedCells;
+            _activeDamageCells[caster] = new List<GameObject>(spawnedCells);
 
         await RemoveDamageCells(caster, skill, cellsAffected, spawnedCells, charged, shouldSuppressDamage);
     }
@@ -103,7 +103,9 @@ public class DamageCellController : MonoBehaviour
 
             if (caster != null && _activeDamageCells.TryGetValue(caster, out List<GameObject> activeCells))
             {
-                foreach (var cell in spawnedCells)
+                List<GameObject> spawnedCellsSnapshot = new List<GameObject>(spawnedCells);
+
+                foreach (var cell in spawnedCellsSnapshot)
                     activeCells.Remove(cell);
 
                 if (activeCells.Count == 0)
@@ -120,6 +122,11 @@ public class DamageCellController : MonoBehaviour
     {
 
         if (caster == null) return;
+
+        float damageMultiplier = 1f;
+
+        if (skill != null && skill.Effect is StompPuddleEffect)
+            SkillPowerPuddle.TryConsumeAt(caster, out damageMultiplier);
 
         if (caster.CompareTag("Player"))
         {
@@ -146,7 +153,7 @@ public class DamageCellController : MonoBehaviour
                         return;
                     }
 
-                    ApplyPlayerAreaDamage(caster, skill, charged, monster, monsterCombat, playerContext);
+                    ApplyPlayerAreaDamage(caster, skill, charged, damageMultiplier, monster, monsterCombat, playerContext);
                 }
             }
         }
@@ -165,7 +172,7 @@ public class DamageCellController : MonoBehaviour
                     var enemyContext = caster.GetComponent<EnemyContext>();
 
                     if (playerCombat != null && enemyContext != null)
-                        ApplyEnemyAreaDamage(caster, skill, charged, player, playerCombat, enemyContext);
+                        ApplyEnemyAreaDamage(caster, skill, charged, damageMultiplier, player, playerCombat, enemyContext);
                 }
             }
         }
@@ -175,12 +182,13 @@ public class DamageCellController : MonoBehaviour
         GameObject caster,
         Skill skill,
         bool charged,
+        float damageMultiplier,
         GameObject monster,
         EnemyCombat monsterCombat,
         PlayerContext playerContext)
     {
         var playerStats = playerContext.StatsManager.RunTimeStats;
-        var baseDamage = Mathf.RoundToInt(skill.Multiplier * playerStats.Attack);
+        var baseDamage = Mathf.RoundToInt(skill.Multiplier * playerStats.Attack * damageMultiplier);
 
         if (!charged)
         {
@@ -235,11 +243,12 @@ public class DamageCellController : MonoBehaviour
         GameObject caster,
         Skill skill,
         bool charged,
+        float damageMultiplier,
         GameObject player,
         PlayerCombat playerCombat,
         EnemyContext enemyContext)
     {
-        int baseDamage = Mathf.RoundToInt(skill.Multiplier * enemyContext.Stats.Attack);
+        int baseDamage = Mathf.RoundToInt(skill.Multiplier * enemyContext.Stats.Attack * damageMultiplier);
 
         if (!charged)
         {

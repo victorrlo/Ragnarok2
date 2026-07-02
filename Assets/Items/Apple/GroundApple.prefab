@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 873990629608704742}
   - component: {fileID: 9059126034308590892}
   - component: {fileID: 6444254589934304298}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GroundApple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,6 +118,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe2b8281549a924da71d5262d7ddfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shouldRemainBehind: 0
+  _orderOffset: 0
+  _behindOrderOffset: -1000
+  _precision: 10
 --- !u!65 &9059126034308590892
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -137,8 +141,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.34, y: 0.34, z: 0.2}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.58229846, y: 0.5256659, z: 0.2}
+  m_Center: {x: 0.0036257207, y: -0.0067885066, z: 8.813866e-12}
 --- !u!114 &6444254589934304298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,7 +167,7 @@ GameObject:
   - component: {fileID: 5029475979600530929}
   - component: {fileID: 3941306997257454554}
   - component: {fileID: 2697374786366574026}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -301,7 +305,7 @@ GameObject:
   - component: {fileID: 8845480621379559738}
   - component: {fileID: 3768494257792393263}
   - component: {fileID: 6075002072101069424}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
