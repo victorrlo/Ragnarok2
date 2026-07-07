@@ -86,6 +86,16 @@ public class EnemyAI : MonoBehaviour
     public void SetDestination(Vector3Int position) => CurrentDestination = position;
     public void ClearDestination() => CurrentDestination = null;
     public void SetStateChangeBlock(bool block) => _blockStateChange = block;
+    public void ReturnToDefaultState()
+    {
+        if (TryGetComponent(out BossMinionFollower follower) && follower.HasLeader)
+        {
+            follower.EnterFollowState();
+            return;
+        }
+
+        ChangeState(new PassiveState());
+    }
 }
 
 public interface IEnemyState
@@ -368,6 +378,7 @@ public class AggressiveState : IEnemyState
     private float _moveSpeed;
     private Skill _chosenSkillToCast;
     private bool _chosenSkillIsCharged;
+    private float _chosenSkillCooldown;
     private EnemyAnimation _animation;
     public void Enter(GameObject enemy)
     {
@@ -388,6 +399,7 @@ public class AggressiveState : IEnemyState
         _chaseTimer = 0f;
         _chosenSkillToCast = null;
         _chosenSkillIsCharged = false;
+        _chosenSkillCooldown = 0f;
 
         _isChasing = false;
         _path = null;
@@ -405,7 +417,7 @@ public class AggressiveState : IEnemyState
 
         if (_target == null)
         {
-            _ai.ChangeState(new PassiveState());
+            _ai.ReturnToDefaultState();
             return;
         }
 
@@ -420,7 +432,7 @@ public class AggressiveState : IEnemyState
             // Debug.Log($"{_self.name} lost sight of player");
             // show emote of drop of water
             _ai.ClearTarget();
-            _ai.ChangeState(new PassiveState());
+            _ai.ReturnToDefaultState();
             return;
         }
 
@@ -440,7 +452,7 @@ public class AggressiveState : IEnemyState
             {
                 Debug.Log($"{_self.name} gave up chasing after {_maxChaseTime} seconds");
                 _ai.ClearTarget();
-                _ai.ChangeState(new PassiveState());
+                _ai.ReturnToDefaultState();
                 return;
             }
 
@@ -645,10 +657,15 @@ public class AggressiveState : IEnemyState
 
     private bool TryCastingSkill()
     {
-        var monsterSkills = _context.Stats.Skills;
+        List<SkillCastingData> skillRules = GetCurrentSkillRules();
 
-        foreach(var skill in monsterSkills)
+        foreach(var skillRule in skillRules)
         {
+            Skill skill = skillRule.skill;
+
+            if (skill == null)
+                continue;
+
             if (_context.IsOnCooldown(skill))
             {
                 Debug.Log($"{skill.name} is on cooldown, skipping");
@@ -662,7 +679,7 @@ public class AggressiveState : IEnemyState
                 continue;
             }
 
-            var chanceOfCasting = _context.Stats.GetChanceOfCasting(skill);
+            var chanceOfCasting = skillRule.chanceOfCasting;
             var roll = UnityEngine.Random.Range(0f, 100f);
 
             // Debug.Log($"Rolled {roll:F1} for {skill.name} (needed <= {chanceOfCasting}%)");
@@ -671,7 +688,8 @@ public class AggressiveState : IEnemyState
             {
                 Debug.Log("Chosen skill to cast!");
                 _chosenSkillToCast = skill;
-                _chosenSkillIsCharged = RollChargedSkill(skill);
+                _chosenSkillIsCharged = RollChargedSkill(skill, skillRule.chanceOfChargedCasting);
+                _chosenSkillCooldown = skillRule.cooldown;
                 return true;
             }
         }
@@ -679,12 +697,34 @@ public class AggressiveState : IEnemyState
         return false;
     }
 
-    private bool RollChargedSkill(Skill skill)
+    private List<SkillCastingData> GetCurrentSkillRules()
+    {
+        IEnemySkillRuleProvider skillRuleProvider = _self.GetComponent<IEnemySkillRuleProvider>();
+
+        if (skillRuleProvider != null)
+            return skillRuleProvider.GetSkillRules();
+
+        List<SkillCastingData> rules = new();
+
+        foreach (Skill skill in _context.Stats.Skills)
+        {
+            rules.Add(new SkillCastingData
+            {
+                skill = skill,
+                chanceOfCasting = _context.Stats.GetChanceOfCasting(skill),
+                chanceOfChargedCasting = _context.Stats.GetChanceOfChargedCasting(skill),
+                cooldown = _context.Stats.GetSkillCooldown(skill)
+            });
+        }
+
+        return rules;
+    }
+
+    private bool RollChargedSkill(Skill skill, float chanceOfChargedCasting)
     {
         if (skill == null || skill.Effect is not StompPuddleEffect)
             return false;
 
-        float chanceOfChargedCasting = _context.Stats.GetChanceOfChargedCasting(skill);
         float roll = UnityEngine.Random.Range(0f, 100f);
 
         return roll <= chanceOfChargedCasting;
@@ -698,7 +738,7 @@ public class AggressiveState : IEnemyState
 
         resourceUser.UseSP(skill.SpCost);
         _ai.ChangeState(new EnemyCastingState(skill, _chosenSkillIsCharged));
-        _context.PutOnCooldown(skill);
+        _context.PutOnCooldown(skill, _chosenSkillCooldown);
     }
 }
 

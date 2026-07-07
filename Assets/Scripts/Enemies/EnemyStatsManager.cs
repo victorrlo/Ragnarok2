@@ -89,6 +89,16 @@ public class EnemyStatsManager : MonoBehaviour, ISkillResourceUser
         _enemyContext.EventBus.RaiseOnDamaged(data);
     }
 
+    public void RecoverHP(float amount)
+    {
+        if (amount <= 0f || _currentHP <= 0f)
+            return;
+
+        _currentHP = Mathf.Min(_currentHP + amount, _enemyContext.Stats.MaxHP);
+        _healthBar.fillAmount = _currentHP / _enemyContext.Stats.MaxHP;
+        hasBeenDamaged = true;
+    }
+
     public void HideStatsBar()
     {
         hasBeenDamaged = false;

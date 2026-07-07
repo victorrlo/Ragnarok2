@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 684161066911973323}
   - component: {fileID: 7116505063230905466}
   - component: {fileID: 5208352337176137190}
+  - component: {fileID: 873714620945184312}
   m_Layer: 8
   m_Name: tradum
   m_TagString: Enemy
@@ -133,6 +134,40 @@ MonoBehaviour:
   _healthBar: {fileID: 435192981788293242}
   _spiritBar: {fileID: 6349778254286315578}
   _offset: {x: 0, y: -30, z: 0}
+--- !u!114 &873714620945184312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850954093980881960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f79f3c62a9a4a448a35cb67cf0f1f9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _minionPrefab: {fileID: 8843197986823452482, guid: c83709823953ca44c92e05bb3d8ad4a3,
+    type: 3}
+  _maxActiveMinions: 4
+  _summonDelay: 8
+  _summonAmountPerWave: 4
+  _minionFollowDistance: 2
+  _minionRepathInterval: 0.5
+  _skillPhases:
+  - _minHpPercent: 0.203
+    _maxHpPercent: 0
+    _skillRules:
+    - skill: {fileID: 11400000, guid: b0180e57d98ddbd4cb34c41d516ed596, type: 2}
+      chanceOfCasting: 50
+      chanceOfChargedCasting: 100
+      cooldown: 10
+  _useBaseMonsterSkillsWhenNoPhaseMatches: 1
+  _canRetreatToPuddle: 1
+  _retreatBelowHpPercent: 0.5
+  _stopRetreatAtHpPercent: 0.8
+  _puddleSearchRange: 15
+  _puddleHealPerSecond: 20
+  _retreatCooldown: 8
 --- !u!1 &3313055147213635945
 GameObject:
   m_ObjectHideFlags: 0
@@ -451,6 +486,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe2b8281549a924da71d5262d7ddfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shouldRemainBehind: 0
+  _orderOffset: 0
+  _behindOrderOffset: -1000
+  _precision: 10
 --- !u!1 &6356646410388024147
 GameObject:
   m_ObjectHideFlags: 0

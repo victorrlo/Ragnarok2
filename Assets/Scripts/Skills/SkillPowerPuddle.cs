@@ -21,6 +21,7 @@ public class SkillPowerPuddle : MonoBehaviour
 
     public int CurrentSizeStage => _currentSizeStage;
     public float SkillDamageMultiplier => _skillDamageMultiplier;
+    public Vector3Int Cell => _cell;
 
     private void Awake()
     {
@@ -89,6 +90,30 @@ public class SkillPowerPuddle : MonoBehaviour
     public static bool HasPuddleAt(Vector3Int cell)
     {
         return PuddlesByCell.TryGetValue(cell, out SkillPowerPuddle puddle) && puddle != null;
+    }
+
+    public static bool TryFindNearest(Vector3 worldPosition, float maxDistance, out SkillPowerPuddle nearestPuddle)
+    {
+        nearestPuddle = null;
+        float maxDistanceSqr = maxDistance * maxDistance;
+        float closestDistanceSqr = float.MaxValue;
+        List<SkillPowerPuddle> activePuddleSnapshot = new(ActivePuddles);
+
+        foreach (SkillPowerPuddle puddle in activePuddleSnapshot)
+        {
+            if (puddle == null)
+                continue;
+
+            float distanceSqr = (puddle.transform.position - worldPosition).sqrMagnitude;
+
+            if (distanceSqr > maxDistanceSqr || distanceSqr >= closestDistanceSqr)
+                continue;
+
+            closestDistanceSqr = distanceSqr;
+            nearestPuddle = puddle;
+        }
+
+        return nearestPuddle != null;
     }
 
     private void OnTriggerEnter(Collider other)

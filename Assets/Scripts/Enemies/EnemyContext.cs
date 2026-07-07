@@ -31,7 +31,11 @@ public class EnemyContext : MonoBehaviour
     public void PutOnCooldown(Skill skill)
     {
         var cooldown = Stats.GetSkillCooldown(skill);
+        PutOnCooldown(skill, cooldown);
+    }
 
+    public void PutOnCooldown(Skill skill, float cooldown)
+    {
         if (cooldown > 0)
         {
             _skillCooldowns[skill] = Time.time + cooldown;
