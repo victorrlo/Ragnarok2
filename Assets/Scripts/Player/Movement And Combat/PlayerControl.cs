@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 [RequireComponent(typeof(PlayerContext))]
 public class PlayerControl : MonoBehaviour
@@ -18,6 +16,8 @@ public class PlayerControl : MonoBehaviour
     public Skill CurrentSkill {get; set;}
     public GameObject CurrentSkillTarget {get; set;}
     public bool CurrentSkillCharged {get; set;}
+    private readonly CancellationTokenSource _destroyCts = new ();
+    public CancellationTokenSource DestroyTokenSource => _destroyCts;
 
     private void Awake()
     {
@@ -55,6 +55,12 @@ public class PlayerControl : MonoBehaviour
     private void Update()
     {
         _currentState?.Execute();
+    }
+
+    private void OnDestroy()
+    {
+        _destroyCts.Cancel();
+        _destroyCts.Dispose();
     }
 
     public void ChangeState(IPlayerState newState)
@@ -491,7 +497,8 @@ public class CastingState : IPlayerState
 
         // 1. Criamos um CTS vinculado ao ciclo de vida do GameObject do Player.
         // Se o Player for destruído, o token cancela automaticamente.
-        _stateCts = CancellationTokenSource.CreateLinkedTokenSource(_player.GetCancellationTokenOnDestroy());
+        CancellationToken cts = _player.TryGetComponent(out PlayerControl playerControl) ? playerControl.DestroyTokenSource.Token : new CancellationTokenSource().Token;
+        _stateCts = CancellationTokenSource.CreateLinkedTokenSource(cts);
 
         _control._blockStateChange = true;
 

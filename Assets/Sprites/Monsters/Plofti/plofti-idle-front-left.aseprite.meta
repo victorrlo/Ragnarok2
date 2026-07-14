@@ -8,7 +8,7 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 62a9f0aa5b59740cfbadc7e5f9823bb0, type: 3}
-  importerVersion: 1
+  importerVersion: 2
   textureImporterSettings:
     alphaSource: 1
     mipMapMode: 0
@@ -84,6 +84,8 @@ ScriptedImporter:
     generateAnimationClips: 1
     addSortingGroup: 1
     addShadowCasters: 0
+    generateIndividualEvents: 1
+    generateSpriteAtlas: 1
   asepriteImporterSettings:
     fileImportMode: 1
     importHiddenLayers: 0
@@ -97,9 +99,9 @@ ScriptedImporter:
     generateAnimationClips: 1
     addSortingGroup: 1
     addShadowCasters: 0
-  importFileNodeState: 1
+    generateIndividualEvents: 1
+    generateSpriteAtlas: 1
   platformSettingsDirtyTick: 638898538134712697
-  textureAssetName: 
   singleSpriteImportData:
   - name: 
     originalName: 
@@ -1237,8 +1239,14 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 65, y: 21}
   spriteSheetImportData: []
+  tileSetImportData: []
   asepriteLayers:
   - layerIndex: 0
+    uuid:
+      value0: 803716347
+      value1: 0
+      value2: 0
+      value3: 0
     guid: 803716347
     name: plofti-idle-front-left
     layerFlags: 0
@@ -1723,7 +1731,10 @@ ScriptedImporter:
         height: 9
       spriteId: ac953317fa6fa73448bea3926e6623fa
     linkedCells: []
+    tileCells: []
+    tileSetIndex: 0
     parentIndex: -1
+  tileSets: []
   platformSettings:
   - name: Default
     overridden: 0
@@ -1787,6 +1798,5 @@ ScriptedImporter:
     androidETC2FallbackOverride: 0
   generatePhysicsShape: 0
   secondarySpriteTextures: []
-  spritePackingTag: 
-  canvasSize: {x: 16, y: 16}
   previousTextureSize: {x: 128, y: 256}
+  canvasSize: {x: 16, y: 16}

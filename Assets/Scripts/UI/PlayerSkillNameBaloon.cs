@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 
@@ -8,6 +8,9 @@ public class PlayerSkillNameBaloon : MonoBehaviour
 
     [SerializeField] private TMP_Text _skillNameText;
     [SerializeField] private float _displayTime = 2f;
+
+    private CancellationTokenSource _cts;
+    public CancellationTokenSource DestroyCancellationTokenSource => _cts ??= new CancellationTokenSource();
 
     private int _showId;
 
@@ -23,8 +26,13 @@ public class PlayerSkillNameBaloon : MonoBehaviour
 
         gameObject.SetActive(false);
     }
+    
+    private void OnDestroy()
+    {
+        
+    }
 
-    public void Show(Skill skill)
+    public async void Show(Skill skill)
     {
         if (_skillNameText == null || skill == null)
             return;
@@ -33,12 +41,12 @@ public class PlayerSkillNameBaloon : MonoBehaviour
         gameObject.SetActive(true);
 
         int showId = ++_showId;
-        HideAfterDelay(showId).Forget();
+        await HideAfterDelay(showId);
     }
 
-    private async UniTask HideAfterDelay(int showId)
+    private async Awaitable HideAfterDelay(int showId)
     {
-        await UniTask.Delay((int)(_displayTime * 1000f), cancellationToken: this.GetCancellationTokenOnDestroy());
+        await Awaitable.WaitForSecondsAsync((int)(_displayTime * 1000f), cancellationToken: DestroyCancellationTokenSource.Token);
 
         if (showId != _showId)
             return;

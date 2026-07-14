@@ -1,5 +1,4 @@
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +18,7 @@ public class CastingBar : MonoBehaviour
             _castingBar = _castingBarFill.transform.parent.gameObject;
     }
 
-    public void Initialize(GameObject caster, Skill skill, System.Action<CastingBar> returnToPool)
+    public async void Initialize(GameObject caster, Skill skill, System.Action<CastingBar> returnToPool)
     {
         CurrentCaster = caster;
         float duration = skill != null ? Mathf.Max(0f, skill.CastingTime) : 0f;
@@ -36,10 +35,10 @@ public class CastingBar : MonoBehaviour
         _cancellationTokenSource = new CancellationTokenSource();
         int invocationId = ++_invocationId;
 
-        AnimateCastingBar(caster, skill, returnToPool, invocationId).Forget();
+        await AnimateCastingBar(caster, skill, returnToPool, invocationId);
     }
 
-    private async UniTask AnimateCastingBar(GameObject caster, Skill skill, System.Action<CastingBar> returnToPool, int invocationId)
+    private async Awaitable AnimateCastingBar(GameObject caster, Skill skill, System.Action<CastingBar> returnToPool, int invocationId)
     {
         float elapsedTime = 0f;
         float duration = skill != null ? Mathf.Max(0f, skill.CastingTime) : 0f;
@@ -71,7 +70,7 @@ public class CastingBar : MonoBehaviour
                     OnCastingComplete?.Invoke(caster, skill);
                 }
 
-                await UniTask.Yield(_cancellationTokenSource.Token);
+                await Awaitable.NextFrameAsync(_cancellationTokenSource.Token);
                 elapsedTime += Time.deltaTime;
             }
 
@@ -91,7 +90,7 @@ public class CastingBar : MonoBehaviour
             if (!completionRaised)
                 OnCastingComplete?.Invoke(caster, skill);
 
-            await UniTask.Yield(cancellationToken: _cancellationTokenSource.Token);
+            await Awaitable.NextFrameAsync(_cancellationTokenSource.Token);
             ReturnToPoolIfCurrent(returnToPool, invocationId);
         }
         catch (System.OperationCanceledException)

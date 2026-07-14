@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Cysharp.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -76,7 +73,7 @@ public class DamageCellController : MonoBehaviour
         await RemoveDamageCells(caster, skill, cellsAffected, spawnedCells, charged, shouldSuppressDamage);
     }
 
-    private async UniTask RemoveDamageCells(
+    private async Awaitable RemoveDamageCells(
         GameObject caster,
         Skill skill,
         List<Vector3Int> cellsAffected,
@@ -88,7 +85,7 @@ public class DamageCellController : MonoBehaviour
 
         try
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(castingTime));
+            await Awaitable.WaitForSecondsAsync(castingTime);
 
             if (caster != null && (shouldSuppressDamage == null || !shouldSuppressDamage()))
             {

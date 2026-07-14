@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 [RequireComponent(typeof(EnemyContext))]
 public class EnemyAI : MonoBehaviour
@@ -820,7 +818,7 @@ public class EnemyCastingState : IEnemyState
         }
     }
 
-    private async UniTask SnapToGrid(CancellationToken cancellationToken)
+    private async Awaitable SnapToGrid(CancellationToken cancellationToken)
     {
         if (!IsMonsterValid()) return;
         
@@ -835,7 +833,7 @@ public class EnemyCastingState : IEnemyState
             elapsed += Time.deltaTime;
             _monster.transform.position = Vector3.Lerp(startPosition, targetPosition, elapsed / duration);
 
-            await UniTask.Yield(cancellationToken);
+            await Awaitable.NextFrameAsync(cancellationToken);
         }
 
         if (IsMonsterValid())
